@@ -3,6 +3,29 @@
 
 #include "sdk/demofile.h"
 
+#include <stdarg.h>  // For va_start, etc.
+
+std::string string_format(const std::string fmt, ...) {
+    int size = ((int)fmt.size()) * 2 + 50;   // Use a rubric appropriate for your code
+    std::string str;
+    va_list ap;
+    while (1) {     // Maximum two passes on a POSIX system...
+        str.resize(size);
+        va_start(ap, fmt);
+        int n = vsnprintf((char *)str.data(), size, fmt.c_str(), ap);
+        va_end(ap);
+        if (n > -1 && n < size) {  // Everything worked
+            str.resize(n);
+            return str;
+        }
+        if (n > -1)  // Needed size returned
+            size = n + 1;   // For null char
+        else
+            size *= 2;      // Guess at a larger size (OS specific)
+    }
+    return str;
+}
+
 struct DemoHeader
 {
 	std::string filestamp;
@@ -65,6 +88,11 @@ void parseHeader(std::istream &demo)
 	header.signonlength = readInt(demo);
 }
 
+void unhandledCommand(const std::string &description)
+{
+	std::cout << "Unhandled command: " << description << std::endl;
+}
+
 int main()
 {
 	std::ifstream demofile("demo.dem");
@@ -77,6 +105,22 @@ int main()
 	{
 		unsigned char command = readByte(demo);
 		int tick = readInt(demo);
+		unsigned char playerSlot = readByte(demo);
+
+		switch (command)
+		{
+		case dem_signon:
+		case dem_packet:
+		case dem_synctick:
+		case dem_consolecmd:
+		case dem_usercmd:
+		case dem_datatables:
+		case dem_stop:
+		case dem_customdata:
+		case dem_stringtables:
+		default:
+			unhandledCommand("command: default");
+		}
 	}
 
 	return 0;
