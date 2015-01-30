@@ -101,6 +101,13 @@ void parsePacket(std::istream &demo)
 	std::cout << "Parse packet end" << std::endl;
 }
 
+void parseDatatables(std::istream &demo)
+{
+	int length = readInt(demo);
+	std::cout << "Parse datatables: " << length << std::endl;
+	demo.seekg(length, std::ios_base::cur);
+}
+
 void unhandledCommand(const std::string &description)
 {
 	std::cout << "Unhandled command: " << description << std::endl;
@@ -135,6 +142,7 @@ int main()
 		case dem_usercmd:
 			break;
 		case dem_datatables:
+			parseDatatables(demo);
 			break;
 		case dem_stop:
 			end = true;
