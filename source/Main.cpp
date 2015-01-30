@@ -90,15 +90,14 @@ void parseHeader(std::istream &demo)
 
 void parsePacket(std::istream &demo)
 {
-	std::cout << "Parse packet" << std::endl;
+	int position = demo.tellg();
 	democmdinfo_t cmdinfo;
 	demo.read(reinterpret_cast<char *>(&cmdinfo), sizeof(democmdinfo_t));
 	int sequenceNumberIn = readInt(demo);
 	int sequenceNumberOut = readInt(demo);
 	int length = readInt(demo);
-	std::cout << "Parse packet length: " << length << std::endl;
+	std::cout << "Parse packet. Length: " << length << " at " << position << std::endl;
 	demo.seekg(length, std::ios_base::cur);
-	std::cout << "Parse packet end" << std::endl;
 }
 
 void parseDatatables(std::istream &demo)
@@ -123,7 +122,7 @@ void unhandledCommand(const std::string &description)
 
 int main()
 {
-	std::ifstream demofile("demo.dem");
+	std::ifstream demofile("demo.dem", std::ios_base::binary);
 	std::istream &demo = demofile;
 
 	parseHeader(demo);
@@ -131,10 +130,11 @@ int main()
 	bool end = false;
 	while (!end)
 	{
+		int position = demo.tellg();
 		unsigned char command = readByte(demo);
 		int tick = readInt(demo);
 		unsigned char playerSlot = readByte(demo);
-		std::cout << "command: " << ((int)command) << std::endl;
+		std::cout << "command: " << ((int)command) << " at " << position << std::endl;
 
 		switch (command)
 		{
