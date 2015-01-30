@@ -3,8 +3,8 @@
 
 #include "sdk/demofile.h"
 
-#include "protobuf/cstrike15_usermessages_public.pb.h"
-#include "protobuf/netmessages_public.pb.h"
+#include "protobuf/generated/cstrike15_usermessages_public.pb.h"
+#include "protobuf/generated/netmessages_public.pb.h"
 
 #include <stdarg.h>  // For va_start, etc.
 
