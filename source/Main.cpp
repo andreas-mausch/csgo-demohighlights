@@ -108,6 +108,13 @@ void parseDatatables(std::istream &demo)
 	demo.seekg(length, std::ios_base::cur);
 }
 
+void parseStringtables(std::istream &demo)
+{
+	int length = readInt(demo);
+	std::cout << "Parse stringtables: " << length << std::endl;
+	demo.seekg(length, std::ios_base::cur);
+}
+
 void unhandledCommand(const std::string &description)
 {
 	std::cout << "Unhandled command: " << description << std::endl;
@@ -138,8 +145,10 @@ int main()
 		case dem_synctick:
 			break;
 		case dem_consolecmd:
+			unhandledCommand(string_format("command: default %d", command));
 			break;
 		case dem_usercmd:
+			unhandledCommand(string_format("command: default %d", command));
 			break;
 		case dem_datatables:
 			parseDatatables(demo);
@@ -148,8 +157,10 @@ int main()
 			end = true;
 			break;
 		case dem_customdata:
+			unhandledCommand(string_format("command: default %d", command));
 			break;
 		case dem_stringtables:
+			parseStringtables(demo);
 			break;
 		default:
 			unhandledCommand(string_format("command: default %d", command));
