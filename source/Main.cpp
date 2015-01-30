@@ -88,9 +88,23 @@ void parseHeader(std::istream &demo)
 	header.signonlength = readInt(demo);
 }
 
+void parsePacket(std::istream &demo)
+{
+	std::cout << "Parse packet" << std::endl;
+	democmdinfo_t cmdinfo;
+	demo.read(reinterpret_cast<char *>(&cmdinfo), sizeof(democmdinfo_t));
+	int sequenceNumberIn = readInt(demo);
+	int sequenceNumberOut = readInt(demo);
+	int length = readInt(demo);
+	std::cout << "Parse packet length: " << length << std::endl;
+	demo.seekg(length, std::ios_base::cur);
+	std::cout << "Parse packet end" << std::endl;
+}
+
 void unhandledCommand(const std::string &description)
 {
 	std::cout << "Unhandled command: " << description << std::endl;
+	exit(1);
 }
 
 int main()
@@ -106,20 +120,31 @@ int main()
 		unsigned char command = readByte(demo);
 		int tick = readInt(demo);
 		unsigned char playerSlot = readByte(demo);
+		std::cout << "command: " << ((int)command) << std::endl;
 
 		switch (command)
 		{
 		case dem_signon:
 		case dem_packet:
+			parsePacket(demo);
+			break;
 		case dem_synctick:
+			break;
 		case dem_consolecmd:
+			break;
 		case dem_usercmd:
+			break;
 		case dem_datatables:
+			break;
 		case dem_stop:
+			end = true;
+			break;
 		case dem_customdata:
+			break;
 		case dem_stringtables:
+			break;
 		default:
-			unhandledCommand("command: default");
+			unhandledCommand(string_format("command: default %d", command));
 		}
 	}
 
