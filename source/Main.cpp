@@ -96,7 +96,7 @@ void parsePacket(std::istream &demo)
 	int sequenceNumberIn = readInt(demo);
 	int sequenceNumberOut = readInt(demo);
 	int length = readInt(demo);
-	std::cout << "Parse packet. Length: " << length << " at " << position << std::endl;
+	// std::cout << "Parse packet. Length: " << length << " at " << position << std::endl;
 	demo.seekg(length, std::ios_base::cur);
 }
 
@@ -127,6 +127,7 @@ int main()
 
 	parseHeader(demo);
 
+	int messageCount = 0;
 	bool end = false;
 	while (!end)
 	{
@@ -134,7 +135,8 @@ int main()
 		unsigned char command = readByte(demo);
 		int tick = readInt(demo);
 		unsigned char playerSlot = readByte(demo);
-		std::cout << "command: " << ((int)command) << " at " << position << std::endl;
+		messageCount++;
+		// std::cout << "command: " << ((int)command) << " at " << position << std::endl;
 
 		switch (command)
 		{
@@ -166,6 +168,8 @@ int main()
 			unhandledCommand(string_format("command: default %d", command));
 		}
 	}
+
+	std::cout << "message count: " << messageCount << std::endl;
 
 	return 0;
 }
