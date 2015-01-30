@@ -26,6 +26,12 @@ std::string string_format(const std::string fmt, ...) {
     return str;
 }
 
+void unhandledCommand(const std::string &description)
+{
+	std::cout << "Unhandled command: " << description << std::endl;
+	exit(1);
+}
+
 struct DemoHeader
 {
 	std::string filestamp;
@@ -72,6 +78,29 @@ float readFloat(std::istream &stream)
 	return result;
 }
 
+int readVarInt32(std::istream &stream)
+{
+	int maximumBytes = sizeof(int);
+	int result = 0;
+	unsigned char b = 0;
+	int currentByte = 0;
+
+	do
+	{
+		if (currentByte + 1 == maximumBytes)
+		{
+			return result;
+		}
+
+		b = readByte(stream);
+
+		result |= (b & 0x7F) << (7 * currentByte);
+		currentByte++;
+	} while (b & 0x80);
+
+	return result;
+}
+
 void parseHeader(std::istream &demo)
 {
 	DemoHeader header;
@@ -88,6 +117,27 @@ void parseHeader(std::istream &demo)
 	header.signonlength = readInt(demo);
 }
 
+void parsePacket2(std::istream &demo, int length)
+{
+	int destination = (int)demo.tellg() + length;
+
+	while (demo.tellg() < destination)
+	{
+		int command = readVarInt32(demo);
+		int messageLength = readVarInt32(demo);
+
+		switch (command)
+		{
+		default:
+			unhandledCommand(string_format("message command: default %d", command));
+		}
+
+		demo.seekg(messageLength, std::ios_base::cur);
+	}
+
+	demo.seekg(destination, std::ios_base::beg);
+}
+
 void parsePacket(std::istream &demo)
 {
 	int position = demo.tellg();
@@ -96,8 +146,8 @@ void parsePacket(std::istream &demo)
 	int sequenceNumberIn = readInt(demo);
 	int sequenceNumberOut = readInt(demo);
 	int length = readInt(demo);
-	// std::cout << "Parse packet. Length: " << length << " at " << position << std::endl;
-	demo.seekg(length, std::ios_base::cur);
+	std::cout << "Parse packet. Length: " << length << " at " << position << " / " << demo.tellg() << std::endl;
+	parsePacket2(demo, length);
 }
 
 void parseDatatables(std::istream &demo)
@@ -112,12 +162,6 @@ void parseStringtables(std::istream &demo)
 	int length = readInt(demo);
 	std::cout << "Parse stringtables: " << length << std::endl;
 	demo.seekg(length, std::ios_base::cur);
-}
-
-void unhandledCommand(const std::string &description)
-{
-	std::cout << "Unhandled command: " << description << std::endl;
-	exit(1);
 }
 
 int main()
@@ -136,7 +180,7 @@ int main()
 		int tick = readInt(demo);
 		unsigned char playerSlot = readByte(demo);
 		messageCount++;
-		// std::cout << "command: " << ((int)command) << " at " << position << std::endl;
+		std::cout << "command: " << ((int)command) << " at " << position << std::endl;
 
 		switch (command)
 		{
