@@ -184,6 +184,14 @@
 				RelativePath="..\source\Main.h"
 				>
 			</File>
+			<Filter
+				Name="sdk"
+				>
+				<File
+					RelativePath="..\source\sdk\demofile.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Ressourcendateien"

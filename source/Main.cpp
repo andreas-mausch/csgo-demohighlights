@@ -1,6 +1,8 @@
 #include <iostream>
 #include <fstream>
 
+#include "sdk/demofile.h"
+
 struct DemoHeader
 {
 	std::string filestamp;
@@ -26,6 +28,13 @@ std::string readString(std::istream &stream, int length)
 	return result;
 }
 
+unsigned char readByte(std::istream &stream)
+{
+	unsigned char result;
+	stream.read(reinterpret_cast<char *>(&result), sizeof(unsigned char));
+	return result;
+}
+
 int readInt(std::istream &stream)
 {
 	int result;
@@ -42,8 +51,6 @@ float readFloat(std::istream &stream)
 
 void parseHeader(std::istream &demo)
 {
-	int MAX_OSPATH = 260;
-
 	DemoHeader header;
 	header.filestamp = readString(demo, 8);
 	header.protocol = readInt(demo);
@@ -61,7 +68,16 @@ void parseHeader(std::istream &demo)
 int main()
 {
 	std::ifstream demofile("demo.dem");
-	parseHeader(demofile);
+	std::istream &demo = demofile;
+
+	parseHeader(demo);
+
+	bool end = false;
+	while (!end)
+	{
+		unsigned char command = readByte(demo);
+		int tick = readInt(demo);
+	}
 
 	return 0;
 }
