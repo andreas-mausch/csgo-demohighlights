@@ -8,14 +8,15 @@ class MemoryStream : public std::istream
 {
 public:
 	MemoryStream(MemoryStreamBuffer &buffer);
+	virtual ~MemoryStream();
 
-	char readByte();
-	short readWord();
-	int readInt();
-	float readFloat();
-	int readVarInt32();
+	virtual char readByte();
+	virtual short readWord();
+	virtual int readInt();
+	virtual float readFloat();
+	virtual int readVarInt32();
 
-	void readBytes(void *buffer, int length);
+	virtual void readBytes(void *buffer, int length);
 	std::string readFixedLengthString(int length);
 	std::string readNullTerminatedString(int maximumLength);
 };

@@ -6,6 +6,10 @@ MemoryStream::MemoryStream(MemoryStreamBuffer &buffer)
 {
 }
 
+MemoryStream::~MemoryStream()
+{
+}
+
 char MemoryStream::readByte()
 {
 	char result = 0;

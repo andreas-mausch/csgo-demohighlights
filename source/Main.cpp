@@ -97,89 +97,6 @@ public:
 	  }
   }
 
-	std::string readString(int length)
-	{
-		char *buffer = new char[length];
-		readBytes(buffer, length);
-		std::string result(buffer);
-		delete[] buffer;
-
-		return result;
-	}
-
-	std::string readNullTerminatedString(int maximumLength)
-	{
-		char *buffer = new char[maximumLength];
-		memset(buffer, 0, maximumLength);
-
-		bool bTooSmall = false;
-		int iChar = 0;
-		while(1)
-		{
-			char val = readByte();
-			if ( val == 0 )
-				break;
-
-			if ( iChar < ( maximumLength - 1 ) )
-			{
-				buffer[ iChar ] = val;
-				++iChar;
-			}
-			else
-			{
-				bTooSmall = true;
-			}
-		}
-
-		std::string result(buffer);
-		delete[] buffer;
-		return result;
-	}
-
-	short readWord()
-	{
-		short result;
-		readBytes(&result, sizeof(short));
-		return result;
-	}
-
-	int readInt()
-	{
-		int result;
-		readBytes(&result, sizeof(int));
-		return result;
-	}
-
-	float readFloat()
-	{
-		float result;
-		readBytes(&result, sizeof(float));
-		return result;
-	}
-
-	int readVarInt32()
-	{
-		int maximumBytes = sizeof(int);
-		int result = 0;
-		unsigned char b = 0;
-		int currentByte = 0;
-
-		do
-		{
-			if (currentByte + 1 == maximumBytes)
-			{
-				return result;
-			}
-
-			b = readByte();
-
-			result |= (b & 0x7F) << (7 * currentByte);
-			currentByte++;
-		} while (b & 0x80);
-
-		return result;
-	}
-
 	unsigned int ReadUBitLong( int numbits )
 	{
 		unsigned int result = 0;
@@ -236,13 +153,13 @@ struct DemoHeader
 void parseHeader(memstream &demo)
 {
 	DemoHeader header;
-	header.filestamp = demo.readString(8);
+	header.filestamp = demo.readFixedLengthString(8);
 	header.protocol = demo.readInt();
 	header.networkProtocol = demo.readInt();
-	header.serverName = demo.readString(MAX_OSPATH);
-	header.clientName = demo.readString(MAX_OSPATH);
-	header.mapName = demo.readString(MAX_OSPATH);
-	header.gameDirectory = demo.readString(MAX_OSPATH);
+	header.serverName = demo.readFixedLengthString(MAX_OSPATH);
+	header.clientName = demo.readFixedLengthString(MAX_OSPATH);
+	header.mapName = demo.readFixedLengthString(MAX_OSPATH);
+	header.gameDirectory = demo.readFixedLengthString(MAX_OSPATH);
 	header.playbackTime = demo.readFloat();
 	header.playbackTicks = demo.readInt();
 	header.playbackFrames = demo.readInt();
@@ -308,12 +225,12 @@ void parseStringTableUpdate(memstream &stream, int entryCount, int maximumEntrie
 			{
 				int index = stream.ReadUBitLong( 5 );
 				int bytestocopy = stream.ReadUBitLong( SUBSTRING_BITS );
-				std::string substr_str = stream.readString( sizeof( substr ) );
+				std::string substr_str = stream.readFixedLengthString( sizeof( substr ) );
 				strncpy(substr, substr_str.c_str(), sizeof(substr));
 			}
 			else
 			{
-				std::string entry_str = stream.readString( sizeof( entry ) );
+				std::string entry_str = stream.readFixedLengthString( sizeof( entry ) );
 				strncpy(entry, entry_str.c_str(), sizeof(entry));
 			}
 
