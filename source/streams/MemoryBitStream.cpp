@@ -46,10 +46,7 @@ char MemoryBitStream::readByte()
 	}
 	else
 	{
-		for (int i = 0; i < 8; i++)
-		{
-			result |= readBit() << i;
-		}
+		readBits(&result, 8);
 	}
 
 	return result;
