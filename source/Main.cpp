@@ -2,6 +2,7 @@
 #include <fstream>
 
 #include "sdk/demofile.h"
+#include "sdk/demofiledump.h"
 
 #include "protobuf/generated/cstrike15_usermessages_public.pb.h"
 #include "protobuf/generated/netmessages_public.pb.h"
@@ -310,19 +311,14 @@ void parseDatatables(memstream &demo)
 void parseStringtable(memstream &stringtables)
 {
 	std::string tableName = stringtables.readNullTerminatedString(256);
-	std::cout << "tableName: " << tableName << std::endl;
+	// std::cout << "tableName: " << tableName << std::endl;
 
 	int wordCount = stringtables.readWord();
-	std::cout << "wordCount: " << wordCount << std::endl;
+	// std::cout << "wordCount: " << wordCount << std::endl;
 
 	for (int i = 0; i < wordCount; i++)
 	{
 		std::string name = stringtables.readNullTerminatedString(4096);
-
-		if (tableName == "userinfo")
-		{
-			std::cout << "\tname: " << name << std::endl;
-		}
 
 		bool hasUserData = stringtables.readBit();
 		if (hasUserData)
@@ -330,6 +326,13 @@ void parseStringtable(memstream &stringtables)
 			int userDataLength = stringtables.readWord();
 			unsigned char *data = new unsigned char[ userDataLength + 4 ];
 			stringtables.readBytes(data, userDataLength);
+
+			if (tableName == "userinfo")
+			{
+				const player_info_t *pUnswappedPlayerInfo = ( const player_info_t * )data;
+				std::cout << "\tplayer name: " << pUnswappedPlayerInfo->name << std::endl;
+			}
+
 			delete[] data;
 		}
 		else

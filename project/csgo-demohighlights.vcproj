@@ -209,6 +209,14 @@
 					RelativePath="..\source\sdk\demofile.h"
 					>
 				</File>
+				<File
+					RelativePath="..\source\sdk\demofiledump.h"
+					>
+				</File>
+				<File
+					RelativePath="..\source\sdk\demofilepropdecode.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="protobuf"
