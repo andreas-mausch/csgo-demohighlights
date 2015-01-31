@@ -120,6 +120,14 @@ void parseHeader(std::istream &demo)
 	header.signonlength = readInt(demo);
 }
 
+void serverInfo(const char *bytes, int length)
+{
+	CSVCMsg_ServerInfo serverInfo;
+	serverInfo.ParseFromArray(bytes, length);
+	delete[] bytes;
+	std::cout << serverInfo.DebugString() << std::endl;
+}
+
 void parsePacket2(std::istream &demo, int length)
 {
 	int destination = (int)demo.tellg() + length;
@@ -131,11 +139,14 @@ void parsePacket2(std::istream &demo, int length)
 
 		switch (command)
 		{
+		case svc_ServerInfo: {
+			char *bytes = new char[messageLength];
+			demo.read(bytes, messageLength);}
+			break;
 		default:
 			unhandledCommand(string_format("message command: default %d", command));
+			demo.seekg(messageLength, std::ios_base::cur);
 		}
-
-		demo.seekg(messageLength, std::ios_base::cur);
 	}
 
 	demo.seekg(destination, std::ios_base::beg);

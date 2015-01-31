@@ -176,6 +176,22 @@
 				RelativePath="..\source\Main.cpp"
 				>
 			</File>
+			<Filter
+				Name="protobuf"
+				>
+				<Filter
+					Name="generated"
+					>
+					<File
+						RelativePath="..\source\protobuf\generated\cstrike15_usermessages_public.pb.cc"
+						>
+					</File>
+					<File
+						RelativePath="..\source\protobuf\generated\netmessages_public.pb.cc"
+						>
+					</File>
+				</Filter>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Headerdateien"
@@ -193,6 +209,22 @@
 					RelativePath="..\source\sdk\demofile.h"
 					>
 				</File>
+			</Filter>
+			<Filter
+				Name="protobuf"
+				>
+				<Filter
+					Name="generated"
+					>
+					<File
+						RelativePath="..\source\protobuf\generated\cstrike15_usermessages_public.pb.h"
+						>
+					</File>
+					<File
+						RelativePath="..\source\protobuf\generated\netmessages_public.pb.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 		</Filter>
 		<Filter
