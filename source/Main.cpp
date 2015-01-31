@@ -423,6 +423,10 @@ void updateStringTable(CSVCMsg_UpdateStringTable &message)
 	parseStringTableUpdate(stream, message.num_changed_entries(), s_StringTables[ message.table_id() ].nMaxEntries, 0, 0, 0, strcmp(s_StringTables[ message.table_id() ].szName, "userinfo") == 0);
 }
 
+void gameEvent(CSVCMsg_GameEvent &message)
+{
+}
+
 void parsePacket2(memstream &demo, int length)
 {
 	int destination = (int)demo.tellg() + length;
@@ -455,6 +459,13 @@ void parsePacket2(memstream &demo, int length)
 			CSVCMsg_UpdateStringTable message;
 			message.ParseFromArray(bytes, messageLength);
 			updateStringTable(message);
+									} break;
+		case svc_GameEvent: {
+			char *bytes = new char[messageLength];
+			demo.readBytes(bytes, messageLength);
+			CSVCMsg_GameEvent message;
+			message.ParseFromArray(bytes, messageLength);
+			gameEvent(message);
 									} break;
 		default:
 			// unhandledCommand(string_format("message command: default %d", command));
