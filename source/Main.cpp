@@ -34,13 +34,8 @@ int main()
 	DemoParser demoParser(gameState);
 	demoParser.parseHeader(demo);
 
-	while (!end)
+	while (demoParser.parseNextTick(demo))
 	{
-		if (!demoParser.parseNextTick(demo))
-		{
-			end = true;
-		}
-
 		messageCount++;
 	}
 
