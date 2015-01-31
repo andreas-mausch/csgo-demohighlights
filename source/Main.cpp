@@ -8,6 +8,44 @@
 
 #include <stdarg.h>  // For va_start, etc.
 
+class membuf : public std::basic_streambuf<char>
+{
+public:
+  membuf(char* p, size_t n) {
+	setg(p, p, p + n);
+	setp(p, p + n);
+  }
+};
+
+class memstream : public std::istream
+{
+private:
+	membuf &buffer;
+	int currentBitPosition;
+	char currentByte;
+public:
+	memstream(membuf &buffer) : buffer(buffer), std::istream(&buffer) {
+	  currentBitPosition = 0;
+	  currentByte = 0;
+	}
+
+  bool readBit()
+  {
+	  if (currentBitPosition == 0)
+	  {
+		  read(&currentByte, sizeof(char));
+	  }
+
+	  bool bit = (currentByte >> currentBitPosition) & 0x01;
+	  currentBitPosition++;
+	  if (currentBitPosition == 8)
+	  {
+		  currentBitPosition = 0;
+	  }
+	  return bit;
+  }
+};
+
 std::string string_format(const std::string fmt, ...) {
     int size = ((int)fmt.size()) * 2 + 50;   // Use a rubric appropriate for your code
     std::string str;
@@ -32,7 +70,7 @@ std::string string_format(const std::string fmt, ...) {
 void unhandledCommand(const std::string &description)
 {
 	std::cout << "Unhandled command: " << description << std::endl;
-	exit(1);
+	//exit(1);
 }
 
 struct DemoHeader
@@ -139,12 +177,16 @@ void parsePacket2(std::istream &demo, int length)
 
 		switch (command)
 		{
+		case net_Tick:
+			demo.seekg(messageLength, std::ios_base::cur);
+			break;
 		case svc_ServerInfo: {
 			char *bytes = new char[messageLength];
-			demo.read(bytes, messageLength);}
-			break;
+			demo.read(bytes, messageLength);
+			serverInfo(bytes, messageLength);
+			} break;
 		default:
-			unhandledCommand(string_format("message command: default %d", command));
+			// unhandledCommand(string_format("message command: default %d", command));
 			demo.seekg(messageLength, std::ios_base::cur);
 		}
 	}
@@ -160,7 +202,7 @@ void parsePacket(std::istream &demo)
 	int sequenceNumberIn = readInt(demo);
 	int sequenceNumberOut = readInt(demo);
 	int length = readInt(demo);
-	std::cout << "Parse packet. Length: " << length << " at " << position << " / " << demo.tellg() << std::endl;
+	// std::cout << "Parse packet. Length: " << length << " at " << position << " / " << demo.tellg() << std::endl;
 	parsePacket2(demo, length);
 }
 
@@ -168,14 +210,19 @@ void parseDatatables(std::istream &demo)
 {
 	int length = readInt(demo);
 	std::cout << "Parse datatables: " << length << std::endl;
-	demo.seekg(length, std::ios_base::cur);
+	char *datatablesBytes = new char[length];
+	demo.read(datatablesBytes, length);
+	delete[] datatablesBytes;
 }
 
 void parseStringtables(std::istream &demo)
 {
 	int length = readInt(demo);
 	std::cout << "Parse stringtables: " << length << std::endl;
-	demo.seekg(length, std::ios_base::cur);
+	char *stringtablesBytes = new char[length];
+	demo.read(stringtablesBytes, length);
+	membuf stringtables(stringtablesBytes, length);
+	delete[] stringtablesBytes;
 }
 
 int main()
@@ -194,7 +241,7 @@ int main()
 		int tick = readInt(demo);
 		unsigned char playerSlot = readByte(demo);
 		messageCount++;
-		std::cout << "command: " << ((int)command) << " at " << position << std::endl;
+		// std::cout << "command: " << ((int)command) << " at " << position << std::endl;
 
 		switch (command)
 		{
