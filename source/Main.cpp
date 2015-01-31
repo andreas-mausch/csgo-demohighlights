@@ -10,10 +10,38 @@
 
 class membuf : public std::basic_streambuf<char>
 {
+private:
+	char *buffer;
 public:
   membuf(char* p, size_t n) {
 	setg(p, p, p + n);
-	setp(p, p + n);
+	// setp(p, p + n);
+  }
+
+  pos_type seekoff( off_type off, std::ios_base::seekdir dir,
+                          std::ios_base::openmode which = std::ios_base::in | std::ios_base::out )
+  {
+	  int newPosition = off;
+
+	  if (dir == std::ios_base::cur)
+	  {
+		  newPosition += gptr() - eback();
+	  }
+
+	  if (dir == std::ios_base::end)
+	  {
+		  newPosition += egptr() - eback();
+	  }
+
+	  setg(eback(), eback() + newPosition, egptr());
+	  return newPosition;
+  }
+
+  pos_type seekpos( pos_type pos,
+	  std::ios_base::openmode which = std::ios_base::in | std::ios_base::out)
+  {
+	  setg(eback(), eback() + pos, egptr());
+	  return pos;
   }
 };
 
@@ -44,6 +72,123 @@ public:
 	  }
 	  return bit;
   }
+
+  char readByte()
+  {
+	  char result = 0;
+
+	  if (currentBitPosition == 0)
+	  {
+		  read(&result, sizeof(char));
+	  }
+	  else
+	  {
+		  for (int i = 0; i < 8; i++)
+		  {
+			  result |= (readBit() << i);
+		  }
+	  }
+
+	  return result;
+  }
+
+  void readBytes(void *buffer, int length)
+  {
+	  if (currentBitPosition == 0)
+	  {
+		  read(reinterpret_cast<char *>(buffer), length);
+	  }
+	  else
+	  {
+		  for (int i = 0; i < length; i++)
+		  {
+			  reinterpret_cast<char *>(buffer)[i] = readByte();
+		  }
+	  }
+  }
+
+	std::string readString(int length)
+	{
+		char *buffer = new char[length];
+		readBytes(buffer, length);
+		std::string result(buffer);
+		delete[] buffer;
+
+		return result;
+	}
+
+	std::string readNullTerminatedString(int maximumLength)
+	{
+		char *buffer = new char[maximumLength];
+		memset(buffer, 0, maximumLength);
+
+		bool bTooSmall = false;
+		int iChar = 0;
+		while(1)
+		{
+			char val = readByte();
+			if ( val == 0 )
+				break;
+
+			if ( iChar < ( maximumLength - 1 ) )
+			{
+				buffer[ iChar ] = val;
+				++iChar;
+			}
+			else
+			{
+				bTooSmall = true;
+			}
+		}
+
+		std::string result(buffer);
+		delete[] buffer;
+		return result;
+	}
+
+	short readWord()
+	{
+		short result;
+		readBytes(&result, sizeof(short));
+		return result;
+	}
+
+	int readInt()
+	{
+		int result;
+		readBytes(&result, sizeof(int));
+		return result;
+	}
+
+	float readFloat()
+	{
+		float result;
+		readBytes(&result, sizeof(float));
+		return result;
+	}
+
+	int readVarInt32()
+	{
+		int maximumBytes = sizeof(int);
+		int result = 0;
+		unsigned char b = 0;
+		int currentByte = 0;
+
+		do
+		{
+			if (currentByte + 1 == maximumBytes)
+			{
+				return result;
+			}
+
+			b = readByte();
+
+			result |= (b & 0x7F) << (7 * currentByte);
+			currentByte++;
+		} while (b & 0x80);
+
+		return result;
+	}
 };
 
 std::string string_format(const std::string fmt, ...) {
@@ -88,92 +233,39 @@ struct DemoHeader
 	int signonlength;
 };
 
-std::string readString(std::istream &stream, int length)
-{
-	char *buffer = new char[length];
-	stream.read(buffer, length);
-	std::string result(buffer);
-	delete[] buffer;
-
-	return result;
-}
-
-unsigned char readByte(std::istream &stream)
-{
-	unsigned char result;
-	stream.read(reinterpret_cast<char *>(&result), sizeof(unsigned char));
-	return result;
-}
-
-int readInt(std::istream &stream)
-{
-	int result;
-	stream.read(reinterpret_cast<char *>(&result), sizeof(int));
-	return result;
-}
-
-float readFloat(std::istream &stream)
-{
-	float result;
-	stream.read(reinterpret_cast<char *>(&result), sizeof(float));
-	return result;
-}
-
-int readVarInt32(std::istream &stream)
-{
-	int maximumBytes = sizeof(int);
-	int result = 0;
-	unsigned char b = 0;
-	int currentByte = 0;
-
-	do
-	{
-		if (currentByte + 1 == maximumBytes)
-		{
-			return result;
-		}
-
-		b = readByte(stream);
-
-		result |= (b & 0x7F) << (7 * currentByte);
-		currentByte++;
-	} while (b & 0x80);
-
-	return result;
-}
-
-void parseHeader(std::istream &demo)
+void parseHeader(memstream &demo)
 {
 	DemoHeader header;
-	header.filestamp = readString(demo, 8);
-	header.protocol = readInt(demo);
-	header.networkProtocol = readInt(demo);
-	header.serverName = readString(demo, MAX_OSPATH);
-	header.clientName = readString(demo, MAX_OSPATH);
-	header.mapName = readString(demo, MAX_OSPATH);
-	header.gameDirectory = readString(demo, MAX_OSPATH);
-	header.playbackTime = readFloat(demo);
-	header.playbackTicks = readInt(demo);
-	header.playbackFrames = readInt(demo);
-	header.signonlength = readInt(demo);
+	header.filestamp = demo.readString(8);
+	header.protocol = demo.readInt();
+	header.networkProtocol = demo.readInt();
+	header.serverName = demo.readString(MAX_OSPATH);
+	header.clientName = demo.readString(MAX_OSPATH);
+	header.mapName = demo.readString(MAX_OSPATH);
+	header.gameDirectory = demo.readString(MAX_OSPATH);
+	header.playbackTime = demo.readFloat();
+	header.playbackTicks = demo.readInt();
+	header.playbackFrames = demo.readInt();
+	header.signonlength = demo.readInt();
 }
 
 void serverInfo(const char *bytes, int length)
 {
+	std::cout << "serverInfo: " << length << std::endl;
 	CSVCMsg_ServerInfo serverInfo;
 	serverInfo.ParseFromArray(bytes, length);
 	delete[] bytes;
 	std::cout << serverInfo.DebugString() << std::endl;
 }
 
-void parsePacket2(std::istream &demo, int length)
+void parsePacket2(memstream &demo, int length)
 {
 	int destination = (int)demo.tellg() + length;
 
 	while (demo.tellg() < destination)
 	{
-		int command = readVarInt32(demo);
-		int messageLength = readVarInt32(demo);
+		int command = demo.readVarInt32();
+		int messageLength = demo.readVarInt32();
 
 		switch (command)
 		{
@@ -182,7 +274,7 @@ void parsePacket2(std::istream &demo, int length)
 			break;
 		case svc_ServerInfo: {
 			char *bytes = new char[messageLength];
-			demo.read(bytes, messageLength);
+			demo.readBytes(bytes, messageLength);
 			serverInfo(bytes, messageLength);
 			} break;
 		default:
@@ -194,41 +286,75 @@ void parsePacket2(std::istream &demo, int length)
 	demo.seekg(destination, std::ios_base::beg);
 }
 
-void parsePacket(std::istream &demo)
+void parsePacket(memstream &demo)
 {
 	int position = demo.tellg();
 	democmdinfo_t cmdinfo;
-	demo.read(reinterpret_cast<char *>(&cmdinfo), sizeof(democmdinfo_t));
-	int sequenceNumberIn = readInt(demo);
-	int sequenceNumberOut = readInt(demo);
-	int length = readInt(demo);
+	demo.readBytes(&cmdinfo, sizeof(democmdinfo_t));
+	int sequenceNumberIn = demo.readInt();
+	int sequenceNumberOut = demo.readInt();
+	int length = demo.readInt();
 	// std::cout << "Parse packet. Length: " << length << " at " << position << " / " << demo.tellg() << std::endl;
 	parsePacket2(demo, length);
 }
 
-void parseDatatables(std::istream &demo)
+void parseDatatables(memstream &demo)
 {
-	int length = readInt(demo);
+	int length = demo.readInt();
 	std::cout << "Parse datatables: " << length << std::endl;
 	char *datatablesBytes = new char[length];
-	demo.read(datatablesBytes, length);
+	demo.readBytes(datatablesBytes, length);
 	delete[] datatablesBytes;
 }
 
-void parseStringtables(std::istream &demo)
+void parseStringtable(memstream &stringtables)
 {
-	int length = readInt(demo);
+	std::string tableName = stringtables.readNullTerminatedString(256);
+	std::cout << "tableName: " << tableName << std::endl;
+
+	if (tableName == "userinfo")
+	{
+		int wordCount = stringtables.readWord();
+		std::cout << "wordCount: " << wordCount << std::endl;
+
+		for (int i = 0; i < wordCount; i++)
+		{
+			std::string name = stringtables.readNullTerminatedString(4096);
+		}
+	}
+}
+
+void parseStringtables(memstream &demo)
+{
+	int length = demo.readInt();
 	std::cout << "Parse stringtables: " << length << std::endl;
 	char *stringtablesBytes = new char[length];
-	demo.read(stringtablesBytes, length);
-	membuf stringtables(stringtablesBytes, length);
+	demo.readBytes(stringtablesBytes, length);
+	membuf stringtablesBuffer(stringtablesBytes, length);
+	memstream stringtables(stringtablesBuffer);
+	int tableCount = stringtables.readByte();
+	std::cout << "Parse stringtables tableCount: " << tableCount << std::endl;
+
+	for (int i = 0; i < tableCount; i++)
+	{
+		parseStringtable(stringtables);
+	}
+
 	delete[] stringtablesBytes;
 }
 
 int main()
 {
 	std::ifstream demofile("demo.dem", std::ios_base::binary);
-	std::istream &demo = demofile;
+	demofile.seekg(0, std::ios::end);
+	size_t size = demofile.tellg();
+	std::string str(size, ' ');
+	demofile.seekg(0);
+	demofile.read(&str[0], size); 
+	membuf demoBuffer(const_cast<char *>(str.c_str()), str.length());
+	memstream demo(demoBuffer);
+
+	std::cout << "BLA "<< demo.tellg() << std::endl;
 
 	parseHeader(demo);
 
@@ -237,11 +363,11 @@ int main()
 	while (!end)
 	{
 		int position = demo.tellg();
-		unsigned char command = readByte(demo);
-		int tick = readInt(demo);
-		unsigned char playerSlot = readByte(demo);
+		unsigned char command = demo.readByte();
+		int tick = demo.readInt();
+		unsigned char playerSlot = demo.readByte();
 		messageCount++;
-		// std::cout << "command: " << ((int)command) << " at " << position << std::endl;
+		std::cout << "command: " << ((int)command) << " at " << position << std::endl;
 
 		switch (command)
 		{
