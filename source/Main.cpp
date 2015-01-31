@@ -312,14 +312,51 @@ void parseStringtable(memstream &stringtables)
 	std::string tableName = stringtables.readNullTerminatedString(256);
 	std::cout << "tableName: " << tableName << std::endl;
 
-	if (tableName == "userinfo")
-	{
-		int wordCount = stringtables.readWord();
-		std::cout << "wordCount: " << wordCount << std::endl;
+	int wordCount = stringtables.readWord();
+	std::cout << "wordCount: " << wordCount << std::endl;
 
+	for (int i = 0; i < wordCount; i++)
+	{
+		std::string name = stringtables.readNullTerminatedString(4096);
+
+		if (tableName == "userinfo")
+		{
+			std::cout << "\tname: " << name << std::endl;
+		}
+
+		bool hasUserData = stringtables.readBit();
+		if (hasUserData)
+		{
+			int userDataLength = stringtables.readWord();
+			unsigned char *data = new unsigned char[ userDataLength + 4 ];
+			stringtables.readBytes(data, userDataLength);
+			delete[] data;
+		}
+		else
+		{
+		}
+	}
+
+	bool clientSideData = stringtables.readBit();
+
+	if (clientSideData)
+	{
 		for (int i = 0; i < wordCount; i++)
 		{
 			std::string name = stringtables.readNullTerminatedString(4096);
+			std::cout << "\tname: " << name << std::endl;
+
+			bool hasUserData = stringtables.readBit();
+			if (hasUserData)
+			{
+				int userDataLength = stringtables.readWord();
+				unsigned char *data = new unsigned char[ userDataLength + 4 ];
+				stringtables.readBytes(data, userDataLength);
+				delete[] data;
+			}
+			else
+			{
+			}
 		}
 	}
 }
@@ -354,8 +391,6 @@ int main()
 	membuf demoBuffer(const_cast<char *>(str.c_str()), str.length());
 	memstream demo(demoBuffer);
 
-	std::cout << "BLA "<< demo.tellg() << std::endl;
-
 	parseHeader(demo);
 
 	int messageCount = 0;
@@ -367,7 +402,7 @@ int main()
 		int tick = demo.readInt();
 		unsigned char playerSlot = demo.readByte();
 		messageCount++;
-		std::cout << "command: " << ((int)command) << " at " << position << std::endl;
+		// std::cout << "command: " << ((int)command) << " at " << position << std::endl;
 
 		switch (command)
 		{
