@@ -8,6 +8,7 @@
 #include "protobuf/generated/netmessages_public.pb.h"
 
 #include "streams/MemoryStream.h"
+#include "streams/MemoryBitStream.h"
 #include "streams/MemoryStreamBuffer.h"
 
 #include <stdarg.h>  // For va_start, etc.
@@ -19,94 +20,6 @@ unsigned int endian_swap(unsigned int x)
         ((x>>8) & 0x0000FF00) |
         (x<<24);
 }
-
-class memstream : public MemoryStream
-{
-private:
-	MemoryStreamBuffer &buffer;
-	int currentBitPosition;
-	char currentByte;
-public:
-	memstream(MemoryStreamBuffer &buffer) : buffer(buffer), MemoryStream(buffer) {
-	  currentBitPosition = 0;
-	  currentByte = 0;
-	}
-
-  bool readBit()
-  {
-	  if (currentBitPosition == 0)
-	  {
-		  read(&currentByte, sizeof(char));
-	  }
-
-	  bool bit = (currentByte >> currentBitPosition) & 0x01;
-	  currentBitPosition++;
-	  if (currentBitPosition == 8)
-	  {
-		  currentBitPosition = 0;
-	  }
-	  return bit;
-  }
-
-  void readBits(void *buffer, int bitCount)
-  {
-	  int bitsLeft = bitCount;
-	  if (bitCount > 8)
-	  {
-		  readBytes(buffer, bitCount / 8);
-		  bitsLeft = bitCount % 8;
-	  }
-
-	  for (int targetBit = bitCount - bitsLeft; targetBit < bitCount; targetBit++)
-	  {
-		  reinterpret_cast<char *>(buffer)[targetBit / 8] |= readBit() << (targetBit % 8);
-	  }
-  }
-
-  char readByte()
-  {
-	  char result = 0;
-
-	  if (currentBitPosition == 0)
-	  {
-		  read(&result, sizeof(char));
-	  }
-	  else
-	  {
-		  for (int i = 0; i < 8; i++)
-		  {
-			  result |= readBit() << i;
-		  }
-	  }
-
-	  return result;
-  }
-
-  void readBytes(void *buffer, int length)
-  {
-	  if (currentBitPosition == 0)
-	  {
-		  read(reinterpret_cast<char *>(buffer), length);
-	  }
-	  else
-	  {
-		  for (int i = 0; i < length; i++)
-		  {
-			  reinterpret_cast<char *>(buffer)[i] = readByte();
-		  }
-	  }
-  }
-
-	unsigned int ReadUBitLong( int numbits )
-	{
-		unsigned int result = 0;
-		for (int i = 0; i < numbits; i++)
-		{
-			result |= readBit() << i;
-		}
-		return result;
-	}
-};
 
 std::string string_format(const std::string fmt, ...) {
     int size = ((int)fmt.size()) * 2 + 50;   // Use a rubric appropriate for your code
@@ -150,7 +63,7 @@ struct DemoHeader
 	int signonlength;
 };
 
-void parseHeader(memstream &demo)
+void parseHeader(MemoryStream &demo)
 {
 	DemoHeader header;
 	header.filestamp = demo.readFixedLengthString(8);
@@ -178,7 +91,7 @@ void serverInfo(const char *bytes, int length)
 int s_nNumStringTables = 0;
 StringTableData_t s_StringTables[ MAX_STRING_TABLES ];
 
-void parseStringTableUpdate(memstream &stream, int entryCount, int maximumEntries, int userDataSize, int userDataSizeBits, int userDataFixedSize, bool userData)
+void parseStringTableUpdate(MemoryBitStream &stream, int entryCount, int maximumEntries, int userDataSize, int userDataSizeBits, int userDataFixedSize, bool userData)
 {
 	int nTemp = maximumEntries;
 	int nEntryBits = 0;
@@ -289,7 +202,7 @@ void createStringTable(CSVCMsg_CreateStringTable &message)
 	// std::cout << "svc_CreateStringTable: " << message.name() << std::endl;
 	char *data = const_cast<char *>(message.string_data().c_str());
 	MemoryStreamBuffer buffer(data, message.string_data().size());
-	memstream stream(buffer);
+	MemoryBitStream stream(buffer);
 	parseStringTableUpdate(stream, message.num_entries(), message.max_entries(), message.user_data_size(), message.user_data_size_bits(), message.user_data_fixed_size(), message.name() == "userinfo");
 
 	strncpy(s_StringTables[ s_nNumStringTables ].szName, message.name().c_str(), sizeof( s_StringTables[ s_nNumStringTables ].szName ));
@@ -302,7 +215,7 @@ void updateStringTable(CSVCMsg_UpdateStringTable &message)
 	// std::cout << "svc_UpdateStringTable: " << message.table_id() << std::endl;
 	char *data = const_cast<char *>(message.string_data().c_str());
 	MemoryStreamBuffer buffer(data, message.string_data().size());
-	memstream stream(buffer);
+	MemoryBitStream stream(buffer);
 	parseStringTableUpdate(stream, message.num_changed_entries(), s_StringTables[ message.table_id() ].nMaxEntries, 0, 0, 0, strcmp(s_StringTables[ message.table_id() ].szName, "userinfo") == 0);
 }
 
@@ -371,7 +284,7 @@ void gameEventList(CSVCMsg_GameEventList &message)
 	_gameEventList = message;
 }
 
-void parsePacket2(memstream &demo, int length)
+void parsePacket2(MemoryStream &demo, int length)
 {
 	int destination = (int)demo.tellg() + length;
 
@@ -427,7 +340,7 @@ void parsePacket2(memstream &demo, int length)
 	demo.seekg(destination, std::ios_base::beg);
 }
 
-void parsePacket(memstream &demo)
+void parsePacket(MemoryStream &demo)
 {
 	int position = demo.tellg();
 	democmdinfo_t cmdinfo;
@@ -439,7 +352,7 @@ void parsePacket(memstream &demo)
 	parsePacket2(demo, length);
 }
 
-void parseDatatables(memstream &demo)
+void parseDatatables(MemoryStream &demo)
 {
 	int length = demo.readInt();
 	std::cout << "Parse datatables: " << length << std::endl;
@@ -448,7 +361,7 @@ void parseDatatables(memstream &demo)
 	delete[] datatablesBytes;
 }
 
-void parseStringtable(memstream &stringtables)
+void parseStringtable(MemoryBitStream &stringtables)
 {
 	std::string tableName = stringtables.readNullTerminatedString(256);
 	// std::cout << "tableName: " << tableName << std::endl;
@@ -508,14 +421,14 @@ void parseStringtable(memstream &stringtables)
 	}
 }
 
-void parseStringtables(memstream &demo)
+void parseStringtables(MemoryStream &demo)
 {
 	int length = demo.readInt();
 	std::cout << "Parse stringtables: " << length << std::endl;
 	char *stringtablesBytes = new char[length];
 	demo.readBytes(stringtablesBytes, length);
 	MemoryStreamBuffer stringtablesBuffer(stringtablesBytes, length);
-	memstream stringtables(stringtablesBuffer);
+	MemoryBitStream stringtables(stringtablesBuffer);
 	int tableCount = stringtables.readByte();
 	std::cout << "Parse stringtables tableCount: " << tableCount << std::endl;
 
@@ -536,7 +449,7 @@ int main()
 	demofile.seekg(0);
 	demofile.read(&str[0], size); 
 	MemoryStreamBuffer demoBuffer(const_cast<char *>(str.c_str()), str.length());
-	memstream demo(demoBuffer);
+	MemoryStream demo(demoBuffer);
 
 	parseHeader(demo);
 
