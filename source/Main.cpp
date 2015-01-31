@@ -86,7 +86,7 @@ public:
 	  {
 		  for (int i = 0; i < 8; i++)
 		  {
-			  result |= (readBit() << i);
+			  result |= readBit() << i;
 		  }
 	  }
 
@@ -190,6 +190,16 @@ public:
 
 		return result;
 	}
+
+	unsigned int ReadUBitLong( int numbits )
+	{
+		unsigned int result = 0;
+		for (int i = 0; i < numbits; i++)
+		{
+			result |= readBit() << i;
+		}
+		return result;
+	}
 };
 
 std::string string_format(const std::string fmt, ...) {
@@ -259,6 +269,57 @@ void serverInfo(const char *bytes, int length)
 	std::cout << serverInfo.DebugString() << std::endl;
 }
 
+int s_nNumStringTables = 0;
+StringTableData_t s_StringTables[ MAX_STRING_TABLES ];
+
+void parseStringTableUpdate(memstream &stream, int entryCount, int maximumEntries, int userDataSize, int userDataSizeBits, int userDataFixedSize)
+{
+	int nTemp = maximumEntries;
+	int nEntryBits = 0;
+	while (nTemp >>= 1) ++nEntryBits;
+
+	bool encodeUsingDictionaries = stream.readBit();
+
+	if (encodeUsingDictionaries)
+	{
+		std::cout << "encodeUsingDictionaries" << std::endl;
+		return;
+	}
+
+	// std::cout << "parseStringTableUpdate entryCount: " << entryCount << std::endl;
+	for (int i = 0; i < entryCount; i++)
+	{
+		int entryIndex = -1;
+		if (!stream.readBit())
+		{
+			entryIndex = stream.ReadUBitLong(nEntryBits);
+		}
+		// std::cout << "entryIndex: " << entryIndex << std::endl;
+	}
+}
+
+void createStringTable(CSVCMsg_CreateStringTable &message)
+{
+	std::cout << "svc_CreateStringTable: " << message.name() << std::endl;
+	char *data = const_cast<char *>(message.string_data().c_str());
+	membuf buffer(data, message.ByteSize());
+	memstream stream(buffer);
+	parseStringTableUpdate(stream, message.num_entries(), message.max_entries(), message.user_data_size(), message.user_data_size_bits(), message.user_data_fixed_size());
+
+	strncpy(s_StringTables[ s_nNumStringTables ].szName, message.name().c_str(), sizeof( s_StringTables[ s_nNumStringTables ].szName ));
+	s_StringTables[ s_nNumStringTables ].nMaxEntries = message.max_entries();
+	s_nNumStringTables++;
+}
+
+void updateStringTable(CSVCMsg_UpdateStringTable &message)
+{
+	std::cout << "svc_UpdateStringTable: " << message.table_id() << std::endl;
+	char *data = const_cast<char *>(message.string_data().c_str());
+	membuf buffer(data, message.ByteSize());
+	memstream stream(buffer);
+	parseStringTableUpdate(stream, message.num_changed_entries(), s_StringTables[ message.table_id() ].nMaxEntries, 0, 0, 0);
+}
+
 void parsePacket2(memstream &demo, int length)
 {
 	int destination = (int)demo.tellg() + length;
@@ -278,6 +339,22 @@ void parsePacket2(memstream &demo, int length)
 			demo.readBytes(bytes, messageLength);
 			serverInfo(bytes, messageLength);
 			} break;
+		case svc_CreateStringTable: {
+			demo.seekg(messageLength, std::ios_base::cur);
+			char *bytes = new char[messageLength];
+			demo.readBytes(bytes, messageLength);
+			CSVCMsg_CreateStringTable message;
+			message.ParseFromArray(bytes, messageLength);
+			createStringTable(message);
+									} break;
+		case svc_UpdateStringTable: {
+			demo.seekg(messageLength, std::ios_base::cur);
+			char *bytes = new char[messageLength];
+			demo.readBytes(bytes, messageLength);
+			CSVCMsg_UpdateStringTable message;
+			message.ParseFromArray(bytes, messageLength);
+			updateStringTable(message);
+									} break;
 		default:
 			// unhandledCommand(string_format("message command: default %d", command));
 			demo.seekg(messageLength, std::ios_base::cur);
