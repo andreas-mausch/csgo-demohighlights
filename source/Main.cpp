@@ -395,7 +395,7 @@ void parseStringTableUpdate(memstream &stream, int entryCount, int maximumEntrie
 
 void createStringTable(CSVCMsg_CreateStringTable &message)
 {
-	std::cout << "svc_CreateStringTable: " << message.name() << std::endl;
+	// std::cout << "svc_CreateStringTable: " << message.name() << std::endl;
 	char *data = const_cast<char *>(message.string_data().c_str());
 	membuf buffer(data, message.string_data().size());
 	memstream stream(buffer);
@@ -478,6 +478,14 @@ void parseDatatables(memstream &demo)
 	delete[] datatablesBytes;
 }
 
+unsigned int endian_swap(unsigned int x)
+{
+    return (x>>24) | 
+        ((x<<8) & 0x00FF0000) |
+        ((x>>8) & 0x0000FF00) |
+        (x<<24);
+}
+
 void parseStringtable(memstream &stringtables)
 {
 	std::string tableName = stringtables.readNullTerminatedString(256);
@@ -488,6 +496,7 @@ void parseStringtable(memstream &stringtables)
 
 	for (int i = 0; i < wordCount; i++)
 	{
+		bool userInfo = tableName == "userinfo";
 		std::string name = stringtables.readNullTerminatedString(4096);
 
 		bool hasUserData = stringtables.readBit();
@@ -497,10 +506,10 @@ void parseStringtable(memstream &stringtables)
 			unsigned char *data = new unsigned char[ userDataLength + 4 ];
 			stringtables.readBytes(data, userDataLength);
 
-			if (tableName == "userinfo")
+			if (userInfo)
 			{
 				const player_info_t *pUnswappedPlayerInfo = ( const player_info_t * )data;
-				std::cout << "\tplayer name: " << pUnswappedPlayerInfo->name << std::endl;
+				std::cout << "\tplayer name: " << name << " / " << pUnswappedPlayerInfo->name << " / " << endian_swap(pUnswappedPlayerInfo->userID) << std::endl;
 			}
 
 			delete[] data;
@@ -555,7 +564,7 @@ void parseStringtables(memstream &demo)
 
 int main()
 {
-	std::ifstream demofile("demo.dem", std::ios_base::binary);
+	std::ifstream demofile("MLGXGA2015-GF-ldlc-vs-nip-dust2.dem", std::ios_base::binary);
 	demofile.seekg(0, std::ios::end);
 	size_t size = demofile.tellg();
 	std::string str(size, ' ');
