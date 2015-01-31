@@ -7,6 +7,7 @@
 #include "protobuf/generated/cstrike15_usermessages_public.pb.h"
 #include "protobuf/generated/netmessages_public.pb.h"
 
+#include "streams/MemoryStream.h"
 #include "streams/MemoryStreamBuffer.h"
 
 #include <stdarg.h>  // For va_start, etc.
@@ -19,14 +20,14 @@ unsigned int endian_swap(unsigned int x)
         (x<<24);
 }
 
-class memstream : public std::istream
+class memstream : public MemoryStream
 {
 private:
 	MemoryStreamBuffer &buffer;
 	int currentBitPosition;
 	char currentByte;
 public:
-	memstream(MemoryStreamBuffer &buffer) : buffer(buffer), std::istream(&buffer) {
+	memstream(MemoryStreamBuffer &buffer) : buffer(buffer), MemoryStream(buffer) {
 	  currentBitPosition = 0;
 	  currentByte = 0;
 	}
