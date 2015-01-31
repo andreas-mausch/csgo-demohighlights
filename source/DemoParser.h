@@ -6,6 +6,23 @@ class MemoryStream;
 class CSVCMsg_GameEvent;
 class CSVCMsg_GameEventList;
 
+#include <string>
+
+struct DemoHeader
+{
+	std::string filestamp;
+	int protocol;
+	int networkProtocol;
+	std::string serverName;
+	std::string clientName;
+	std::string mapName;
+	std::string gameDirectory;
+	float playbackTime;
+	int playbackTicks;
+	int playbackFrames;
+	int signonlength;
+};
+
 class DemoParser
 {
 private:
@@ -23,6 +40,8 @@ public:
 	void parsePacket(MemoryStream &demo);
 	void parseDatatables(MemoryStream &demo);
 	void parseStringtables(MemoryStream &demo);
+
+	DemoHeader parseHeader(MemoryStream &demo);
 
 	bool parseNextTick(MemoryStream &demo);
 };

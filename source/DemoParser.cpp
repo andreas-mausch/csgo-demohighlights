@@ -330,6 +330,24 @@ DemoParser::~DemoParser()
 {
 }
 
+DemoHeader DemoParser::parseHeader(MemoryStream &demo)
+{
+	DemoHeader header;
+	header.filestamp = demo.readFixedLengthString(8);
+	header.protocol = demo.readInt();
+	header.networkProtocol = demo.readInt();
+	header.serverName = demo.readFixedLengthString(MAX_OSPATH);
+	header.clientName = demo.readFixedLengthString(MAX_OSPATH);
+	header.mapName = demo.readFixedLengthString(MAX_OSPATH);
+	header.gameDirectory = demo.readFixedLengthString(MAX_OSPATH);
+	header.playbackTime = demo.readFloat();
+	header.playbackTicks = demo.readInt();
+	header.playbackFrames = demo.readInt();
+	header.signonlength = demo.readInt();
+
+	return header;
+}
+
 void DemoParser::parsePacket(MemoryStream &demo)
 {
 	int position = demo.tellg();
