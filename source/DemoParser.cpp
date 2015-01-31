@@ -279,7 +279,7 @@ void DemoParser::parseStringtable(MemoryBitStream &stringtables)
 				const player_info_t *pUnswappedPlayerInfo = ( const player_info_t * )data;
 				int userId = endian_swap(pUnswappedPlayerInfo->userID);
 				Player player(userId, pUnswappedPlayerInfo->name);
-				gameState.getPlayers().push_back(player);
+				gameState.updatePlayer(player);
 				std::cout << "\tplayer name: " << name << " / " << pUnswappedPlayerInfo->name << " / " << userId << std::endl;
 			}
 

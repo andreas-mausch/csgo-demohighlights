@@ -30,6 +30,8 @@ public:
 
 	std::vector<Player> &getPlayers();
 	Player &findPlayerByUserId(int userId);
+	Player *findPlayerByUserIdIfExists(int userId);
+	void updatePlayer(Player &player);
 
 	void setTick(int tick);
 	void setPositionInStream(int positionInStream);

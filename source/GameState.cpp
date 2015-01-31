@@ -56,13 +56,39 @@ std::vector<Player> &GameState::getPlayers()
 
 Player &GameState::findPlayerByUserId(int userId)
 {
+	Player *player = findPlayerByUserIdIfExists(userId);
+
+	if (!player)
+	{
+		throw std::bad_exception("player not found");
+	}
+
+	return *player;
+}
+
+Player *GameState::findPlayerByUserIdIfExists(int userId)
+{
 	for(std::vector<Player>::iterator it = players.begin(); it != players.end(); ++it)
 	{
 		if (it->getUserId() == userId)
 		{
-			return *it;
+			return &*it;
 		}
 	}
 
-	throw std::bad_exception("player not found");
+	return NULL;
+}
+
+void GameState::updatePlayer(Player &player)
+{
+	Player *existingPlayer = findPlayerByUserIdIfExists(player.getUserId());
+
+	if (existingPlayer)
+	{
+		*existingPlayer = player;
+	}
+	else
+	{
+		players.push_back(player);
+	}
 }
