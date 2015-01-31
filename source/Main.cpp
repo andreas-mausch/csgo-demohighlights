@@ -11,15 +11,9 @@
 #include "streams/MemoryBitStream.h"
 #include "streams/MemoryStreamBuffer.h"
 
-#include <stdarg.h>  // For va_start, etc.
+#include "utils/EndianConverter.h"
 
-unsigned int endian_swap(unsigned int x)
-{
-    return (x>>24) | 
-        ((x<<8) & 0x00FF0000) |
-        ((x>>8) & 0x0000FF00) |
-        (x<<24);
-}
+#include <stdarg.h>  // For va_start, etc.
 
 std::string string_format(const std::string fmt, ...) {
     int size = ((int)fmt.size()) * 2 + 50;   // Use a rubric appropriate for your code

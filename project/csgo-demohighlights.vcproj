@@ -208,6 +208,14 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="utils"
+				>
+				<File
+					RelativePath="..\source\utils\EndianConverter.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Headerdateien"
@@ -263,6 +271,14 @@
 				</File>
 				<File
 					RelativePath="..\source\streams\MemoryStreamBuffer.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="utils"
+				>
+				<File
+					RelativePath="..\source\utils\EndianConverter.h"
 					>
 				</File>
 			</Filter>
