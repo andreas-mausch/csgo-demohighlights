@@ -423,8 +423,61 @@ void updateStringTable(CSVCMsg_UpdateStringTable &message)
 	parseStringTableUpdate(stream, message.num_changed_entries(), s_StringTables[ message.table_id() ].nMaxEntries, 0, 0, 0, strcmp(s_StringTables[ message.table_id() ].szName, "userinfo") == 0);
 }
 
+CSVCMsg_GameEventList _gameEventList;
+
+const CSVCMsg_GameEventList::descriptor_t& findGameEvent(int eventId)
+{
+	for (int i = 0; i < _gameEventList.descriptors().size(); i++ )
+	{
+		const CSVCMsg_GameEventList::descriptor_t& Descriptor = _gameEventList.descriptors( i );
+
+		if ( Descriptor.eventid() == eventId )
+		{
+			return Descriptor;
+		}
+	}
+
+	throw 1;
+}
+
+const CSVCMsg_GameEvent::key_t& getValue(CSVCMsg_GameEvent &message, const CSVCMsg_GameEventList::descriptor_t& descriptor, const std::string &keyName)
+{
+	for (int i = 0; i < descriptor.keys().size(); i++)
+	{
+		const CSVCMsg_GameEventList::key_t& key = descriptor.keys(i);
+		if (key.name() == keyName)
+		{
+			return message.keys(i);
+		}
+	}
+
+	throw 2;
+}
+
+std::map<int, std::string> playerNames;
+
+std::string findPlayerName(int userId)
+{
+	return playerNames.find(userId)->second;
+}
+
 void gameEvent(CSVCMsg_GameEvent &message)
 {
+	const CSVCMsg_GameEventList::descriptor_t& descriptor = findGameEvent(message.eventid());
+	// std::cout << "gameEvent: " << descriptor.name() << std::endl;
+
+	if (descriptor.name() == "player_death")
+	{
+		std::string attacker = findPlayerName(getValue(message, descriptor, "attacker").val_short());
+		std::string userid = findPlayerName(getValue(message, descriptor, "userid").val_short());
+		std::cout << "gameEvent: " << descriptor.name() << ": " << attacker << " killed " << userid << std::endl;
+	}
+}
+
+void gameEventList(CSVCMsg_GameEventList &message)
+{
+	std::cout << "gameEventList" << std::endl;
+	_gameEventList = message;
 }
 
 void parsePacket2(memstream &demo, int length)
@@ -467,6 +520,13 @@ void parsePacket2(memstream &demo, int length)
 			message.ParseFromArray(bytes, messageLength);
 			gameEvent(message);
 									} break;
+		case svc_GameEventList: {
+			char *bytes = new char[messageLength];
+			demo.readBytes(bytes, messageLength);
+			CSVCMsg_GameEventList message;
+			message.ParseFromArray(bytes, messageLength);
+			gameEventList(message);
+								} break;
 		default:
 			// unhandledCommand(string_format("message command: default %d", command));
 			demo.seekg(messageLength, std::ios_base::cur);
@@ -520,7 +580,9 @@ void parseStringtable(memstream &stringtables)
 			if (userInfo)
 			{
 				const player_info_t *pUnswappedPlayerInfo = ( const player_info_t * )data;
-				std::cout << "\tplayer name: " << name << " / " << pUnswappedPlayerInfo->name << " / " << endian_swap(pUnswappedPlayerInfo->userID) << std::endl;
+				int userId = endian_swap(pUnswappedPlayerInfo->userID);
+				playerNames[userId] = pUnswappedPlayerInfo->name;
+				std::cout << "\tplayer name: " << name << " / " << pUnswappedPlayerInfo->name << " / " << userId << std::endl;
 			}
 
 			delete[] data;
