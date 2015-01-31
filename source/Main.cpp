@@ -7,6 +7,8 @@
 #include "protobuf/generated/cstrike15_usermessages_public.pb.h"
 #include "protobuf/generated/netmessages_public.pb.h"
 
+#include "streams/MemoryStreamBuffer.h"
+
 #include <stdarg.h>  // For va_start, etc.
 
 unsigned int endian_swap(unsigned int x)
@@ -17,51 +19,14 @@ unsigned int endian_swap(unsigned int x)
         (x<<24);
 }
 
-class membuf : public std::basic_streambuf<char>
-{
-private:
-	char *buffer;
-public:
-  membuf(char* p, size_t n) {
-	setg(p, p, p + n);
-	// setp(p, p + n);
-  }
-
-  pos_type seekoff( off_type off, std::ios_base::seekdir dir,
-                          std::ios_base::openmode which = std::ios_base::in | std::ios_base::out )
-  {
-	  int newPosition = off;
-
-	  if (dir == std::ios_base::cur)
-	  {
-		  newPosition += gptr() - eback();
-	  }
-
-	  if (dir == std::ios_base::end)
-	  {
-		  newPosition += egptr() - eback();
-	  }
-
-	  setg(eback(), eback() + newPosition, egptr());
-	  return newPosition;
-  }
-
-  pos_type seekpos( pos_type pos,
-	  std::ios_base::openmode which = std::ios_base::in | std::ios_base::out)
-  {
-	  setg(eback(), eback() + pos, egptr());
-	  return pos;
-  }
-};
-
 class memstream : public std::istream
 {
 private:
-	membuf &buffer;
+	MemoryStreamBuffer &buffer;
 	int currentBitPosition;
 	char currentByte;
 public:
-	memstream(membuf &buffer) : buffer(buffer), std::istream(&buffer) {
+	memstream(MemoryStreamBuffer &buffer) : buffer(buffer), std::istream(&buffer) {
 	  currentBitPosition = 0;
 	  currentByte = 0;
 	}
@@ -405,7 +370,7 @@ void createStringTable(CSVCMsg_CreateStringTable &message)
 {
 	// std::cout << "svc_CreateStringTable: " << message.name() << std::endl;
 	char *data = const_cast<char *>(message.string_data().c_str());
-	membuf buffer(data, message.string_data().size());
+	MemoryStreamBuffer buffer(data, message.string_data().size());
 	memstream stream(buffer);
 	parseStringTableUpdate(stream, message.num_entries(), message.max_entries(), message.user_data_size(), message.user_data_size_bits(), message.user_data_fixed_size(), message.name() == "userinfo");
 
@@ -418,7 +383,7 @@ void updateStringTable(CSVCMsg_UpdateStringTable &message)
 {
 	// std::cout << "svc_UpdateStringTable: " << message.table_id() << std::endl;
 	char *data = const_cast<char *>(message.string_data().c_str());
-	membuf buffer(data, message.string_data().size());
+	MemoryStreamBuffer buffer(data, message.string_data().size());
 	memstream stream(buffer);
 	parseStringTableUpdate(stream, message.num_changed_entries(), s_StringTables[ message.table_id() ].nMaxEntries, 0, 0, 0, strcmp(s_StringTables[ message.table_id() ].szName, "userinfo") == 0);
 }
@@ -590,6 +555,7 @@ void parseStringtable(memstream &stringtables)
 				const player_info_t *pUnswappedPlayerInfo = ( const player_info_t * )data;
 				int userId = endian_swap(pUnswappedPlayerInfo->userID);
 				playerNames[userId] = pUnswappedPlayerInfo->name;
+				pUnswappedPlayerInfo->
 				std::cout << "\tplayer name: " << name << " / " << pUnswappedPlayerInfo->name << " / " << userId << std::endl;
 			}
 
@@ -630,7 +596,7 @@ void parseStringtables(memstream &demo)
 	std::cout << "Parse stringtables: " << length << std::endl;
 	char *stringtablesBytes = new char[length];
 	demo.readBytes(stringtablesBytes, length);
-	membuf stringtablesBuffer(stringtablesBytes, length);
+	MemoryStreamBuffer stringtablesBuffer(stringtablesBytes, length);
 	memstream stringtables(stringtablesBuffer);
 	int tableCount = stringtables.readByte();
 	std::cout << "Parse stringtables tableCount: " << tableCount << std::endl;
@@ -651,7 +617,7 @@ int main()
 	std::string str(size, ' ');
 	demofile.seekg(0);
 	demofile.read(&str[0], size); 
-	membuf demoBuffer(const_cast<char *>(str.c_str()), str.length());
+	MemoryStreamBuffer demoBuffer(const_cast<char *>(str.c_str()), str.length());
 	memstream demo(demoBuffer);
 
 	parseHeader(demo);

@@ -192,6 +192,22 @@
 					</File>
 				</Filter>
 			</Filter>
+			<Filter
+				Name="streams"
+				>
+				<File
+					RelativePath="..\source\streams\MemoryBitStream.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\source\streams\MemoryStream.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\source\streams\MemoryStreamBuffer.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Headerdateien"
@@ -233,6 +249,22 @@
 						>
 					</File>
 				</Filter>
+			</Filter>
+			<Filter
+				Name="streams"
+				>
+				<File
+					RelativePath="..\source\streams\MemoryBitStream.h"
+					>
+				</File>
+				<File
+					RelativePath="..\source\streams\MemoryStream.h"
+					>
+				</File>
+				<File
+					RelativePath="..\source\streams\MemoryStreamBuffer.h"
+					>
+				</File>
 			</Filter>
 		</Filter>
 		<Filter
