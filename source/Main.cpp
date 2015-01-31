@@ -14,6 +14,8 @@
 #include "utils/EndianConverter.h"
 #include "utils/StringFormat.h"
 
+#include "GameState.h"
+
 void unhandledCommand(const std::string &description)
 {
 	std::cout << "Unhandled command: " << description << std::endl;
@@ -427,44 +429,16 @@ int main()
 
 	int messageCount = 0;
 	bool end = false;
+	GameState gameState(0, demo.tellg());
+
 	while (!end)
 	{
-		int position = demo.tellg();
-		unsigned char command = demo.readByte();
-		int tick = demo.readInt();
-		unsigned char playerSlot = demo.readByte();
-		messageCount++;
-		// std::cout << "command: " << ((int)command) << " at " << position << std::endl;
-
-		switch (command)
+		if (!gameState.parseNextTick(demo))
 		{
-		case dem_signon:
-		case dem_packet:
-			parsePacket(demo);
-			break;
-		case dem_synctick:
-			break;
-		case dem_consolecmd:
-			unhandledCommand(formatString("command: default %d", command));
-			break;
-		case dem_usercmd:
-			unhandledCommand(formatString("command: default %d", command));
-			break;
-		case dem_datatables:
-			parseDatatables(demo);
-			break;
-		case dem_stop:
 			end = true;
-			break;
-		case dem_customdata:
-			unhandledCommand(formatString("command: default %d", command));
-			break;
-		case dem_stringtables:
-			parseStringtables(demo);
-			break;
-		default:
-			unhandledCommand(formatString("command: default %d", command));
 		}
+
+		messageCount++;
 	}
 
 	std::cout << "message count: " << messageCount << std::endl;

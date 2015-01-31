@@ -12,5 +12,5 @@ public:
 	GameState(int tick, int positionInStream);
 	~GameState();
 
-	void parseNextTick(MemoryStream &demo);
+	bool parseNextTick(MemoryStream &demo);
 };
