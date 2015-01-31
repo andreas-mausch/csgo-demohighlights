@@ -171,13 +171,6 @@ const CSVCMsg_GameEvent::key_t& getValue(CSVCMsg_GameEvent &message, const CSVCM
 	throw 2;
 }
 
-std::map<int, std::string> playerNames;
-
-std::string findPlayerName(int userId)
-{
-	return playerNames.find(userId)->second;
-}
-
 void DemoParser::gameEvent(CSVCMsg_GameEvent &message)
 {
 	const CSVCMsg_GameEventList::descriptor_t& descriptor = gameState.getGameEvent(message.eventid());
@@ -185,8 +178,8 @@ void DemoParser::gameEvent(CSVCMsg_GameEvent &message)
 
 	if (descriptor.name() == "player_death")
 	{
-		std::string attacker = findPlayerName(getValue(message, descriptor, "attacker").val_short());
-		std::string userid = findPlayerName(getValue(message, descriptor, "userid").val_short());
+		std::string attacker = gameState.findPlayerByUserId(getValue(message, descriptor, "attacker").val_short()).getName();
+		std::string userid = gameState.findPlayerByUserId(getValue(message, descriptor, "userid").val_short()).getName();
 		std::cout << "gameEvent: " << descriptor.name() << ": " << attacker << " killed " << userid << std::endl;
 	}
 	else if (descriptor.name() == "round_start")
@@ -261,7 +254,7 @@ void DemoParser::parsePacket2(MemoryStream &demo, int length)
 	demo.seekg(destination, std::ios_base::beg);
 }
 
-void parseStringtable(MemoryBitStream &stringtables)
+void DemoParser::parseStringtable(MemoryBitStream &stringtables)
 {
 	std::string tableName = stringtables.readNullTerminatedString(256);
 	// std::cout << "tableName: " << tableName << std::endl;
@@ -285,8 +278,8 @@ void parseStringtable(MemoryBitStream &stringtables)
 			{
 				const player_info_t *pUnswappedPlayerInfo = ( const player_info_t * )data;
 				int userId = endian_swap(pUnswappedPlayerInfo->userID);
-				playerNames[userId] = pUnswappedPlayerInfo->name;
-				pUnswappedPlayerInfo->
+				Player player(userId, pUnswappedPlayerInfo->name);
+				gameState.getPlayers().push_back(player);
 				std::cout << "\tplayer name: " << name << " / " << pUnswappedPlayerInfo->name << " / " << userId << std::endl;
 			}
 

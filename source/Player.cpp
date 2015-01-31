@@ -9,6 +9,11 @@ Player::~Player()
 {
 }
 
+int Player::getUserId()
+{
+	return userId;
+}
+
 const std::string &Player::getName()
 {
 	return name;

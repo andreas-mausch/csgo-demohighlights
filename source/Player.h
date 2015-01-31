@@ -12,5 +12,6 @@ public:
 	Player(int userId, const std::string &name);
 	~Player();
 
+	int getUserId();
 	const std::string &getName();
 };

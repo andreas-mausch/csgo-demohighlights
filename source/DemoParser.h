@@ -2,6 +2,7 @@
 
 class GameState;
 class MemoryStream;
+class MemoryBitStream;
 
 class CSVCMsg_GameEvent;
 class CSVCMsg_GameEventList;
@@ -36,6 +37,7 @@ private:
 	void gameEvent(CSVCMsg_GameEvent &message);
 	void createStringTable(CSVCMsg_CreateStringTable &message);
 	void updateStringTable(CSVCMsg_UpdateStringTable &message);
+	void parseStringtable(MemoryBitStream &stringtables);
 
 public:
 	DemoParser(GameState &gameState);

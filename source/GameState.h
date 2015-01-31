@@ -27,7 +27,9 @@ public:
 
 	const CSVCMsg_GameEventList::descriptor_t &getGameEvent(int eventId);
 	std::vector<StringTableData_t> &getStringTables();
+
 	std::vector<Player> &getPlayers();
+	Player &findPlayerByUserId(int userId);
 
 	void setTick(int tick);
 	void setPositionInStream(int positionInStream);

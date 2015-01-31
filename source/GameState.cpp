@@ -48,3 +48,21 @@ std::vector<StringTableData_t> &GameState::getStringTables()
 {
 	return stringTables;
 }
+
+std::vector<Player> &GameState::getPlayers()
+{
+	return players;
+}
+
+Player &GameState::findPlayerByUserId(int userId)
+{
+	for(std::vector<Player>::iterator it = players.begin(); it != players.end(); ++it)
+	{
+		if (it->getUserId() == userId)
+		{
+			return *it;
+		}
+	}
+
+	throw std::bad_exception("player not found");
+}
