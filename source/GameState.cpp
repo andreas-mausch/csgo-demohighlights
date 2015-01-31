@@ -14,42 +14,32 @@ GameState::~GameState()
 {
 }
 
-bool GameState::parseNextTick(MemoryStream &demo)
+void GameState::setTick(int tick)
 {
-	unsigned char command = demo.readByte();
-	tick = demo.readInt();
-	unsigned char playerSlot = demo.readByte();
+	this->tick = tick;
+}
 
-	switch (command)
+void GameState::setPositionInStream(int positionInStream)
+{
+	this->positionInStream = positionInStream;
+}
+
+void GameState::setGameEvents(CSVCMsg_GameEventList &message)
+{
+	this->gameEvents = message;
+}
+
+const CSVCMsg_GameEventList::descriptor_t& GameState::getGameEvent(int eventId)
+{
+	for (int i = 0; i < gameEvents.descriptors().size(); i++ )
 	{
-	case dem_signon:
-	case dem_packet:
-		parsePacket(demo);
-		break;
-	case dem_synctick:
-		break;
-	case dem_consolecmd:
-		unhandledCommand(formatString("command: default %d", command));
-		break;
-	case dem_usercmd:
-		unhandledCommand(formatString("command: default %d", command));
-		break;
-	case dem_datatables:
-		parseDatatables(demo);
-		break;
-	case dem_stop:
-		return false;
-	case dem_customdata:
-		unhandledCommand(formatString("command: default %d", command));
-		break;
-	case dem_stringtables:
-		parseStringtables(demo);
-		break;
-	default:
-		unhandledCommand(formatString("command: default %d", command));
+		const CSVCMsg_GameEventList::descriptor_t& Descriptor = gameEvents.descriptors( i );
+
+		if ( Descriptor.eventid() == eventId )
+		{
+			return Descriptor;
+		}
 	}
 
-	positionInStream = demo.tellg();
-
-	return true;
+	throw std::bad_exception("game event not found");
 }
