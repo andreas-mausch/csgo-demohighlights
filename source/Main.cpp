@@ -9,6 +9,14 @@
 
 #include <stdarg.h>  // For va_start, etc.
 
+unsigned int endian_swap(unsigned int x)
+{
+    return (x>>24) | 
+        ((x<<8) & 0x00FF0000) |
+        ((x>>8) & 0x0000FF00) |
+        (x<<24);
+}
+
 class membuf : public std::basic_streambuf<char>
 {
 private:
@@ -385,7 +393,7 @@ void parseStringTableUpdate(memstream &stream, int entryCount, int maximumEntrie
 		if ( userData && pUserData != NULL )
 		{
 			const player_info_t *pUnswappedPlayerInfo = ( const player_info_t * )pUserData;
-			std::cout << "\tplayer name: " << pUnswappedPlayerInfo->name << std::endl;
+				std::cout << "parseStringTableUpdate player name: " << pUnswappedPlayerInfo->name << " / " << endian_swap(pUnswappedPlayerInfo->userID) << std::endl;
 		}
 		else
 		{
@@ -476,14 +484,6 @@ void parseDatatables(memstream &demo)
 	char *datatablesBytes = new char[length];
 	demo.readBytes(datatablesBytes, length);
 	delete[] datatablesBytes;
-}
-
-unsigned int endian_swap(unsigned int x)
-{
-    return (x>>24) | 
-        ((x<<8) & 0x00FF0000) |
-        ((x>>8) & 0x0000FF00) |
-        (x<<24);
 }
 
 void parseStringtable(memstream &stringtables)
