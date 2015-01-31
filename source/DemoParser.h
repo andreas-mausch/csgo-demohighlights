@@ -5,6 +5,8 @@ class MemoryStream;
 
 class CSVCMsg_GameEvent;
 class CSVCMsg_GameEventList;
+class CSVCMsg_CreateStringTable;
+class CSVCMsg_UpdateStringTable;
 
 #include <string>
 
@@ -32,6 +34,8 @@ private:
 	void parsePacket2(MemoryStream &demo, int length);
 	void gameEventList(CSVCMsg_GameEventList &message);
 	void gameEvent(CSVCMsg_GameEvent &message);
+	void createStringTable(CSVCMsg_CreateStringTable &message);
+	void updateStringTable(CSVCMsg_UpdateStringTable &message);
 
 public:
 	DemoParser(GameState &gameState);

@@ -26,9 +26,6 @@ void serverInfo(const char *bytes, int length)
 	std::cout << serverInfo.DebugString() << std::endl;
 }
 
-int s_nNumStringTables = 0;
-StringTableData_t s_StringTables[ MAX_STRING_TABLES ];
-
 void parseStringTableUpdate(MemoryBitStream &stream, int entryCount, int maximumEntries, int userDataSize, int userDataSizeBits, int userDataFixedSize, bool userData)
 {
 	int nTemp = maximumEntries;
@@ -135,7 +132,7 @@ void parseStringTableUpdate(MemoryBitStream &stream, int entryCount, int maximum
 	}
 }
 
-void createStringTable(CSVCMsg_CreateStringTable &message)
+void DemoParser::createStringTable(CSVCMsg_CreateStringTable &message)
 {
 	// std::cout << "svc_CreateStringTable: " << message.name() << std::endl;
 	char *data = const_cast<char *>(message.string_data().c_str());
@@ -143,18 +140,21 @@ void createStringTable(CSVCMsg_CreateStringTable &message)
 	MemoryBitStream stream(buffer);
 	parseStringTableUpdate(stream, message.num_entries(), message.max_entries(), message.user_data_size(), message.user_data_size_bits(), message.user_data_fixed_size(), message.name() == "userinfo");
 
-	strncpy(s_StringTables[ s_nNumStringTables ].szName, message.name().c_str(), sizeof( s_StringTables[ s_nNumStringTables ].szName ));
-	s_StringTables[ s_nNumStringTables ].nMaxEntries = message.max_entries();
-	s_nNumStringTables++;
+	StringTableData_t stringTable;
+	strncpy(stringTable.szName, message.name().c_str(), sizeof( stringTable.szName ));
+	stringTable.nMaxEntries = message.max_entries();
+	gameState.getStringTables().push_back(stringTable);
 }
 
-void updateStringTable(CSVCMsg_UpdateStringTable &message)
+void DemoParser::updateStringTable(CSVCMsg_UpdateStringTable &message)
 {
 	// std::cout << "svc_UpdateStringTable: " << message.table_id() << std::endl;
 	char *data = const_cast<char *>(message.string_data().c_str());
 	MemoryStreamBuffer buffer(data, message.string_data().size());
 	MemoryBitStream stream(buffer);
-	parseStringTableUpdate(stream, message.num_changed_entries(), s_StringTables[ message.table_id() ].nMaxEntries, 0, 0, 0, strcmp(s_StringTables[ message.table_id() ].szName, "userinfo") == 0);
+
+	StringTableData_t &stringTable = gameState.getStringTables()[message.table_id()];
+	parseStringTableUpdate(stream, message.num_changed_entries(), stringTable.nMaxEntries, 0, 0, 0, strcmp(stringTable.szName, "userinfo") == 0);
 }
 
 const CSVCMsg_GameEvent::key_t& getValue(CSVCMsg_GameEvent &message, const CSVCMsg_GameEventList::descriptor_t& descriptor, const std::string &keyName)
