@@ -472,6 +472,14 @@ void gameEvent(CSVCMsg_GameEvent &message)
 		std::string userid = findPlayerName(getValue(message, descriptor, "userid").val_short());
 		std::cout << "gameEvent: " << descriptor.name() << ": " << attacker << " killed " << userid << std::endl;
 	}
+	else if (descriptor.name() == "round_start")
+	{
+		std::cout << "gameEvent: " << descriptor.name() << std::endl;
+	}
+	else if (descriptor.name() == "round_end")
+	{
+		std::cout << "gameEvent: " << descriptor.name() << " / " << getValue(message, descriptor, "winner").val_byte() << std::endl;
+	}
 }
 
 void gameEventList(CSVCMsg_GameEventList &message)
