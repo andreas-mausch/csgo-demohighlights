@@ -215,6 +215,10 @@
 					RelativePath="..\source\utils\EndianConverter.cpp"
 					>
 				</File>
+				<File
+					RelativePath="..\source\utils\StringFormat.cpp"
+					>
+				</File>
 			</Filter>
 		</Filter>
 		<Filter
@@ -279,6 +283,10 @@
 				>
 				<File
 					RelativePath="..\source\utils\EndianConverter.h"
+					>
+				</File>
+				<File
+					RelativePath="..\source\utils\StringFormat.h"
 					>
 				</File>
 			</Filter>
