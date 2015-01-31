@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Player.h"
+
 #include "sdk/demofile.h"
 #include "sdk/demofiledump.h"
 
@@ -17,6 +19,7 @@ private:
 
 	CSVCMsg_GameEventList gameEvents;
 	std::vector<StringTableData_t> stringTables;
+	std::vector<Player> players;
 
 public:
 	GameState(int tick, int positionInStream);
@@ -24,6 +27,7 @@ public:
 
 	const CSVCMsg_GameEventList::descriptor_t &getGameEvent(int eventId);
 	std::vector<StringTableData_t> &getStringTables();
+	std::vector<Player> &getPlayers();
 
 	void setTick(int tick);
 	void setPositionInStream(int positionInStream);

@@ -184,6 +184,10 @@
 				RelativePath="..\source\Main.cpp"
 				>
 			</File>
+			<File
+				RelativePath="..\source\Player.cpp"
+				>
+			</File>
 			<Filter
 				Name="protobuf"
 				>
@@ -244,6 +248,10 @@
 			</File>
 			<File
 				RelativePath="..\source\Main.h"
+				>
+			</File>
+			<File
+				RelativePath="..\source\Player.h"
 				>
 			</File>
 			<Filter
