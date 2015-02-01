@@ -1,4 +1,5 @@
 #include "DemoParser.h"
+#include "Entities.h"
 #include "../gamestate/GameState.h"
 
 #include "../sdk/demofile.h"
@@ -74,12 +75,12 @@ void parseStringTableUpdate(MemoryBitStream &stream, int entryCount, int maximum
 				int index = stream.ReadUBitLong( 5 );
 				int bytestocopy = stream.ReadUBitLong( SUBSTRING_BITS );
 				std::string substr_str = stream.readFixedLengthString( sizeof( substr ) );
-				strncpy(substr, substr_str.c_str(), sizeof(substr));
+				// strncpy_s(substr, substr_str.c_str(), sizeof(substr));
 			}
 			else
 			{
 				std::string entry_str = stream.readFixedLengthString( sizeof( entry ) );
-				strncpy(entry, entry_str.c_str(), sizeof(entry));
+				// strncpy_s(entry, entry_str.c_str(), sizeof(entry));
 			}
 
 			pEntry = entry;
@@ -141,7 +142,7 @@ void DemoParser::createStringTable(CSVCMsg_CreateStringTable &message)
 	parseStringTableUpdate(stream, message.num_entries(), message.max_entries(), message.user_data_size(), message.user_data_size_bits(), message.user_data_fixed_size(), message.name() == "userinfo");
 
 	StringTableData_t stringTable;
-	strncpy(stringTable.szName, message.name().c_str(), sizeof( stringTable.szName ));
+	strncpy_s(stringTable.szName, message.name().c_str(), sizeof( stringTable.szName ));
 	stringTable.nMaxEntries = message.max_entries();
 	gameState.getStringTables().push_back(stringTable);
 }
@@ -359,6 +360,9 @@ void DemoParser::parseDatatables(MemoryStream &demo)
 	std::cout << "Parse datatables: " << length << std::endl;
 	char *datatablesBytes = new char[length];
 	demo.readBytes(datatablesBytes, length);
+	MemoryStreamBuffer datatablesBuffer(datatablesBytes, length);
+	MemoryBitStream datatables(datatablesBuffer);
+	ParseDataTable(datatables);
 	delete[] datatablesBytes;
 }
 
