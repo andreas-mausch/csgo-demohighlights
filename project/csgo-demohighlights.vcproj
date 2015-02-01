@@ -329,6 +329,10 @@
 					RelativePath="..\source\gamestate\Player.h"
 					>
 				</File>
+				<File
+					RelativePath="..\source\gamestate\Team.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="parser"
