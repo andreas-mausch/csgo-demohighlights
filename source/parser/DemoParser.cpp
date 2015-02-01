@@ -273,6 +273,8 @@ std::string toString(Player &player)
 	return output.str();
 }
 
+int roundStart = -1;
+
 void DemoParser::gameEvent(CSVCMsg_GameEvent &message)
 {
 	const CSVCMsg_GameEventList::descriptor_t& descriptor = gameState.getGameEvent(message.eventid());
@@ -280,13 +282,19 @@ void DemoParser::gameEvent(CSVCMsg_GameEvent &message)
 
 	if (descriptor.name() == "player_death")
 	{
+		int tickDif = gameState.getTick() - roundStart;
 		Player &attacker = gameState.findPlayerByUserId(getValue(message, descriptor, "attacker").val_short());
 		Player &userid = gameState.findPlayerByUserId(getValue(message, descriptor, "userid").val_short());
-		std::cout << "gameEvent: " << descriptor.name() << ": " << toString(attacker) << " killed " << toString(userid) << std::endl;
+		std::cout << "gameEvent: " << descriptor.name() << ": " << toString(attacker) << " killed " << toString(userid) << "; tick dif: " << tickDif/128 << std::endl;
+	}
+	else if (descriptor.name() == "bomb_planted")
+	{
+		std::cout << descriptor.name() << std::endl;
 	}
 	else if (descriptor.name() == "round_start")
 	{
-		std::cout << "gameEvent: " << descriptor.name() << std::endl;
+		std::cout << descriptor.name() << "; timelimit: " << getValue(message, descriptor, "timelimit").val_long() << "; tick: " << gameState.getTick() << std::endl;
+		roundStart = gameState.getTick();
 
 		std::vector<Player> &players = gameState.getPlayers();
 		for (std::vector<Player>::iterator player = players.begin(); player != players.end(); player++)

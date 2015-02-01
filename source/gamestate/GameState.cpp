@@ -14,6 +14,11 @@ GameState::~GameState()
 {
 }
 
+int GameState::getTick()
+{
+	return tick;
+}
+
 void GameState::setTick(int tick)
 {
 	this->tick = tick;

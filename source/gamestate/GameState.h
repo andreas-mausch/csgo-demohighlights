@@ -33,6 +33,7 @@ public:
 	Player *findPlayerByUserIdIfExists(int userId);
 	void updatePlayer(Player &player);
 
+	int getTick();
 	void setTick(int tick);
 	void setPositionInStream(int positionInStream);
 	void setGameEvents(CSVCMsg_GameEventList &message);
