@@ -11,6 +11,9 @@ private:
 public:
 	MemoryBitStream(MemoryStreamBuffer &buffer);
 
+	int getCurrentBitPosition();
+	char getCurrentByte();
+
 	bool readBit();
 	void readBits(void *buffer, int bitCount);
 	char readByte();

@@ -5,11 +5,22 @@ MemoryBitStream::MemoryBitStream(MemoryStreamBuffer &buffer)
 {
 }
 
+int MemoryBitStream::getCurrentBitPosition()
+{
+	return currentBitPosition;
+}
+
+char MemoryBitStream::getCurrentByte()
+{
+	return currentByte;
+}
+
 bool MemoryBitStream::readBit()
 {
 	if (currentBitPosition == 0)
 	{
-		read(&currentByte, sizeof(char));
+		currentByte = get();
+		//read(&currentByte, 1);
 	}
 
 	bool bit = (currentByte >> currentBitPosition) & 0x01;
