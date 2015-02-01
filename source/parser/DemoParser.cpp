@@ -102,6 +102,7 @@ void parseStringTableUpdate(MemoryBitStream &stream, int entryCount, int maximum
 
 			pEntry = entry;
 		}
+		// std::cout << "\tmemory bit stream 3: " << stream.tellg() << "/" << stream.getCurrentBitPosition() << " - " << stream.eof() << stream.fail() << stream.bad() << std::endl;
 
 		// Read in the user data.
 		unsigned char tempbuf[ MAX_USERDATA_SIZE ];
@@ -111,6 +112,7 @@ void parseStringTableUpdate(MemoryBitStream &stream, int entryCount, int maximum
 
 		if ( stream.readBit() )
 		{
+			// std::cout << "\tmemory bit stream 4: " << stream.tellg() << "/" << stream.getCurrentBitPosition() << " - " << stream.eof() << stream.fail() << stream.bad() << " - " << (int)stream.getCurrentByte() << std::endl;
 			if ( userDataFixedSize )
 			{
 				// Don't need to read length, it's fixed length and the length was networked down already.
@@ -128,7 +130,9 @@ void parseStringTableUpdate(MemoryBitStream &stream, int entryCount, int maximum
 					return;
 				}
 
+				// std::cout << "\tmemory bit stream 5: " << stream.tellg() << "/" << stream.getCurrentBitPosition() << " - " << stream.eof() << stream.fail() << stream.bad() << " - " << nBytes << "/" << MAX_USERDATA_SIZE << std::endl;
 				stream.readBytes( tempbuf, nBytes );
+				// std::cout << "\tmemory bit stream 6: " << stream.tellg() << "/" << stream.getCurrentBitPosition() << " - " << stream.eof() << stream.fail() << stream.bad() << std::endl;
 			}
 
 			pUserData = tempbuf;
@@ -159,9 +163,65 @@ void parseStringTableUpdate(MemoryBitStream &stream, int entryCount, int maximum
 	}
 }
 
+#include <stdio.h>
+#include <ctype.h>
+
+void hexdump(const void *pAddressIn, long  lSize)
+{
+ char szBuf[100];
+ long lIndent = 1;
+ long lOutLen, lIndex, lIndex2, lOutLen2;
+ long lRelPos;
+ struct { char *pData; unsigned long lSize; } buf;
+ unsigned char *pTmp,ucTmp;
+ unsigned char *pAddress = (unsigned char *)pAddressIn;
+
+   buf.pData   = (char *)pAddress;
+   buf.lSize   = lSize;
+
+   while (buf.lSize > 0)
+   {
+      pTmp     = (unsigned char *)buf.pData;
+      lOutLen  = (int)buf.lSize;
+      if (lOutLen > 16)
+          lOutLen = 16;
+
+      // create a 64-character formatted output line:
+      sprintf(szBuf, " >                            "
+                     "                      "
+                     "    %08lX", pTmp-pAddress);
+      lOutLen2 = lOutLen;
+
+      for(lIndex = 1+lIndent, lIndex2 = 53-15+lIndent, lRelPos = 0;
+          lOutLen2;
+          lOutLen2--, lIndex += 2, lIndex2++
+         )
+      {
+         ucTmp = *pTmp++;
+
+         sprintf(szBuf + lIndex, "%02X ", (unsigned short)ucTmp);
+         if(!isprint(ucTmp))  ucTmp = '.'; // nonprintable char
+         szBuf[lIndex2] = ucTmp;
+
+         if (!(++lRelPos & 3))     // extra blank after 4 bytes
+         {  lIndex++; szBuf[lIndex+2] = ' '; }
+      }
+
+      if (!(lRelPos & 3)) lIndex--;
+
+      szBuf[lIndex  ]   = '<';
+      szBuf[lIndex+1]   = ' ';
+
+      printf("%s\n", szBuf);
+
+      buf.pData   += lOutLen;
+      buf.lSize   -= lOutLen;
+   }
+}
+
 void DemoParser::createStringTable(CSVCMsg_CreateStringTable &message)
 {
-	// std::cout << "svc_CreateStringTable: " << message.name() << std::endl;
+	// std::cout << "svc_CreateStringTable: " << message.name() << " (" << message.string_data().size() << " bytes)" << std::endl;
 	char *data = const_cast<char *>(message.string_data().c_str());
 	MemoryStreamBuffer buffer(data, message.string_data().size());
 	MemoryBitStream stream(buffer);
@@ -175,13 +235,21 @@ void DemoParser::createStringTable(CSVCMsg_CreateStringTable &message)
 
 void DemoParser::updateStringTable(CSVCMsg_UpdateStringTable &message)
 {
-	// std::cout << "svc_UpdateStringTable: " << message.table_id() << std::endl;
+	// std::cout << "svc_UpdateStringTable: " << message.table_id() << " (" << message.string_data().size() << " bytes)" << std::endl;
+	// hexdump(message.string_data().c_str(), message.string_data().size());
 	char *data = const_cast<char *>(message.string_data().c_str());
 	MemoryStreamBuffer buffer(data, message.string_data().size());
 	MemoryBitStream stream(buffer);
 
 	StringTableData_t &stringTable = gameState.getStringTables()[message.table_id()];
-	parseStringTableUpdate(stream, message.num_changed_entries(), stringTable.nMaxEntries, 0, 0, 0, strcmp(stringTable.szName, "userinfo") == 0);
+	try
+	{
+		parseStringTableUpdate(stream, message.num_changed_entries(), stringTable.nMaxEntries, 0, 0, 0, strcmp(stringTable.szName, "userinfo") == 0);
+	}
+	catch (...)
+	{
+		std::cout << "ERROR: updateStringTable() failed!" << std::endl;
+	}
 }
 
 const CSVCMsg_GameEvent::key_t& getValue(CSVCMsg_GameEvent &message, const CSVCMsg_GameEventList::descriptor_t& descriptor, const std::string &keyName)

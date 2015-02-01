@@ -12,9 +12,7 @@ MemoryStream::~MemoryStream()
 
 char MemoryStream::readByte()
 {
-	char result = 0;
-	read(&result, sizeof(char));
-	return result;
+	return get();
 }
 
 void MemoryStream::readBytes(void *buffer, int length)

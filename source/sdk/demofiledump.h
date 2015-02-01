@@ -146,22 +146,20 @@ struct EntityEntry
 	}
 	~EntityEntry()
 	{
-		for ( std::vector< PropEntry * >::iterator i = m_props.begin(); i != m_props.end(); i++ )
+		for (std::map<std::string, PropEntry *>::iterator i = m_props.begin(); i != m_props.end(); i++ )
 		{
-			delete *i;
+			delete i->second;
 		}
 	}
 	PropEntry *FindProp( const char *pName )
 	{
-		for ( std::vector< PropEntry * >::iterator i = m_props.begin(); i != m_props.end(); i++ )
+		std::map<std::string, PropEntry *>::iterator it = m_props.find(pName);
+		if (it == m_props.end())
 		{
-			PropEntry *pProp = *i;
-			if (  pProp->m_pFlattenedProp->m_prop->var_name().compare( pName ) == 0 )
-			{
-				return pProp;
-			}
+			return NULL;
 		}
-		return NULL;
+
+		return it->second;
 	}
 	void AddOrUpdateProp( FlattenedPropEntry *pFlattenedProp, Prop_t *pPropValue )
 	{
@@ -169,7 +167,8 @@ struct EntityEntry
 		//{
 		//	printf("got vec origin!\n" );
 		//}
-		PropEntry *pProp = FindProp( pFlattenedProp->m_prop->var_name().c_str() );
+		const std::string &name = pFlattenedProp->m_prop->var_name();
+		PropEntry *pProp = FindProp(name.c_str() );
 		if ( pProp )
 		{
 			delete pProp->m_pPropValue;
@@ -178,14 +177,14 @@ struct EntityEntry
 		else
 		{
 			pProp = new PropEntry( pFlattenedProp, pPropValue );
-			m_props.push_back( pProp );
+			m_props.insert(std::pair<std::string, PropEntry *>(name, pProp) );
 		}
 	}
 	int m_nEntity;
 	uint32 m_uClass;
 	uint32 m_uSerialNum;
 
-	std::vector< PropEntry * > m_props;
+	std::map<std::string, PropEntry *> m_props;
 };
 
 enum UpdateType
