@@ -236,11 +236,11 @@
 				Name="parser"
 				>
 				<File
-					RelativePath="..\source\parser\DemoParser.cpp"
+					RelativePath="..\source\parser\Datatable.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\source\parser\Entities.cpp"
+					RelativePath="..\source\parser\DemoParser.cpp"
 					>
 				</File>
 			</Filter>
@@ -330,11 +330,11 @@
 				Name="parser"
 				>
 				<File
-					RelativePath="..\source\parser\DemoParser.h"
+					RelativePath="..\source\parser\Datatable.h"
 					>
 				</File>
 				<File
-					RelativePath="..\source\parser\Entities.h"
+					RelativePath="..\source\parser\DemoParser.h"
 					>
 				</File>
 			</Filter>
