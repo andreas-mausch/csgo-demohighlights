@@ -77,6 +77,12 @@ unsigned int MemoryBitStream::ReadUBitLong(int numbits)
 	return result;
 }
 
+int MemoryBitStream::ReadSBitLong(int numbits)
+{
+	int result = ReadUBitLong( numbits );
+	return (result << (32 - numbits)) >> (32 - numbits);
+}
+
 unsigned int MemoryBitStream::ReadUBitVar()
 {
 	unsigned int result = ReadUBitLong(6);

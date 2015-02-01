@@ -16,6 +16,7 @@ public:
 	char readByte();
 	void readBytes(void *buffer, int length);
 	unsigned int ReadUBitLong(int numbits);
+	int ReadSBitLong(int numbits);
 	unsigned int ReadUBitVar();
 
 };
