@@ -239,6 +239,10 @@
 					RelativePath="..\source\parser\DemoParser.cpp"
 					>
 				</File>
+				<File
+					RelativePath="..\source\parser\Entities.cpp"
+					>
+				</File>
 			</Filter>
 		</Filter>
 		<Filter
@@ -327,6 +331,10 @@
 				>
 				<File
 					RelativePath="..\source\parser\DemoParser.h"
+					>
+				</File>
+				<File
+					RelativePath="..\source\parser\Entities.h"
 					>
 				</File>
 			</Filter>
