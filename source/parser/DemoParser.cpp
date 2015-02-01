@@ -51,6 +51,8 @@ void parseStringTableUpdate(MemoryBitStream &stream, int entryCount, int maximum
 			entryIndex = stream.ReadUBitLong(nEntryBits);
 		}
 
+		// std::cout << "\tentry index: " << entryIndex << "; lastEntry: " << lastEntry << "; maximum entries: " << maximumEntries << std::endl;
+
 		lastEntry = entryIndex;
 
 		if ( entryIndex < 0 || entryIndex >= maximumEntries )
@@ -59,33 +61,45 @@ void parseStringTableUpdate(MemoryBitStream &stream, int entryCount, int maximum
 			return;
 		}
 
-		// std::cout << "entryIndex: " << entryIndex << std::endl;
-
 		const char *pEntry = NULL;
 		char entry[ 1024 ]; 
 		char substr[ 1024 ];
-		entry[ 0 ] = 0;
+		entry[0] = 0;
 
-		if ( stream.readBit() )
+		struct StringHistoryEntry
+		{
+			char string[1024];
+		};
+		std::vector< StringHistoryEntry > history;
+
+		if (stream.readBit())
 		{
 			bool substringcheck = stream.readBit();
 
-			if ( substringcheck )
+			if (substringcheck)
 			{
-				int index = stream.ReadUBitLong( 5 );
-				int bytestocopy = stream.ReadUBitLong( SUBSTRING_BITS );
-				std::string substr_str = stream.readFixedLengthString( sizeof( substr ) );
-				// strncpy_s(substr, substr_str.c_str(), sizeof(substr));
+				int index = stream.ReadUBitLong(5);
+				int bytestocopy = stream.ReadUBitLong(SUBSTRING_BITS);
+				std::string existingEntry;
+				if (index < history.size())
+				{
+					std::string existingEntry = history[index].string;
+				}
+				strncpy_s(entry, existingEntry.c_str(), bytestocopy + 1);
+				std::string substr_str = stream.readNullTerminatedString(sizeof(substr));
+				strncat_s(entry, substr_str.c_str(), sizeof(entry));
+				// std::cout << "\tsubstr: " << substr_str << "; old: " << existingEntry << "; new: " << entry << std::endl;
 			}
 			else
 			{
-				std::string entry_str = stream.readFixedLengthString( sizeof( entry ) );
-				// strncpy_s(entry, entry_str.c_str(), sizeof(entry));
+				std::string entry_str = stream.readNullTerminatedString(sizeof(entry));
+				// std::cout << "\tentry_str: " << entry_str << std::endl;
+				strncpy_s(entry, entry_str.c_str(), sizeof(entry));
 			}
 
 			pEntry = entry;
 		}
-		
+
 		// Read in the user data.
 		unsigned char tempbuf[ MAX_USERDATA_SIZE ];
 		memset( tempbuf, 0, sizeof( tempbuf ) );
@@ -125,11 +139,20 @@ void parseStringTableUpdate(MemoryBitStream &stream, int entryCount, int maximum
 		if ( userData && pUserData != NULL )
 		{
 			const player_info_t *pUnswappedPlayerInfo = ( const player_info_t * )pUserData;
-				std::cout << "parseStringTableUpdate player name: " << pUnswappedPlayerInfo->name << " / " << endian_swap(pUnswappedPlayerInfo->userID) << std::endl;
+			std::cout << "parseStringTableUpdate player name: " << pUnswappedPlayerInfo->name << " / " << endian_swap(pUnswappedPlayerInfo->userID) << std::endl;
 		}
 		else
 		{
 		}
+
+		if ( history.size() > 31 )
+		{
+			history.erase( history.begin() );
+		}
+
+		StringHistoryEntry she;
+		strncpy_s(she.string, pEntry, sizeof(she.string));
+		history.push_back( she );
 	}
 }
 
@@ -217,7 +240,7 @@ void DemoParser::parsePacket2(MemoryStream &demo, int length)
 			char *bytes = new char[messageLength];
 			demo.readBytes(bytes, messageLength);
 			serverInfo(bytes, messageLength);
-			} break;
+							 } break;
 		case svc_CreateStringTable: {
 			char *bytes = new char[messageLength];
 			demo.readBytes(bytes, messageLength);
@@ -238,7 +261,7 @@ void DemoParser::parsePacket2(MemoryStream &demo, int length)
 			CSVCMsg_GameEvent message;
 			message.ParseFromArray(bytes, messageLength);
 			gameEvent(message);
-									} break;
+							} break;
 		case svc_GameEventList: {
 			char *bytes = new char[messageLength];
 			demo.readBytes(bytes, messageLength);
