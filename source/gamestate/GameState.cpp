@@ -1,9 +1,9 @@
 #include "GameState.h"
-#include "Main.h"
+#include "../Main.h"
 
-#include "sdk/demofile.h"
-#include "streams/MemoryStream.h"
-#include "utils/StringFormat.h"
+#include "../sdk/demofile.h"
+#include "../streams/MemoryStream.h"
+#include "../utils/StringFormat.h"
 
 GameState::GameState(int tick, int positionInStream)
 	: tick(tick), positionInStream(positionInStream)

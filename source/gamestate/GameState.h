@@ -2,10 +2,10 @@
 
 #include "Player.h"
 
-#include "sdk/demofile.h"
-#include "sdk/demofiledump.h"
+#include "../sdk/demofile.h"
+#include "../sdk/demofiledump.h"
 
-#include "protobuf/generated/netmessages_public.pb.h"
+#include "../protobuf/generated/netmessages_public.pb.h"
 
 #include <vector>
 

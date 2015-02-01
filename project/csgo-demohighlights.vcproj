@@ -173,19 +173,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\source\DemoParser.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\source\GameState.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\source\Main.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\source\Player.cpp"
 				>
 			</File>
 			<Filter
@@ -232,6 +220,26 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="gamestate"
+				>
+				<File
+					RelativePath="..\source\gamestate\GameState.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\source\gamestate\Player.cpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="parser"
+				>
+				<File
+					RelativePath="..\source\parser\DemoParser.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Headerdateien"
@@ -239,19 +247,7 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\source\DemoParser.h"
-				>
-			</File>
-			<File
-				RelativePath="..\source\GameState.h"
-				>
-			</File>
-			<File
 				RelativePath="..\source\Main.h"
-				>
-			</File>
-			<File
-				RelativePath="..\source\Player.h"
 				>
 			</File>
 			<Filter
@@ -311,6 +307,26 @@
 				</File>
 				<File
 					RelativePath="..\source\utils\StringFormat.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="gamestate"
+				>
+				<File
+					RelativePath="..\source\gamestate\GameState.h"
+					>
+				</File>
+				<File
+					RelativePath="..\source\gamestate\Player.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="parser"
+				>
+				<File
+					RelativePath="..\source\parser\DemoParser.h"
 					>
 				</File>
 			</Filter>

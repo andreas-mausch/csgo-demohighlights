@@ -14,8 +14,8 @@
 #include "utils/EndianConverter.h"
 #include "utils/StringFormat.h"
 
-#include "DemoParser.h"
-#include "GameState.h"
+#include "parser/DemoParser.h"
+#include "gamestate/GameState.h"
 
 int main()
 {

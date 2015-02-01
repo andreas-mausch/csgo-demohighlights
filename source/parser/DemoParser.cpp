@@ -1,15 +1,15 @@
 #include "DemoParser.h"
-#include "GameState.h"
+#include "../gamestate/GameState.h"
 
-#include "sdk/demofile.h"
-#include "sdk/demofiledump.h"
+#include "../sdk/demofile.h"
+#include "../sdk/demofiledump.h"
 
-#include "streams/MemoryStream.h"
-#include "streams/MemoryBitStream.h"
-#include "streams/MemoryStreamBuffer.h"
+#include "../streams/MemoryStream.h"
+#include "../streams/MemoryBitStream.h"
+#include "../streams/MemoryStreamBuffer.h"
 
-#include "utils/EndianConverter.h"
-#include "utils/StringFormat.h"
+#include "../utils/EndianConverter.h"
+#include "../utils/StringFormat.h"
 
 void unhandledCommand(const std::string &description)
 {
