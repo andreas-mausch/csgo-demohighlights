@@ -76,3 +76,21 @@ unsigned int MemoryBitStream::ReadUBitLong(int numbits)
 	}
 	return result;
 }
+
+unsigned int MemoryBitStream::ReadUBitVar()
+{
+	unsigned int result = ReadUBitLong(6);
+	switch(result & (16 | 32))
+	{
+	case 16:
+		result = (result & 15) | (ReadUBitLong(4) << 4);
+		break;
+	case 32:
+		result = (result & 15) | (ReadUBitLong(8) << 4);
+		break;
+	case 48:
+		result = (result & 15) | (ReadUBitLong(32 - 4) << 4);
+		break;
+	}
+	return result;
+}
