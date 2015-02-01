@@ -1,4 +1,5 @@
 #include "DemoParser.h"
+#include "Datatable.h"
 #include "Entities.h"
 #include "../gamestate/GameState.h"
 
@@ -268,6 +269,13 @@ void DemoParser::parsePacket2(MemoryStream &demo, int length)
 			CSVCMsg_GameEventList message;
 			message.ParseFromArray(bytes, messageLength);
 			gameEventList(message);
+								} break;
+		case svc_PacketEntities: {
+			char *bytes = new char[messageLength];
+			demo.readBytes(bytes, messageLength);
+			CSVCMsg_PacketEntities message;
+			message.ParseFromArray(bytes, messageLength);
+			packetEntities(message);
 								} break;
 		default:
 			// unhandledCommand(string_format("message command: default %d", command));

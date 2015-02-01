@@ -18,6 +18,8 @@ void GatherProps( CSVCMsg_SendTable *pTable, int nServerClass );
 void GatherProps_IterateProps( CSVCMsg_SendTable *pTable, int nServerClass, std::vector< FlattenedPropEntry > &flattenedProps );
 bool IsPropExcluded( CSVCMsg_SendTable *pTable, const CSVCMsg_SendTable::sendprop_t &checkSendProp );
 CSVCMsg_SendTable *GetTableByName( const char *pName );
+CSVCMsg_SendTable *GetTableByClassID( uint32 nClassID );
+FlattenedPropEntry *GetSendPropByIndex( uint32 uClass, uint32 uIndex );
 
 bool ParseDataTable( MemoryBitStream &buf )
 {
@@ -250,6 +252,27 @@ CSVCMsg_SendTable *GetTableByName( const char *pName )
 		{
 			return &(s_DataTables[ i ]);
 		}
+	}
+	return NULL;
+}
+
+CSVCMsg_SendTable *GetTableByClassID( uint32 nClassID )
+{
+	for ( uint32 i = 0; i < s_ServerClasses.size(); i++ )
+	{
+		if ( s_ServerClasses[ i ].nClassID == nClassID )
+		{
+			return &(s_DataTables[ s_ServerClasses[i].nDataTable ]);
+		}
+	}
+	return NULL;
+}
+
+FlattenedPropEntry *GetSendPropByIndex( uint32 uClass, uint32 uIndex )
+{
+	if ( uIndex < s_ServerClasses[ uClass ].flattenedProps.size() )
+	{
+		return &s_ServerClasses[ uClass ].flattenedProps[ uIndex ];
 	}
 	return NULL;
 }
