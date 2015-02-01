@@ -1,3 +1,5 @@
+#include <sstream>
+
 #include "DemoParser.h"
 #include "Datatable.h"
 #include "Entities.h"
@@ -196,6 +198,13 @@ const CSVCMsg_GameEvent::key_t& getValue(CSVCMsg_GameEvent &message, const CSVCM
 	throw 2;
 }
 
+std::string toString(Player &player)
+{
+	std::stringstream output;
+	output << player.getName() << " (" << toString(player.getTeam()) << ")";
+	return output.str();
+}
+
 void DemoParser::gameEvent(CSVCMsg_GameEvent &message)
 {
 	const CSVCMsg_GameEventList::descriptor_t& descriptor = gameState.getGameEvent(message.eventid());
@@ -203,17 +212,40 @@ void DemoParser::gameEvent(CSVCMsg_GameEvent &message)
 
 	if (descriptor.name() == "player_death")
 	{
-		std::string attacker = gameState.findPlayerByUserId(getValue(message, descriptor, "attacker").val_short()).getName();
-		std::string userid = gameState.findPlayerByUserId(getValue(message, descriptor, "userid").val_short()).getName();
-		std::cout << "gameEvent: " << descriptor.name() << ": " << attacker << " killed " << userid << std::endl;
+		Player &attacker = gameState.findPlayerByUserId(getValue(message, descriptor, "attacker").val_short());
+		Player &userid = gameState.findPlayerByUserId(getValue(message, descriptor, "userid").val_short());
+		std::cout << "gameEvent: " << descriptor.name() << ": " << toString(attacker) << " killed " << toString(userid) << std::endl;
 	}
 	else if (descriptor.name() == "round_start")
 	{
 		std::cout << "gameEvent: " << descriptor.name() << std::endl;
+
+		std::vector<Player> &players = gameState.getPlayers();
+		for (std::vector<Player>::iterator player = players.begin(); player != players.end(); player++)
+		{
+			int entityId = player->getEntityId();
+			EntityEntry *entity = FindEntity(entityId);
+
+			if (!entity)
+			{
+				throw std::bad_exception("round_start: entity invalid");
+			}
+
+			PropEntry *prop = entity->FindProp("m_iTeamNum");
+			Team team = Unknown;
+
+			if (prop)
+			{
+				int teamInt = prop->m_pPropValue->m_value.m_int;
+				team = fromEngineInteger(teamInt);
+			}
+
+			player->setTeam(team);
+		}
 	}
 	else if (descriptor.name() == "round_end")
 	{
-		std::cout << "gameEvent: " << descriptor.name() << " / " << getValue(message, descriptor, "winner").val_byte() << std::endl;
+		std::cout << "gameEvent: " << descriptor.name() << " / " << toString(fromEngineInteger(getValue(message, descriptor, "winner").val_byte())) << std::endl;
 	}
 }
 
@@ -292,11 +324,11 @@ void DemoParser::parseStringtable(MemoryBitStream &stringtables)
 	// std::cout << "tableName: " << tableName << std::endl;
 
 	int wordCount = stringtables.readWord();
+	bool userInfo = tableName == "userinfo";
 	// std::cout << "wordCount: " << wordCount << std::endl;
 
 	for (int i = 0; i < wordCount; i++)
 	{
-		bool userInfo = tableName == "userinfo";
 		std::string name = stringtables.readNullTerminatedString(4096);
 
 		bool hasUserData = stringtables.readBit();
@@ -310,7 +342,7 @@ void DemoParser::parseStringtable(MemoryBitStream &stringtables)
 			{
 				const player_info_t *pUnswappedPlayerInfo = ( const player_info_t * )data;
 				int userId = endian_swap(pUnswappedPlayerInfo->userID);
-				Player player(userId, pUnswappedPlayerInfo->name);
+				Player player(i + 1, userId, pUnswappedPlayerInfo->name);
 				gameState.updatePlayer(player);
 				std::cout << "\tplayer name: " << name << " / " << pUnswappedPlayerInfo->name << " / " << userId << std::endl;
 			}

@@ -4,22 +4,21 @@
 
 #include "Team.h"
 
-class GameState;
-
 class Player
 {
 private:
+	int entityId;
 	int userId;
 	std::string name;
 	Team team;
 
-	int getEntityId(GameState &gameState);
-
 public:
-	Player(int userId, const std::string &name);
+	Player(int entityId, int userId, const std::string &name);
 	~Player();
 
 	int getUserId();
+	int getEntityId();
+
 	const std::string &getName();
 
 	Team getTeam();

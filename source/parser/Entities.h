@@ -25,4 +25,7 @@ enum EBitCoordType
 	kCW_Integral
 };
 
+struct EntityEntry;
+
 void packetEntities(CSVCMsg_PacketEntities &message);
+EntityEntry *FindEntity( int nEntity );

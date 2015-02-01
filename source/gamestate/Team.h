@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 enum Team
 {
 	CounterTerrorists,
@@ -7,3 +9,6 @@ enum Team
 	Spectator,
 	Unknown
 };
+
+Team fromEngineInteger(int i);
+std::string toString(Team team);

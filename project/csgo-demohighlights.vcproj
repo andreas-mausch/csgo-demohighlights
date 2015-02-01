@@ -231,6 +231,10 @@
 					RelativePath="..\source\gamestate\Player.cpp"
 					>
 				</File>
+				<File
+					RelativePath="..\source\gamestate\Team.cpp"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="parser"

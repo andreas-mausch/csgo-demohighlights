@@ -1,8 +1,8 @@
 #include "Player.h"
 #include "GameState.h"
 
-Player::Player(int userId, const std::string &name)
-	: userId(userId), name(name)
+Player::Player(int entityId, int userId, const std::string &name)
+	: entityId(entityId), userId(userId), name(name), team(Unknown)
 {
 }
 
@@ -30,17 +30,7 @@ void Player::setTeam(Team team)
 	this->team = team;
 }
 
-int Player::getEntityId(GameState &gameState)
+int Player::getEntityId()
 {
-	int nIndex = 0;
-	for (std::vector<Player>::iterator i = gameState.getPlayers().begin(); i != gameState.getPlayers().end(); i++)
-	{
-		if (i->getUserId() == userId)
-		{
-			return nIndex + 1;
-		}
-		nIndex++;
-	}
-
-	throw std::bad_exception("getEntityId()");
+	return entityId;
 }
