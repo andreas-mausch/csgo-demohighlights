@@ -7,7 +7,7 @@ enum Team
 	CounterTerrorists,
 	Terrorists,
 	Spectator,
-	Unknown
+	UnknownTeam
 };
 
 Team fromEngineInteger(int i);

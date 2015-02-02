@@ -10,7 +10,7 @@ Team fromEngineInteger(int i)
 		return CounterTerrorists;
 	}
 
-	return Unknown;
+	return UnknownTeam;
 }
 
 std::string toString(Team team)
@@ -23,7 +23,7 @@ std::string toString(Team team)
 		return "Counter-Terrorists";
 	case Spectator:
 		return "Spectator";
-	case Unknown:
+	case UnknownTeam:
 	default:
 		return "Unknown";
 	}
