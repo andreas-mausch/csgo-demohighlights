@@ -222,9 +222,7 @@ void hexdump(const void *pAddressIn, long  lSize)
 void DemoParser::createStringTable(CSVCMsg_CreateStringTable &message)
 {
 	// std::cout << "svc_CreateStringTable: " << message.name() << " (" << message.string_data().size() << " bytes)" << std::endl;
-	char *data = const_cast<char *>(message.string_data().c_str());
-	MemoryStreamBuffer buffer(data, message.string_data().size());
-	MemoryBitStream stream(buffer);
+	MemoryBitStream stream(message.string_data().c_str(), message.string_data().size());
 	parseStringTableUpdate(stream, message.num_entries(), message.max_entries(), message.user_data_size(), message.user_data_size_bits(), message.user_data_fixed_size(), message.name() == "userinfo");
 
 	StringTableData_t stringTable;
@@ -238,8 +236,7 @@ void DemoParser::updateStringTable(CSVCMsg_UpdateStringTable &message)
 	// std::cout << "svc_UpdateStringTable: " << message.table_id() << " (" << message.string_data().size() << " bytes)" << std::endl;
 	// hexdump(message.string_data().c_str(), message.string_data().size());
 	char *data = const_cast<char *>(message.string_data().c_str());
-	MemoryStreamBuffer buffer(data, message.string_data().size());
-	MemoryBitStream stream(buffer);
+	MemoryBitStream stream(message.string_data().c_str(), message.string_data().size());
 
 	StringTableData_t &stringTable = gameState.getStringTables()[message.table_id()];
 	try
@@ -308,7 +305,7 @@ void DemoParser::gameEvent(CSVCMsg_GameEvent &message)
 			}
 
 			PropEntry *prop = entity->FindProp("m_iTeamNum");
-			Team team = Unknown;
+			Team team = UnknownTeam;
 
 			if (prop)
 			{
@@ -499,8 +496,7 @@ void DemoParser::parseDatatables(MemoryStream &demo)
 	std::cout << "Parse datatables: " << length << std::endl;
 	char *datatablesBytes = new char[length];
 	demo.readBytes(datatablesBytes, length);
-	MemoryStreamBuffer datatablesBuffer(datatablesBytes, length);
-	MemoryBitStream datatables(datatablesBuffer);
+	MemoryBitStream datatables(datatablesBytes, length);
 	ParseDataTable(datatables);
 	delete[] datatablesBytes;
 }
@@ -511,8 +507,7 @@ void DemoParser::parseStringtables(MemoryStream &demo)
 	std::cout << "Parse stringtables: " << length << std::endl;
 	char *stringtablesBytes = new char[length];
 	demo.readBytes(stringtablesBytes, length);
-	MemoryStreamBuffer stringtablesBuffer(stringtablesBytes, length);
-	MemoryBitStream stringtables(stringtablesBuffer);
+	MemoryBitStream stringtables(stringtablesBytes, length);
 	int tableCount = stringtables.readByte();
 	std::cout << "Parse stringtables tableCount: " << tableCount << std::endl;
 

@@ -2,17 +2,18 @@
 
 #include "MemoryStream.h"
 
-class MemoryBitStream : public MemoryStream
+class MemoryBitStream
 {
 private:
-	int currentBitPosition;
-	char currentByte;
+	int position;
+
+	const char *buffer;
+	int length;
 
 public:
-	MemoryBitStream(MemoryStreamBuffer &buffer);
+	MemoryBitStream(const char *buffer, size_t length);
 
-	int getCurrentBitPosition();
-	char getCurrentByte();
+	int getPosition();
 
 	bool readBit();
 	void readBits(void *buffer, int bitCount);
@@ -21,5 +22,13 @@ public:
 	unsigned int ReadUBitLong(int numbits);
 	int ReadSBitLong(int numbits);
 	unsigned int ReadUBitVar();
+
+	virtual short readWord();
+	virtual int readInt();
+	virtual float readFloat();
+	virtual int readVarInt32();
+
+	std::string readFixedLengthString(int length);
+	std::string readNullTerminatedString(int maximumLength);
 
 };

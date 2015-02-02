@@ -29,8 +29,7 @@ int64 ReadSignedVarInt64(MemoryBitStream &stream);
 
 void packetEntities(CSVCMsg_PacketEntities &message)
 {
-	MemoryStreamBuffer buffer(message.entity_data().c_str(), message.entity_data().size());
-	MemoryBitStream stream(buffer);
+	MemoryBitStream stream(message.entity_data().c_str(), message.entity_data().size());
 
 	bool bAsDelta = message.is_delta();
 	int nHeaderCount = message.updated_entries();
