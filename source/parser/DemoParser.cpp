@@ -282,6 +282,7 @@ void DemoParser::gameEvent(CSVCMsg_GameEvent &message)
 		int tickDif = gameState.getTick() - roundStart;
 		Player &attacker = gameState.findPlayerByUserId(getValue(message, descriptor, "attacker").val_short());
 		Player &userid = gameState.findPlayerByUserId(getValue(message, descriptor, "userid").val_short());
+		userid.setAlive(false);
 		std::cout << "gameEvent: " << descriptor.name() << ": " << toString(attacker) << " killed " << toString(userid) << "; tick dif: " << tickDif/128 << std::endl;
 	}
 	else if (descriptor.name() == "bomb_planted")
@@ -314,6 +315,7 @@ void DemoParser::gameEvent(CSVCMsg_GameEvent &message)
 			}
 
 			player->setTeam(team);
+			player->setAlive(true);
 		}
 	}
 	else if (descriptor.name() == "round_end")
