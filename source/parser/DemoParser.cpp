@@ -146,7 +146,7 @@ void parseStringTableUpdate(MemoryBitStream &stream, int entryCount, int maximum
 		if ( userData && pUserData != NULL )
 		{
 			const player_info_t *pUnswappedPlayerInfo = ( const player_info_t * )pUserData;
-			// std::cout << "parseStringTableUpdate player name: " << pUnswappedPlayerInfo->name << " / " << endian_swap(pUnswappedPlayerInfo->userID) << std::endl;
+			std::cout << "parseStringTableUpdate player name: " << pUnswappedPlayerInfo->name << " / " << endian_swap(pUnswappedPlayerInfo->userID) << std::endl;
 		}
 		else
 		{
@@ -325,19 +325,17 @@ void DemoParser::gameEvent(CSVCMsg_GameEvent &message)
 		{
 			int entityId = player->getEntityId();
 			EntityEntry *entity = FindEntity(entityId);
-
-			if (!entity)
-			{
-				throw std::bad_exception("round_start: entity invalid");
-			}
-
-			PropEntry *prop = entity->FindProp("m_iTeamNum");
 			Team team = UnknownTeam;
 
-			if (prop)
+			if (entity)
 			{
-				int teamInt = prop->m_pPropValue->m_value.m_int;
-				team = fromEngineInteger(teamInt);
+				PropEntry *prop = entity->FindProp("m_iTeamNum");
+
+				if (prop)
+				{
+					int teamInt = prop->m_pPropValue->m_value.m_int;
+					team = fromEngineInteger(teamInt);
+				}
 			}
 
 			player->setTeam(team);
@@ -453,7 +451,7 @@ void DemoParser::parseStringtable(MemoryBitStream &stringtables)
 				int userId = endian_swap(pUnswappedPlayerInfo->userID);
 				Player player(i + 1, userId, pUnswappedPlayerInfo->name);
 				gameState.updatePlayer(player);
-				// std::cout << "\tplayer name: " << name << " / " << pUnswappedPlayerInfo->name << " / " << userId << std::endl;
+				std::cout << "\tplayer name: " << name << " / " << pUnswappedPlayerInfo->name << " / " << userId << std::endl;
 			}
 
 			delete[] data;

@@ -135,6 +135,4 @@ void GameState::addWonRound(Team team)
 	case CounterTerrorists:
 		ctRoundsWon++; return;
 	}
-
-	throw std::bad_exception("invalid call getRoundsWon()");
 }
