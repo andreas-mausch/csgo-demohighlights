@@ -351,8 +351,10 @@ void DemoParser::gameEvent(CSVCMsg_GameEvent &message)
 
 		if (clutch && clutch->getTeam() == winner)
 		{
-			std::cout << "CLUTCH WON " << "1vs" << clutchCount << ": " << clutch->getName() << "; " << toString(winner) << std::endl;
+			std::cout << "CLUTCH WON " << gameState.getRoundsWon(Terrorists) << ":" << gameState.getRoundsWon(CounterTerrorists) << " - 1vs" << clutchCount << ": " << clutch->getName() << "; " << toString(winner) << std::endl;
 		}
+
+		gameState.addWonRound(winner);
 	}
 }
 
@@ -577,6 +579,7 @@ bool DemoParser::parseNextTick(MemoryStream &demo)
 		parseDatatables(demo);
 		break;
 	case dem_stop:
+		std::cout << "Game ended " << gameState.getRoundsWon(Terrorists) << ":" << gameState.getRoundsWon(CounterTerrorists) << std::endl;
 		return false;
 	case dem_customdata:
 		unhandledCommand(formatString("command: default %d", command));
