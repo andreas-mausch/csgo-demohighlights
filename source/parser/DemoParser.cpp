@@ -23,11 +23,11 @@ void unhandledCommand(const std::string &description)
 
 void serverInfo(const char *bytes, int length)
 {
-	std::cout << "serverInfo: " << length << std::endl;
+	// std::cout << "serverInfo: " << length << std::endl;
 	CSVCMsg_ServerInfo serverInfo;
 	serverInfo.ParseFromArray(bytes, length);
 	delete[] bytes;
-	std::cout << serverInfo.DebugString() << std::endl;
+	// std::cout << serverInfo.DebugString() << std::endl;
 }
 
 void parseStringTableUpdate(MemoryBitStream &stream, int entryCount, int maximumEntries, int userDataSize, int userDataSizeBits, int userDataFixedSize, bool userData)
@@ -146,7 +146,7 @@ void parseStringTableUpdate(MemoryBitStream &stream, int entryCount, int maximum
 		if ( userData && pUserData != NULL )
 		{
 			const player_info_t *pUnswappedPlayerInfo = ( const player_info_t * )pUserData;
-			std::cout << "parseStringTableUpdate player name: " << pUnswappedPlayerInfo->name << " / " << endian_swap(pUnswappedPlayerInfo->userID) << std::endl;
+			// std::cout << "parseStringTableUpdate player name: " << pUnswappedPlayerInfo->name << " / " << endian_swap(pUnswappedPlayerInfo->userID) << std::endl;
 		}
 		else
 		{
@@ -245,7 +245,7 @@ void DemoParser::updateStringTable(CSVCMsg_UpdateStringTable &message)
 	}
 	catch (...)
 	{
-		std::cout << "ERROR: updateStringTable() failed!" << std::endl;
+		// std::cout << "ERROR: updateStringTable() failed!" << std::endl;
 	}
 }
 
@@ -271,10 +271,13 @@ std::string toString(Player &player)
 }
 
 int roundStart = -1;
+Player *clutch = NULL;
+int clutchCount = 0;
 
 void DemoParser::gameEvent(CSVCMsg_GameEvent &message)
 {
 	const CSVCMsg_GameEventList::descriptor_t& descriptor = gameState.getGameEvent(message.eventid());
+	std::vector<Player> &players = gameState.getPlayers();
 	// std::cout << "gameEvent: " << descriptor.name() << std::endl;
 
 	if (descriptor.name() == "player_death")
@@ -283,18 +286,41 @@ void DemoParser::gameEvent(CSVCMsg_GameEvent &message)
 		Player &attacker = gameState.findPlayerByUserId(getValue(message, descriptor, "attacker").val_short());
 		Player &userid = gameState.findPlayerByUserId(getValue(message, descriptor, "userid").val_short());
 		userid.setAlive(false);
-		std::cout << "gameEvent: " << descriptor.name() << ": " << toString(attacker) << " killed " << toString(userid) << "; tick dif: " << tickDif/128 << std::endl;
+		// std::cout << "gameEvent: " << descriptor.name() << ": " << toString(attacker) << " killed " << toString(userid) << "; tick dif: " << tickDif/128 << std::endl;
+
+		if (gameState.getPlayersAlive(CounterTerrorists) == 1 && gameState.getPlayersAlive(Terrorists) > 0)
+		{
+			for (std::vector<Player>::iterator player = players.begin(); player != players.end(); player++)
+			{
+				if (player->isAlive() && player->getTeam() == CounterTerrorists)
+				{
+					clutch = &(*player);
+					clutchCount = gameState.getPlayersAlive(Terrorists);
+				}
+			}
+		}
+		else if (gameState.getPlayersAlive(Terrorists) == 1 && gameState.getPlayersAlive(CounterTerrorists) > 0)
+		{
+			for (std::vector<Player>::iterator player = players.begin(); player != players.end(); player++)
+			{
+				if (player->isAlive() && player->getTeam() == Terrorists)
+				{
+					clutch = &(*player);
+					clutchCount = gameState.getPlayersAlive(CounterTerrorists);
+				}
+			}
+		}
 	}
 	else if (descriptor.name() == "bomb_planted")
 	{
-		std::cout << descriptor.name() << std::endl;
+		// std::cout << descriptor.name() << std::endl;
 	}
 	else if (descriptor.name() == "round_start")
 	{
-		std::cout << descriptor.name() << "; timelimit: " << getValue(message, descriptor, "timelimit").val_long() << "; tick: " << gameState.getTick() << std::endl;
+		// std::cout << descriptor.name() << "; timelimit: " << getValue(message, descriptor, "timelimit").val_long() << "; tick: " << gameState.getTick() << std::endl;
 		roundStart = gameState.getTick();
+		clutch = NULL;
 
-		std::vector<Player> &players = gameState.getPlayers();
 		for (std::vector<Player>::iterator player = players.begin(); player != players.end(); player++)
 		{
 			int entityId = player->getEntityId();
@@ -320,13 +346,19 @@ void DemoParser::gameEvent(CSVCMsg_GameEvent &message)
 	}
 	else if (descriptor.name() == "round_end")
 	{
-		std::cout << "gameEvent: " << descriptor.name() << " / " << toString(fromEngineInteger(getValue(message, descriptor, "winner").val_byte())) << std::endl;
+		Team winner = fromEngineInteger(getValue(message, descriptor, "winner").val_byte());
+		// std::cout << "gameEvent: " << descriptor.name() << " / " << toString(winner) << " - " << gameState.getPlayersAlive(Terrorists) << ":" << gameState.getPlayersAlive(CounterTerrorists) << std::endl;
+
+		if (clutch && clutch->getTeam() == winner)
+		{
+			std::cout << "CLUTCH WON " << "1vs" << clutchCount << ": " << clutch->getName() << "; " << toString(winner) << std::endl;
+		}
 	}
 }
 
 void DemoParser::gameEventList(CSVCMsg_GameEventList &message)
 {
-	std::cout << "gameEventList" << std::endl;
+	// std::cout << "gameEventList" << std::endl;
 	gameState.setGameEvents(message);
 }
 
@@ -419,7 +451,7 @@ void DemoParser::parseStringtable(MemoryBitStream &stringtables)
 				int userId = endian_swap(pUnswappedPlayerInfo->userID);
 				Player player(i + 1, userId, pUnswappedPlayerInfo->name);
 				gameState.updatePlayer(player);
-				std::cout << "\tplayer name: " << name << " / " << pUnswappedPlayerInfo->name << " / " << userId << std::endl;
+				// std::cout << "\tplayer name: " << name << " / " << pUnswappedPlayerInfo->name << " / " << userId << std::endl;
 			}
 
 			delete[] data;
@@ -436,7 +468,7 @@ void DemoParser::parseStringtable(MemoryBitStream &stringtables)
 		for (int i = 0; i < wordCount; i++)
 		{
 			std::string name = stringtables.readNullTerminatedString(4096);
-			std::cout << "\tname: " << name << std::endl;
+			// std::cout << "\tname: " << name << std::endl;
 
 			bool hasUserData = stringtables.readBit();
 			if (hasUserData)
@@ -495,7 +527,7 @@ void DemoParser::parsePacket(MemoryStream &demo)
 void DemoParser::parseDatatables(MemoryStream &demo)
 {
 	int length = demo.readInt();
-	std::cout << "Parse datatables: " << length << std::endl;
+	// std::cout << "Parse datatables: " << length << std::endl;
 	char *datatablesBytes = new char[length];
 	demo.readBytes(datatablesBytes, length);
 	MemoryBitStream datatables(datatablesBytes, length);
@@ -506,12 +538,12 @@ void DemoParser::parseDatatables(MemoryStream &demo)
 void DemoParser::parseStringtables(MemoryStream &demo)
 {
 	int length = demo.readInt();
-	std::cout << "Parse stringtables: " << length << std::endl;
+	// std::cout << "Parse stringtables: " << length << std::endl;
 	char *stringtablesBytes = new char[length];
 	demo.readBytes(stringtablesBytes, length);
 	MemoryBitStream stringtables(stringtablesBytes, length);
 	int tableCount = stringtables.readByte();
-	std::cout << "Parse stringtables tableCount: " << tableCount << std::endl;
+	// std::cout << "Parse stringtables tableCount: " << tableCount << std::endl;
 
 	for (int i = 0; i < tableCount; i++)
 	{
