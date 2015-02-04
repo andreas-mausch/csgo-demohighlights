@@ -10,6 +10,7 @@ private:
 	int entityId;
 	int userId;
 	std::string name;
+	bool alive;
 	Team team;
 
 public:
@@ -23,4 +24,7 @@ public:
 
 	Team getTeam();
 	void setTeam(Team team);
+
+	bool isAlive();
+	void setAlive(bool alive);
 };

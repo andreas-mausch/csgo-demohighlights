@@ -2,7 +2,7 @@
 #include "GameState.h"
 
 Player::Player(int entityId, int userId, const std::string &name)
-	: entityId(entityId), userId(userId), name(name), team(UnknownTeam)
+	: entityId(entityId), userId(userId), name(name), team(UnknownTeam), alive(false)
 {
 }
 
@@ -28,6 +28,16 @@ Team Player::getTeam()
 void Player::setTeam(Team team)
 {
 	this->team = team;
+}
+
+bool Player::isAlive()
+{
+	return alive;
+}
+
+void Player::setAlive(bool alive)
+{
+	this->alive = alive;
 }
 
 int Player::getEntityId()
