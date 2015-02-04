@@ -17,6 +17,9 @@ private:
 	int tick;
 	int positionInStream;
 
+	int tRoundsWon;
+	int ctRoundsWon;
+
 	CSVCMsg_GameEventList gameEvents;
 	std::vector<StringTableData_t> stringTables;
 	std::vector<Player> players;
@@ -38,4 +41,7 @@ public:
 	void setTick(int tick);
 	void setPositionInStream(int positionInStream);
 	void setGameEvents(CSVCMsg_GameEventList &message);
+
+	int getRoundsWon(Team team);
+	void addWonRound(Team team);
 };

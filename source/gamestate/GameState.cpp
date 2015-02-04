@@ -6,7 +6,7 @@
 #include "../utils/StringFormat.h"
 
 GameState::GameState(int tick, int positionInStream)
-	: tick(tick), positionInStream(positionInStream)
+	: tick(tick), positionInStream(positionInStream), tRoundsWon(0), ctRoundsWon(0)
 {
 }
 
@@ -111,4 +111,30 @@ int GameState::getPlayersAlive(Team team)
 	}
 
 	return playersAlive;
+}
+
+int GameState::getRoundsWon(Team team)
+{
+	switch (team)
+	{
+	case Terrorists:
+		return tRoundsWon;
+	case CounterTerrorists:
+		return ctRoundsWon;
+	}
+
+	throw std::bad_exception("invalid call getRoundsWon()");
+}
+
+void GameState::addWonRound(Team team)
+{
+	switch (team)
+	{
+	case Terrorists:
+		tRoundsWon++; return;
+	case CounterTerrorists:
+		ctRoundsWon++; return;
+	}
+
+	throw std::bad_exception("invalid call getRoundsWon()");
 }
