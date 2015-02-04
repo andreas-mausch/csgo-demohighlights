@@ -14,7 +14,7 @@ bool MemoryBitStream::readBit()
 {
 	if (position >= length * 8)
 	{
-		return false;
+		throw std::bad_exception("MemoryBitStream::readBit()");
 	}
 
 	char byte = buffer[position / 8];
@@ -45,7 +45,7 @@ char MemoryBitStream::readByte()
 	{
 		if (position + 8 > length * 8)
 		{
-			return 0;
+			throw std::bad_exception("MemoryBitStream::readByte()");
 		}
 
 		char result = buffer[position / 8];
@@ -66,7 +66,7 @@ void MemoryBitStream::readBytes(void *buffer, int length)
 	{
 		if (position + length * 8 > this->length * 8)
 		{
-			return;
+			throw std::bad_exception("MemoryBitStream::readBytes()");
 		}
 
 		memcpy(buffer, &this->buffer[position / 8], length);
