@@ -97,3 +97,18 @@ void GameState::updatePlayer(Player &player)
 		players.push_back(player);
 	}
 }
+
+int GameState::getPlayersAlive(Team team)
+{
+	int playersAlive = 0;
+
+	for(std::vector<Player>::iterator it = players.begin(); it != players.end(); ++it)
+	{
+		if (it->getTeam() == team && it->isAlive())
+		{
+			playersAlive++;
+		}
+	}
+
+	return playersAlive;
+}

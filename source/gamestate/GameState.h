@@ -32,6 +32,7 @@ public:
 	Player &findPlayerByUserId(int userId);
 	Player *findPlayerByUserIdIfExists(int userId);
 	void updatePlayer(Player &player);
+	int getPlayersAlive(Team team);
 
 	int getTick();
 	void setTick(int tick);
