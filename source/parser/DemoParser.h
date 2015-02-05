@@ -9,6 +9,8 @@ class CSVCMsg_GameEventList;
 class CSVCMsg_CreateStringTable;
 class CSVCMsg_UpdateStringTable;
 
+struct player_info_t;
+
 #include <string>
 
 struct DemoHeader
@@ -38,6 +40,10 @@ private:
 	void createStringTable(CSVCMsg_CreateStringTable &message);
 	void updateStringTable(CSVCMsg_UpdateStringTable &message);
 	void parseStringtable(MemoryBitStream &stringtables);
+	void parseStringTableUpdate(MemoryBitStream &stream, int entryCount, int maximumEntries, int userDataSize, int userDataSizeBits, int userDataFixedSize, bool userData);
+
+	void updatePlayer(int entityId, const player_info_t *playerinfo);
+	void updatePlayer(int entityId, int userId, const std::string &name);
 
 public:
 	DemoParser(GameState &gameState);

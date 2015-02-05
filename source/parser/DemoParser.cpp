@@ -30,7 +30,7 @@ void serverInfo(const char *bytes, int length)
 	// std::cout << serverInfo.DebugString() << std::endl;
 }
 
-void parseStringTableUpdate(MemoryBitStream &stream, int entryCount, int maximumEntries, int userDataSize, int userDataSizeBits, int userDataFixedSize, bool userData)
+void DemoParser::parseStringTableUpdate(MemoryBitStream &stream, int entryCount, int maximumEntries, int userDataSize, int userDataSizeBits, int userDataFixedSize, bool userData)
 {
 	int nTemp = maximumEntries;
 	int nEntryBits = 0;
@@ -146,7 +146,8 @@ void parseStringTableUpdate(MemoryBitStream &stream, int entryCount, int maximum
 		if ( userData && pUserData != NULL )
 		{
 			const player_info_t *pUnswappedPlayerInfo = ( const player_info_t * )pUserData;
-			std::cout << "parseStringTableUpdate player name: " << pUnswappedPlayerInfo->name << " / " << endian_swap(pUnswappedPlayerInfo->userID) << std::endl;
+			// std::cout << "parseStringTableUpdate player name: " << pUnswappedPlayerInfo->name << " / " << endian_swap(pUnswappedPlayerInfo->userID) << std::endl;
+			updatePlayer(entryIndex, pUnswappedPlayerInfo);
 		}
 		else
 		{
@@ -219,6 +220,21 @@ void hexdump(const void *pAddressIn, long  lSize)
    }
 }
 
+void DemoParser::updatePlayer(int entityId, const player_info_t *playerinfo)
+{
+	int userId = endian_swap(playerinfo->userID);
+	Player player(entityId, userId, playerinfo->name);
+	gameState.updatePlayer(player);
+	// std::cout << "\tplayer name: " << playerinfo->name << " / " << userId << std::endl;
+}
+
+void DemoParser::updatePlayer(int entityId, int userId, const std::string &name)
+{
+	Player player(entityId, userId, name);
+	gameState.updatePlayer(player);
+	// std::cout << "\tplayer name: " << name << " / " << userId << std::endl;
+}
+
 void DemoParser::createStringTable(CSVCMsg_CreateStringTable &message)
 {
 	// std::cout << "svc_CreateStringTable: " << message.name() << " (" << message.string_data().size() << " bytes)" << std::endl;
@@ -229,23 +245,33 @@ void DemoParser::createStringTable(CSVCMsg_CreateStringTable &message)
 	strncpy_s(stringTable.szName, message.name().c_str(), sizeof( stringTable.szName ));
 	stringTable.nMaxEntries = message.max_entries();
 	gameState.getStringTables().push_back(stringTable);
+
+	// if (strcmp(stringTable.szName, "userinfo") == 0)
+		// hexdump(message.string_data().c_str(), message.string_data().size());
 }
 
 void DemoParser::updateStringTable(CSVCMsg_UpdateStringTable &message)
 {
 	// std::cout << "svc_UpdateStringTable: " << message.table_id() << " (" << message.string_data().size() << " bytes)" << std::endl;
-	// hexdump(message.string_data().c_str(), message.string_data().size());
 	char *data = const_cast<char *>(message.string_data().c_str());
 	MemoryBitStream stream(message.string_data().c_str(), message.string_data().size());
 
 	StringTableData_t &stringTable = gameState.getStringTables()[message.table_id()];
+
+	// if (strcmp(stringTable.szName, "userinfo") == 0)
+		// hexdump(message.string_data().c_str(), message.string_data().size());
+
 	try
 	{
 		parseStringTableUpdate(stream, message.num_changed_entries(), stringTable.nMaxEntries, 0, 0, 0, strcmp(stringTable.szName, "userinfo") == 0);
 	}
 	catch (...)
 	{
-		// std::cout << "ERROR: updateStringTable() failed!" << std::endl;
+		if (strcmp(stringTable.szName, "soundprecache") != 0)
+		{
+			std::cout << "ERROR: updateStringTable() failed: " << stringTable.szName << std::endl;
+			hexdump(message.string_data().c_str(), message.string_data().size());
+		}
 	}
 }
 
@@ -354,6 +380,18 @@ void DemoParser::gameEvent(CSVCMsg_GameEvent &message)
 
 		gameState.addWonRound(winner);
 	}
+	else if (descriptor.name() == "player_connect")
+	{
+		std::string name = getValue(message, descriptor, "name").val_string();
+		int entityId = getValue(message, descriptor, "index").val_byte() + 1;
+		int userId = getValue(message, descriptor, "userid").val_short();
+		updatePlayer(entityId, userId, name);
+	}
+	else if (descriptor.name() == "player_disconnect")
+	{
+		int userId = getValue(message, descriptor, "userid").val_short();
+		gameState.disconnect(userId);
+	}
 }
 
 void DemoParser::gameEventList(CSVCMsg_GameEventList &message)
@@ -447,11 +485,7 @@ void DemoParser::parseStringtable(MemoryBitStream &stringtables)
 
 			if (userInfo)
 			{
-				const player_info_t *pUnswappedPlayerInfo = ( const player_info_t * )data;
-				int userId = endian_swap(pUnswappedPlayerInfo->userID);
-				Player player(i + 1, userId, pUnswappedPlayerInfo->name);
-				gameState.updatePlayer(player);
-				std::cout << "\tplayer name: " << name << " / " << pUnswappedPlayerInfo->name << " / " << userId << std::endl;
+				updatePlayer(i + 1, reinterpret_cast<const player_info_t *>(data));
 			}
 
 			delete[] data;
