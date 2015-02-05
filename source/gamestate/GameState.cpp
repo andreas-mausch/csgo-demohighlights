@@ -136,3 +136,15 @@ void GameState::addWonRound(Team team)
 		ctRoundsWon++; return;
 	}
 }
+
+void GameState::disconnect(int userId)
+{
+	for(std::vector<Player>::iterator it = players.begin(); it != players.end(); ++it)
+	{
+		if (it->getUserId() == userId)
+		{
+			players.erase(it);
+			return;
+		}
+	}
+}
