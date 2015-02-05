@@ -17,15 +17,21 @@
 #include "parser/DemoParser.h"
 #include "gamestate/GameState.h"
 
+std::string readFile(const std::string &filename)
+{
+	std::ifstream file(filename.c_str(), std::ios_base::binary);
+	file.seekg(0, std::ios::end);
+	size_t size = file.tellg();
+	std::string buffer(size, ' ');
+	file.seekg(0);
+	file.read(&buffer[0], size);
+	return buffer;
+}
+
 int main()
 {
-	std::ifstream demofile("MLGXGA2015-GF-ldlc-vs-nip-dust2.dem", std::ios_base::binary);
-	demofile.seekg(0, std::ios::end);
-	size_t size = demofile.tellg();
-	std::string str(size, ' ');
-	demofile.seekg(0);
-	demofile.read(&str[0], size); 
-	MemoryStreamBuffer demoBuffer(const_cast<char *>(str.c_str()), str.length());
+	std::string stringBuffer = readFile("MLGXGA2015-GF-ldlc-vs-nip-dust2.dem");
+	MemoryStreamBuffer demoBuffer(const_cast<char *>(stringBuffer.c_str()), stringBuffer.length());
 	MemoryStream demo(demoBuffer);
 
 	int messageCount = 0;
