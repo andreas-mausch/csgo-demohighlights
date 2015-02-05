@@ -341,7 +341,7 @@ void DemoParser::gameEvent(CSVCMsg_GameEvent &message)
 	{
 		// std::cout << descriptor.name() << std::endl;
 	}
-	else if (descriptor.name() == "round_start")
+	else if (descriptor.name() == "round_freeze_end")
 	{
 		// std::cout << descriptor.name() << "; timelimit: " << getValue(message, descriptor, "timelimit").val_long() << "; tick: " << gameState.getTick() << std::endl;
 		roundStart = gameState.getTick();
@@ -366,6 +366,7 @@ void DemoParser::gameEvent(CSVCMsg_GameEvent &message)
 
 			player->setTeam(team);
 			player->setAlive(true);
+			// std::cout << "\t" << toString(*player) << std::endl;
 		}
 	}
 	else if (descriptor.name() == "round_end")
@@ -391,6 +392,11 @@ void DemoParser::gameEvent(CSVCMsg_GameEvent &message)
 	{
 		int userId = getValue(message, descriptor, "userid").val_short();
 		gameState.disconnect(userId);
+	}
+	else if (descriptor.name() == "announce_phase_end")
+	{
+		// std::cout << "gameEvent: " << descriptor.name() << std::endl;
+		gameState.switchTeams();
 	}
 }
 

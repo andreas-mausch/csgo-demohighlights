@@ -30,6 +30,14 @@ void Player::setTeam(Team team)
 	this->team = team;
 }
 
+void Player::switchTeam()
+{
+	if (team == Terrorists || team == CounterTerrorists)
+	{
+		team = getOppositeTeam(team);
+	}
+}
+
 bool Player::isAlive()
 {
 	return alive;

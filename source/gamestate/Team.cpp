@@ -13,6 +13,19 @@ Team fromEngineInteger(int i)
 	return UnknownTeam;
 }
 
+Team getOppositeTeam(Team team)
+{
+	switch (team)
+	{
+	case Terrorists:
+		return CounterTerrorists;
+	case CounterTerrorists:
+		return Terrorists;
+	}
+
+	throw std::bad_exception("no opposite team");
+}
+
 std::string toString(Team team)
 {
 	switch (team)

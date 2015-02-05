@@ -24,6 +24,7 @@ public:
 
 	Team getTeam();
 	void setTeam(Team team);
+	void switchTeam();
 
 	bool isAlive();
 	void setAlive(bool alive);

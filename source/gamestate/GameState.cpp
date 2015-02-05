@@ -148,3 +148,17 @@ void GameState::disconnect(int userId)
 		}
 	}
 }
+
+void GameState::switchTeams()
+{
+	for(std::vector<Player>::iterator it = players.begin(); it != players.end(); ++it)
+	{
+		it->switchTeam();
+	}
+
+	int tRoundsWon = this->tRoundsWon;
+	int ctRoundsWon = this->ctRoundsWon;
+
+	this->tRoundsWon = ctRoundsWon;
+	this->ctRoundsWon = tRoundsWon;
+}

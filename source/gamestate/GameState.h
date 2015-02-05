@@ -38,6 +38,8 @@ public:
 	void disconnect(int userId);
 	int getPlayersAlive(Team team);
 
+	void switchTeams();
+
 	int getTick();
 	void setTick(int tick);
 	void setPositionInStream(int positionInStream);

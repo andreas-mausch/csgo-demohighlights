@@ -11,4 +11,5 @@ enum Team
 };
 
 Team fromEngineInteger(int i);
+Team getOppositeTeam(Team team);
 std::string toString(Team team);
