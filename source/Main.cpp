@@ -37,7 +37,7 @@ int main()
 	int messageCount = 0;
 	bool end = false;
 	GameState gameState(0, demo.tellg());
-	DemoParser demoParser(gameState);
+	DemoParser demoParser(gameState, true);
 	demoParser.parseHeader(demo);
 
 	while (demoParser.parseNextTick(demo))

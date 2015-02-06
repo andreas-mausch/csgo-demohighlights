@@ -16,10 +16,18 @@
 #include "../utils/EndianConverter.h"
 #include "../utils/StringFormat.h"
 
-void unhandledCommand(const std::string &description)
+void DemoParser::logVerbose(const std::string &line)
 {
-	std::cout << "Unhandled command: " << description << std::endl;
-	//exit(1);
+	if (verbose)
+	{
+		outputStream << "info: " << line << std::endl;
+	}
+}
+
+void DemoParser::unhandledCommand(const std::string &description)
+{
+	outputStream << "ERROR Unhandled command: " << description << std::endl;
+	throw std::bad_exception(description.c_str());
 }
 
 void serverInfo(const char *bytes, int length)
@@ -299,8 +307,8 @@ void DemoParser::parseStringtable(MemoryBitStream &stringtables)
 	}
 }
 
-DemoParser::DemoParser(GameState &gameState)
-: gameState(gameState)
+DemoParser::DemoParser(GameState &gameState, bool verbose)
+: gameState(gameState), verbose(verbose), outputStream(std::cout)
 {
 }
 

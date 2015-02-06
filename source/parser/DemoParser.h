@@ -33,6 +33,9 @@ class DemoParser
 private:
 	GameState &gameState;
 
+	bool verbose;
+	std::ostream &outputStream;
+
 	// TODO remove / rename
 	void parsePacket2(MemoryStream &demo, int length);
 	void gameEventList(CSVCMsg_GameEventList &message);
@@ -41,12 +44,15 @@ private:
 	void updateStringTable(CSVCMsg_UpdateStringTable &message);
 	void parseStringtable(MemoryBitStream &stringtables);
 	void parseStringTableUpdate(MemoryBitStream &stream, int entryCount, int maximumEntries, int userDataSize, int userDataSizeBits, int userDataFixedSize, bool userData);
+	void unhandledCommand(const std::string &description);
 
 	void updatePlayer(int entityId, const player_info_t *playerinfo);
 	void updatePlayer(int entityId, int userId, const std::string &name);
 
+	void logVerbose(const std::string &line);
+
 public:
-	DemoParser(GameState &gameState);
+	DemoParser(GameState &gameState, bool verbose);
 	~DemoParser();
 
 	void parsePacket(MemoryStream &demo);
