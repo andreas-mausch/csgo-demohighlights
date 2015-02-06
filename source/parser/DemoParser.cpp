@@ -313,25 +313,28 @@ void DemoParser::gameEvent(CSVCMsg_GameEvent &message)
 		userid.setAlive(false);
 		// std::cout << "gameEvent: " << descriptor.name() << ": " << toString(attacker) << " killed " << toString(userid) << "; tick dif: " << tickDif/128 << std::endl;
 
-		if (gameState.getPlayersAlive(CounterTerrorists) == 1 && gameState.getPlayersAlive(Terrorists) > 0)
+		if (clutch == NULL)
 		{
-			for (std::vector<Player>::iterator player = players.begin(); player != players.end(); player++)
+			if (gameState.getPlayersAlive(CounterTerrorists) == 1 && gameState.getPlayersAlive(Terrorists) > 0)
 			{
-				if (player->isAlive() && player->getTeam() == CounterTerrorists)
+				for (std::vector<Player>::iterator player = players.begin(); player != players.end(); player++)
 				{
-					clutch = &(*player);
-					clutchCount = gameState.getPlayersAlive(Terrorists);
+					if (player->isAlive() && player->getTeam() == CounterTerrorists)
+					{
+						clutch = &(*player);
+						clutchCount = gameState.getPlayersAlive(Terrorists);
+					}
 				}
 			}
-		}
-		else if (gameState.getPlayersAlive(Terrorists) == 1 && gameState.getPlayersAlive(CounterTerrorists) > 0)
-		{
-			for (std::vector<Player>::iterator player = players.begin(); player != players.end(); player++)
+			else if (gameState.getPlayersAlive(Terrorists) == 1 && gameState.getPlayersAlive(CounterTerrorists) > 0)
 			{
-				if (player->isAlive() && player->getTeam() == Terrorists)
+				for (std::vector<Player>::iterator player = players.begin(); player != players.end(); player++)
 				{
-					clutch = &(*player);
-					clutchCount = gameState.getPlayersAlive(CounterTerrorists);
+					if (player->isAlive() && player->getTeam() == Terrorists)
+					{
+						clutch = &(*player);
+						clutchCount = gameState.getPlayersAlive(CounterTerrorists);
+					}
 				}
 			}
 		}

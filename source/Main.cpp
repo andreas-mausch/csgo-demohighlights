@@ -30,7 +30,7 @@ std::string readFile(const std::string &filename)
 
 int main()
 {
-	std::string stringBuffer = readFile("MLGXGA2015-GF-ldlc-vs-nip-dust2.dem");
+	std::string stringBuffer = readFile("demo.dem");
 	MemoryStreamBuffer demoBuffer(const_cast<char *>(stringBuffer.c_str()), stringBuffer.length());
 	MemoryStream demo(demoBuffer);
 
