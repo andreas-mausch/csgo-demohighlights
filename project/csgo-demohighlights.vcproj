@@ -442,6 +442,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\source\parser\GameEventHandler.h"
+					>
+				</File>
+				<File
 					RelativePath="..\source\parser\Stringtable.h"
 					>
 				</File>
