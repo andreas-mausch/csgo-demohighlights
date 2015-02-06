@@ -332,6 +332,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\source\parser\PlayerConnectHandler.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\source\parser\Stringtable.cpp"
 					>
 				</File>
@@ -443,6 +447,10 @@
 				</File>
 				<File
 					RelativePath="..\source\parser\GameEventHandler.h"
+					>
+				</File>
+				<File
+					RelativePath="..\source\parser\PlayerConnectHandler.h"
 					>
 				</File>
 				<File

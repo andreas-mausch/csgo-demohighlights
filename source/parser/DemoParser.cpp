@@ -4,6 +4,7 @@
 #include "DemoParser.h"
 #include "Datatable.h"
 #include "Entities.h"
+#include "PlayerConnectHandler.h"
 #include "Stringtable.h"
 #include "../gamestate/GameState.h"
 
@@ -53,6 +54,12 @@ void DemoParser::gameEvent(CSVCMsg_GameEvent &message)
 		int tickDif = gameState.getTick() - roundStart;
 		Player &attacker = gameState.findPlayerByUserId(getValue(message, descriptor, "attacker").val_short());
 		Player &userid = gameState.findPlayerByUserId(getValue(message, descriptor, "userid").val_short());
+
+		for (std::vector<GameEventHandler *>::iterator handler = gameEventHandlers.begin(); handler != gameEventHandlers.end(); handler++)
+		{
+			(*handler)->playerDeath(userid, attacker);
+		}
+
 		userid.setAlive(false);
 		logVerbose("player_death: %s killed %s", toString(attacker).c_str(), toString(userid).c_str());
 
@@ -84,13 +91,26 @@ void DemoParser::gameEvent(CSVCMsg_GameEvent &message)
 	}
 	else if (descriptor.name() == "bomb_planted")
 	{
+		for (std::vector<GameEventHandler *>::iterator handler = gameEventHandlers.begin(); handler != gameEventHandlers.end(); handler++)
+		{
+			(*handler)->bombPlanted();
+		}
 	}
 	else if (descriptor.name() == "round_start")
 	{
 		logVerbose("timelimit: %d; tick: %d", getValue(message, descriptor, "timelimit").val_long(), gameState.getTick());
+		for (std::vector<GameEventHandler *>::iterator handler = gameEventHandlers.begin(); handler != gameEventHandlers.end(); handler++)
+		{
+			(*handler)->roundStart();
+		}
 	}
 	else if (descriptor.name() == "round_freeze_end")
 	{
+		for (std::vector<GameEventHandler *>::iterator handler = gameEventHandlers.begin(); handler != gameEventHandlers.end(); handler++)
+		{
+			(*handler)->roundFreezeEnd();
+		}
+
 		roundStart = gameState.getTick();
 		clutch = NULL;
 
@@ -118,6 +138,11 @@ void DemoParser::gameEvent(CSVCMsg_GameEvent &message)
 	}
 	else if (descriptor.name() == "round_end")
 	{
+		for (std::vector<GameEventHandler *>::iterator handler = gameEventHandlers.begin(); handler != gameEventHandlers.end(); handler++)
+		{
+			(*handler)->roundEnd();
+		}
+
 		Team winner = fromEngineInteger(getValue(message, descriptor, "winner").val_byte());
 		logVerbose("%s %d:%d", toString(winner).c_str(), gameState.getPlayersAlive(Terrorists), gameState.getPlayersAlive(CounterTerrorists));
 
@@ -133,12 +158,19 @@ void DemoParser::gameEvent(CSVCMsg_GameEvent &message)
 		std::string name = getValue(message, descriptor, "name").val_string();
 		int entityId = getValue(message, descriptor, "index").val_byte() + 1;
 		int userId = getValue(message, descriptor, "userid").val_short();
-		updatePlayer(entityId, userId, name);
+
+		for (std::vector<GameEventHandler *>::iterator handler = gameEventHandlers.begin(); handler != gameEventHandlers.end(); handler++)
+		{
+			(*handler)->playerConnect(name, entityId, userId);
+		}
 	}
 	else if (descriptor.name() == "player_disconnect")
 	{
 		int userId = getValue(message, descriptor, "userid").val_short();
-		gameState.disconnect(userId);
+		for (std::vector<GameEventHandler *>::iterator handler = gameEventHandlers.begin(); handler != gameEventHandlers.end(); handler++)
+		{
+			(*handler)->playerDisconnect(userId);
+		}
 	}
 	else if (descriptor.name() == "announce_phase_end")
 	{
@@ -273,6 +305,7 @@ void DemoParser::parseStringtable(MemoryBitStream &stringtables)
 DemoParser::DemoParser(GameState &gameState, bool verbose)
 : gameState(gameState), verbose(verbose), outputStream(std::cout)
 {
+	gameEventHandlers.push_back(new PlayerConnectHandler(gameState));
 }
 
 DemoParser::~DemoParser()
@@ -382,13 +415,6 @@ void DemoParser::updatePlayer(int entityId, const player_info_t *playerinfo)
 	Player player(entityId, userId, playerinfo->name);
 	gameState.updatePlayer(player);
 	logVerbose("\tplayer name: %s / %d", playerinfo->name, userId);
-}
-
-void DemoParser::updatePlayer(int entityId, int userId, const std::string &name)
-{
-	Player player(entityId, userId, name);
-	gameState.updatePlayer(player);
-	logVerbose("\tplayer name: %s / %d", name.c_str(), userId);
 }
 
 bool DemoParser::parseNextTick(MemoryStream &demo)

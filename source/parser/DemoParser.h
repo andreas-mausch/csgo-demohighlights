@@ -12,6 +12,9 @@ class CSVCMsg_UpdateStringTable;
 struct player_info_t;
 
 #include <string>
+#include <vector>
+
+#include "GameEventHandler.h"
 
 struct DemoHeader
 {
@@ -35,6 +38,8 @@ private:
 
 	bool verbose;
 	std::ostream &outputStream;
+
+	std::vector<GameEventHandler *> gameEventHandlers;
 
 	// TODO remove / rename
 	void serverInfo(const char *bytes, int length);
