@@ -35,8 +35,12 @@ void DemoParser::parseStringTableUpdate(MemoryBitStream &stream, int entryCount,
 {
 	int nTemp = maximumEntries;
 	int nEntryBits = 0;
-	while (nTemp >>= 1) ++nEntryBits;
 	int lastEntry = -1;
+
+	while (nTemp >>= 1)
+	{
+		++nEntryBits;
+	}
 
 	bool encodeUsingDictionaries = stream.readBit();
 
@@ -170,55 +174,55 @@ void DemoParser::parseStringTableUpdate(MemoryBitStream &stream, int entryCount,
 
 void hexdump(const void *pAddressIn, long  lSize)
 {
- char szBuf[100];
- long lIndent = 1;
- long lOutLen, lIndex, lIndex2, lOutLen2;
- long lRelPos;
- struct { char *pData; unsigned long lSize; } buf;
- unsigned char *pTmp,ucTmp;
- unsigned char *pAddress = (unsigned char *)pAddressIn;
+	char szBuf[100];
+	long lIndent = 1;
+	long lOutLen, lIndex, lIndex2, lOutLen2;
+	long lRelPos;
+	struct { char *pData; unsigned long lSize; } buf;
+	unsigned char *pTmp,ucTmp;
+	unsigned char *pAddress = (unsigned char *)pAddressIn;
 
-   buf.pData   = (char *)pAddress;
-   buf.lSize   = lSize;
+	buf.pData   = (char *)pAddress;
+	buf.lSize   = lSize;
 
-   while (buf.lSize > 0)
-   {
-      pTmp     = (unsigned char *)buf.pData;
-      lOutLen  = (int)buf.lSize;
-      if (lOutLen > 16)
-          lOutLen = 16;
+	while (buf.lSize > 0)
+	{
+		pTmp     = (unsigned char *)buf.pData;
+		lOutLen  = (int)buf.lSize;
+		if (lOutLen > 16)
+			lOutLen = 16;
 
-      // create a 64-character formatted output line:
-      sprintf(szBuf, " >                            "
-                     "                      "
-                     "    %08lX", pTmp-pAddress);
-      lOutLen2 = lOutLen;
+		// create a 64-character formatted output line:
+		sprintf(szBuf, " >                            "
+			"                      "
+			"    %08lX", pTmp-pAddress);
+		lOutLen2 = lOutLen;
 
-      for(lIndex = 1+lIndent, lIndex2 = 53-15+lIndent, lRelPos = 0;
-          lOutLen2;
-          lOutLen2--, lIndex += 2, lIndex2++
-         )
-      {
-         ucTmp = *pTmp++;
+		for(lIndex = 1+lIndent, lIndex2 = 53-15+lIndent, lRelPos = 0;
+			lOutLen2;
+			lOutLen2--, lIndex += 2, lIndex2++
+			)
+		{
+			ucTmp = *pTmp++;
 
-         sprintf(szBuf + lIndex, "%02X ", (unsigned short)ucTmp);
-         if(!isprint(ucTmp))  ucTmp = '.'; // nonprintable char
-         szBuf[lIndex2] = ucTmp;
+			sprintf(szBuf + lIndex, "%02X ", (unsigned short)ucTmp);
+			if(!isprint(ucTmp))  ucTmp = '.'; // nonprintable char
+			szBuf[lIndex2] = ucTmp;
 
-         if (!(++lRelPos & 3))     // extra blank after 4 bytes
-         {  lIndex++; szBuf[lIndex+2] = ' '; }
-      }
+			if (!(++lRelPos & 3))     // extra blank after 4 bytes
+			{  lIndex++; szBuf[lIndex+2] = ' '; }
+		}
 
-      if (!(lRelPos & 3)) lIndex--;
+		if (!(lRelPos & 3)) lIndex--;
 
-      szBuf[lIndex  ]   = '<';
-      szBuf[lIndex+1]   = ' ';
+		szBuf[lIndex  ]   = '<';
+		szBuf[lIndex+1]   = ' ';
 
-      printf("%s\n", szBuf);
+		printf("%s\n", szBuf);
 
-      buf.pData   += lOutLen;
-      buf.lSize   -= lOutLen;
-   }
+		buf.pData   += lOutLen;
+		buf.lSize   -= lOutLen;
+	}
 }
 
 void DemoParser::updatePlayer(int entityId, const player_info_t *playerinfo)
@@ -246,7 +250,7 @@ void DemoParser::createStringTable(CSVCMsg_CreateStringTable &message)
 	gameState.getStringTables().push_back(stringTable);
 
 	// if (strcmp(stringTable.szName, "userinfo") == 0)
-		// hexdump(message.string_data().c_str(), message.string_data().size());
+	// hexdump(message.string_data().c_str(), message.string_data().size());
 }
 
 void DemoParser::updateStringTable(CSVCMsg_UpdateStringTable &message)
@@ -258,7 +262,7 @@ void DemoParser::updateStringTable(CSVCMsg_UpdateStringTable &message)
 	Stringtable &stringTable = gameState.getStringTables()[message.table_id()];
 
 	// if (strcmp(stringTable.szName, "userinfo") == 0)
-		// hexdump(message.string_data().c_str(), message.string_data().size());
+	// hexdump(message.string_data().c_str(), message.string_data().size());
 
 	try
 	{
@@ -461,7 +465,7 @@ void DemoParser::parsePacket2(MemoryStream &demo, int length)
 			CSVCMsg_PacketEntities message;
 			message.ParseFromArray(bytes, messageLength);
 			packetEntities(message);
-								} break;
+								 } break;
 		default:
 			// unhandledCommand(string_format("message command: default %d", command));
 			demo.seekg(messageLength, std::ios_base::cur);
