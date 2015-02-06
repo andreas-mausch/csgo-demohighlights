@@ -50,7 +50,9 @@ private:
 	void updatePlayer(int entityId, const player_info_t *playerinfo);
 	void updatePlayer(int entityId, int userId, const std::string &name);
 
-	void log(bool verbose, const std::string &format, ...);
+	void log(const char *format, ...);
+	void logVargs(const std::string &format, va_list args);
+	void logVerbose(const char *format, ...);
 
 public:
 	DemoParser(GameState &gameState, bool verbose);

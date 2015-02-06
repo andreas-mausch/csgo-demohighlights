@@ -30,14 +30,15 @@ std::string readFile(const std::string &filename)
 
 int main()
 {
-	std::string stringBuffer = readFile("demo.dem");
+	const std::string filename = "demo.dem";
+	std::string stringBuffer = readFile(filename);
 	MemoryStreamBuffer demoBuffer(const_cast<char *>(stringBuffer.c_str()), stringBuffer.length());
 	MemoryStream demo(demoBuffer);
 
 	int messageCount = 0;
 	bool end = false;
 	GameState gameState(0, demo.tellg());
-	DemoParser demoParser(gameState, true);
+	DemoParser demoParser(gameState, false);
 	demoParser.parseHeader(demo);
 
 	while (demoParser.parseNextTick(demo))

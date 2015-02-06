@@ -17,47 +17,6 @@
 #include "../utils/EndianConverter.h"
 #include "../utils/StringFormat.h"
 
-void DemoParser::log(bool verbose, const std::string &format, ...)
-{
-	if (!this->verbose || verbose)
-	{
-		va_list args;
-		va_start(args, format);
-		std::string text = formatString(format, args);
-		va_end(args);
-		outputStream << "info: " << text << std::endl;
-	}
-}
-
-void DemoParser::unhandledCommand(const std::string &description)
-{
-	outputStream << "ERROR Unhandled command: " << description << std::endl;
-	throw std::bad_exception(description.c_str());
-}
-
-void DemoParser::serverInfo(const char *bytes, int length)
-{
-	CSVCMsg_ServerInfo serverInfo;
-	serverInfo.ParseFromArray(bytes, length);
-	delete[] bytes;
-	log(true, "serverInfo: %d, %s", length, serverInfo.DebugString().c_str());
-}
-
-void DemoParser::updatePlayer(int entityId, const player_info_t *playerinfo)
-{
-	int userId = endian_swap(playerinfo->userID);
-	Player player(entityId, userId, playerinfo->name);
-	gameState.updatePlayer(player);
-	log(true, "\tplayer name: %s / %d", playerinfo->name, userId);
-}
-
-void DemoParser::updatePlayer(int entityId, int userId, const std::string &name)
-{
-	Player player(entityId, userId, name);
-	gameState.updatePlayer(player);
-	log(true, "\tplayer name: %s / %d", name.c_str(), userId);
-}
-
 const CSVCMsg_GameEvent::key_t& getValue(CSVCMsg_GameEvent &message, const CSVCMsg_GameEventList::descriptor_t& descriptor, const std::string &keyName)
 {
 	for (int i = 0; i < descriptor.keys().size(); i++)
@@ -69,7 +28,7 @@ const CSVCMsg_GameEvent::key_t& getValue(CSVCMsg_GameEvent &message, const CSVCM
 		}
 	}
 
-	throw 2;
+	throw std::bad_exception("key not found");
 }
 
 std::string toString(Player &player)
@@ -87,7 +46,7 @@ void DemoParser::gameEvent(CSVCMsg_GameEvent &message)
 {
 	const CSVCMsg_GameEventList::descriptor_t& descriptor = gameState.getGameEvent(message.eventid());
 	std::vector<Player> &players = gameState.getPlayers();
-	log(true, "gameEvent: %s" , descriptor.name().c_str());
+	logVerbose("gameEvent: %s" , descriptor.name().c_str());
 
 	if (descriptor.name() == "player_death")
 	{
@@ -95,7 +54,7 @@ void DemoParser::gameEvent(CSVCMsg_GameEvent &message)
 		Player &attacker = gameState.findPlayerByUserId(getValue(message, descriptor, "attacker").val_short());
 		Player &userid = gameState.findPlayerByUserId(getValue(message, descriptor, "userid").val_short());
 		userid.setAlive(false);
-		log(true, "player_death: %s killed %s", toString(attacker).c_str(), toString(userid).c_str());
+		logVerbose("player_death: %s killed %s", toString(attacker).c_str(), toString(userid).c_str());
 
 		if (clutch == NULL)
 		{
@@ -126,9 +85,12 @@ void DemoParser::gameEvent(CSVCMsg_GameEvent &message)
 	else if (descriptor.name() == "bomb_planted")
 	{
 	}
+	else if (descriptor.name() == "round_start")
+	{
+		logVerbose("timelimit: %d; tick: %d", getValue(message, descriptor, "timelimit").val_long(), gameState.getTick());
+	}
 	else if (descriptor.name() == "round_freeze_end")
 	{
-		log(true, "timelimit: %d; tick: %d", getValue(message, descriptor, "timelimit").val_long(), gameState.getTick());
 		roundStart = gameState.getTick();
 		clutch = NULL;
 
@@ -151,17 +113,17 @@ void DemoParser::gameEvent(CSVCMsg_GameEvent &message)
 
 			player->setTeam(team);
 			player->setAlive(true);
-			log(true, "\t%s", toString(*player).c_str());
+			logVerbose("\t%s", toString(*player).c_str());
 		}
 	}
 	else if (descriptor.name() == "round_end")
 	{
 		Team winner = fromEngineInteger(getValue(message, descriptor, "winner").val_byte());
-		log(true, "%s %d:%d", toString(winner).c_str(), gameState.getPlayersAlive(Terrorists), gameState.getPlayersAlive(CounterTerrorists));
+		logVerbose("%s %d:%d", toString(winner).c_str(), gameState.getPlayersAlive(Terrorists), gameState.getPlayersAlive(CounterTerrorists));
 
 		if (clutch && clutch->getTeam() == winner)
 		{
-			log(false, "CLUTCH WON %d:%d - 1vs%d: %s; %s", gameState.getRoundsWon(Terrorists), gameState.getRoundsWon(CounterTerrorists), clutchCount, clutch->getName().c_str(), toString(winner).c_str());
+			log("CLUTCH WON %d:%d - 1vs%d: %s; %s", gameState.getRoundsWon(Terrorists), gameState.getRoundsWon(CounterTerrorists), clutchCount, clutch->getName().c_str(), toString(winner).c_str());
 		}
 
 		gameState.addWonRound(winner);
@@ -180,14 +142,13 @@ void DemoParser::gameEvent(CSVCMsg_GameEvent &message)
 	}
 	else if (descriptor.name() == "announce_phase_end")
 	{
-		// std::cout << "gameEvent: " << descriptor.name() << std::endl;
 		gameState.switchTeams();
 	}
 }
 
 void DemoParser::gameEventList(CSVCMsg_GameEventList &message)
 {
-	// std::cout << "gameEventList" << std::endl;
+	logVerbose("gameEventList");
 	gameState.setGameEvents(message);
 }
 
@@ -257,11 +218,10 @@ void DemoParser::parsePacket2(MemoryStream &demo, int length)
 void DemoParser::parseStringtable(MemoryBitStream &stringtables)
 {
 	std::string tableName = stringtables.readNullTerminatedString(256);
-	// std::cout << "tableName: " << tableName << std::endl;
-
 	int wordCount = stringtables.readWord();
 	bool userInfo = tableName == "userinfo";
-	// std::cout << "wordCount: " << wordCount << std::endl;
+
+	logVerbose("parseStringtable: %s / %d", tableName.c_str(), wordCount);
 
 	for (int i = 0; i < wordCount; i++)
 	{
@@ -293,13 +253,13 @@ void DemoParser::parseStringtable(MemoryBitStream &stringtables)
 		for (int i = 0; i < wordCount; i++)
 		{
 			std::string name = stringtables.readNullTerminatedString(4096);
-			// std::cout << "\tname: " << name << std::endl;
+			logVerbose("\tname: ", name.c_str());
 
 			bool hasUserData = stringtables.readBit();
 			if (hasUserData)
 			{
 				int userDataLength = stringtables.readWord();
-				unsigned char *data = new unsigned char[ userDataLength + 4 ];
+				unsigned char *data = new unsigned char[userDataLength + 4];
 				stringtables.readBytes(data, userDataLength);
 				delete[] data;
 			}
@@ -345,14 +305,14 @@ void DemoParser::parsePacket(MemoryStream &demo)
 	int sequenceNumberIn = demo.readInt();
 	int sequenceNumberOut = demo.readInt();
 	int length = demo.readInt();
-	// std::cout << "Parse packet. Length: " << length << " at " << position << " / " << demo.tellg() << std::endl;
+	logVerbose("Parse packet. Length: %d at %d / %d", length, position, demo.tellg());
 	parsePacket2(demo, length);
 }
 
 void DemoParser::parseDatatables(MemoryStream &demo)
 {
 	int length = demo.readInt();
-	// std::cout << "Parse datatables: " << length << std::endl;
+	logVerbose("Parse datatables: %d", length);
 	char *datatablesBytes = new char[length];
 	demo.readBytes(datatablesBytes, length);
 	MemoryBitStream datatables(datatablesBytes, length);
@@ -363,12 +323,12 @@ void DemoParser::parseDatatables(MemoryStream &demo)
 void DemoParser::parseStringtables(MemoryStream &demo)
 {
 	int length = demo.readInt();
-	// std::cout << "Parse stringtables: " << length << std::endl;
+	logVerbose("parseStringtables: %d", length);
 	char *stringtablesBytes = new char[length];
 	demo.readBytes(stringtablesBytes, length);
 	MemoryBitStream stringtables(stringtablesBytes, length);
 	int tableCount = stringtables.readByte();
-	// std::cout << "Parse stringtables tableCount: " << tableCount << std::endl;
+	logVerbose("Parse stringtables tableCount: %d", tableCount);
 
 	for (int i = 0; i < tableCount; i++)
 	{
@@ -378,10 +338,64 @@ void DemoParser::parseStringtables(MemoryStream &demo)
 	delete[] stringtablesBytes;
 }
 
+void DemoParser::log(const char *format, ...)
+{
+	va_list args;
+	va_start(args, format);
+	logVargs(format, args);
+	va_end(args);
+}
+
+void DemoParser::logVargs(const std::string &format, va_list args)
+{
+	outputStream << "info: " << formatStringVargs(format, args) << std::endl;
+}
+
+void DemoParser::logVerbose(const char *format, ...)
+{
+	if (this->verbose)
+	{
+		va_list args;
+		va_start(args, format);
+		logVargs(format, args);
+		va_end(args);
+	}
+}
+
+void DemoParser::unhandledCommand(const std::string &description)
+{
+	outputStream << "ERROR Unhandled command: " << description << std::endl;
+	throw std::bad_exception(description.c_str());
+}
+
+void DemoParser::serverInfo(const char *bytes, int length)
+{
+	CSVCMsg_ServerInfo serverInfo;
+	serverInfo.ParseFromArray(bytes, length);
+	delete[] bytes;
+	logVerbose("serverInfo: %d, %s", length, serverInfo.DebugString().c_str());
+}
+
+void DemoParser::updatePlayer(int entityId, const player_info_t *playerinfo)
+{
+	int userId = endian_swap(playerinfo->userID);
+	Player player(entityId, userId, playerinfo->name);
+	gameState.updatePlayer(player);
+	logVerbose("\tplayer name: %s / %d", playerinfo->name, userId);
+}
+
+void DemoParser::updatePlayer(int entityId, int userId, const std::string &name)
+{
+	Player player(entityId, userId, name);
+	gameState.updatePlayer(player);
+	logVerbose("\tplayer name: %s / %d", name.c_str(), userId);
+}
+
 bool DemoParser::parseNextTick(MemoryStream &demo)
 {
 	unsigned char command = demo.readByte();
-	gameState.setTick(demo.readInt());
+	int tick = demo.readInt();
+	gameState.setTick(tick);
 	unsigned char playerSlot = demo.readByte();
 
 	switch (command)
@@ -402,7 +416,7 @@ bool DemoParser::parseNextTick(MemoryStream &demo)
 		parseDatatables(demo);
 		break;
 	case dem_stop:
-		std::cout << "Game ended " << gameState.getRoundsWon(Terrorists) << ":" << gameState.getRoundsWon(CounterTerrorists) << std::endl;
+		log("Game ended %d:%d", gameState.getRoundsWon(Terrorists), gameState.getRoundsWon(CounterTerrorists));
 		return false;
 	case dem_customdata:
 		unhandledCommand(formatString("command: default %d", command));
@@ -416,7 +430,7 @@ bool DemoParser::parseNextTick(MemoryStream &demo)
 
 	gameState.setPositionInStream(demo.tellg());
 
-	// std::cout << "GameState: " << tick << " / " << positionInStream << std::endl;
+	logVerbose("GameState: %d / %d", tick, demo.tellg());
 
 	return true;
 }

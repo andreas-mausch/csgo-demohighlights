@@ -40,11 +40,11 @@ void DemoParser::parseStringTableUpdate(MemoryBitStream &stream, int entryCount,
 
 	if (encodeUsingDictionaries)
 	{
-		std::cout << "encodeUsingDictionaries" << std::endl;
+		log(false, "encodeUsingDictionaries");
 		return;
 	}
 
-	// std::cout << "parseStringTableUpdate entryCount: " << entryCount << std::endl;
+	logVerbose("parseStringTableUpdate entryCount: %d", entryCount);
 	for (int i = 0; i < entryCount; i++)
 	{
 		int entryIndex = lastEntry + 1;
@@ -53,13 +53,13 @@ void DemoParser::parseStringTableUpdate(MemoryBitStream &stream, int entryCount,
 			entryIndex = stream.ReadUBitLong(nEntryBits);
 		}
 
-		// std::cout << "\tentry index: " << entryIndex << "; lastEntry: " << lastEntry << "; maximum entries: " << maximumEntries << std::endl;
+		logVerbose("\tentry index: %d; lastEntry: %d; maximum entries: %d", entryIndex,lastEntry, maximumEntries);
 
 		lastEntry = entryIndex;
 
 		if ( entryIndex < 0 || entryIndex >= maximumEntries )
 		{
-			std::cout << "ParseStringTableUpdate: bogus string index " << entryIndex << std::endl;
+			log("ParseStringTableUpdate: bogus string index %d", entryIndex);
 			return;
 		}
 
@@ -90,19 +90,17 @@ void DemoParser::parseStringTableUpdate(MemoryBitStream &stream, int entryCount,
 				strncpy_s(entry, existingEntry.c_str(), bytestocopy + 1);
 				std::string substr_str = stream.readNullTerminatedString(sizeof(substr));
 				strncat_s(entry, substr_str.c_str(), sizeof(entry));
-				// std::cout << "\tsubstr: " << substr_str << "; old: " << existingEntry << "; new: " << entry << std::endl;
+				// log(true, "\tsubstr: %s; old: %s; new: %s", substr_str.c_str(), existingEntry.c_str(), entry);
 			}
 			else
 			{
 				std::string entry_str = stream.readNullTerminatedString(sizeof(entry));
-				// std::cout << "\tentry_str: " << entry_str << std::endl;
+				logVerbose("\tentry_str: %s", entry_str.c_str());
 				strncpy_s(entry, entry_str.c_str(), sizeof(entry));
 			}
 
 			pEntry = entry;
 		}
-		// std::cout << "\tmemory bit stream 3: " << stream.tellg() << "/" << stream.getCurrentBitPosition() << " - " << stream.eof() << stream.fail() << stream.bad() << std::endl;
-
 		// Read in the user data.
 		unsigned char tempbuf[ MAX_USERDATA_SIZE ];
 		memset( tempbuf, 0, sizeof( tempbuf ) );
@@ -111,7 +109,6 @@ void DemoParser::parseStringTableUpdate(MemoryBitStream &stream, int entryCount,
 
 		if ( stream.readBit() )
 		{
-			// std::cout << "\tmemory bit stream 4: " << stream.tellg() << "/" << stream.getCurrentBitPosition() << " - " << stream.eof() << stream.fail() << stream.bad() << " - " << (int)stream.getCurrentByte() << std::endl;
 			if ( userDataFixedSize )
 			{
 				// Don't need to read length, it's fixed length and the length was networked down already.
@@ -129,9 +126,7 @@ void DemoParser::parseStringTableUpdate(MemoryBitStream &stream, int entryCount,
 					return;
 				}
 
-				// std::cout << "\tmemory bit stream 5: " << stream.tellg() << "/" << stream.getCurrentBitPosition() << " - " << stream.eof() << stream.fail() << stream.bad() << " - " << nBytes << "/" << MAX_USERDATA_SIZE << std::endl;
 				stream.readBytes( tempbuf, nBytes );
-				// std::cout << "\tmemory bit stream 6: " << stream.tellg() << "/" << stream.getCurrentBitPosition() << " - " << stream.eof() << stream.fail() << stream.bad() << std::endl;
 			}
 
 			pUserData = tempbuf;
@@ -145,7 +140,7 @@ void DemoParser::parseStringTableUpdate(MemoryBitStream &stream, int entryCount,
 		if ( userData && pUserData != NULL )
 		{
 			const player_info_t *pUnswappedPlayerInfo = ( const player_info_t * )pUserData;
-			// std::cout << "parseStringTableUpdate player name: " << pUnswappedPlayerInfo->name << " / " << endian_swap(pUnswappedPlayerInfo->userID) << std::endl;
+			logVerbose("parseStringTableUpdate player name: %s / %d", pUnswappedPlayerInfo->name, pUnswappedPlayerInfo->userID);
 			updatePlayer(entryIndex, pUnswappedPlayerInfo);
 		}
 		else
@@ -165,27 +160,21 @@ void DemoParser::parseStringTableUpdate(MemoryBitStream &stream, int entryCount,
 
 void DemoParser::createStringTable(CSVCMsg_CreateStringTable &message)
 {
-	// std::cout << "svc_CreateStringTable: " << message.name() << " (" << message.string_data().size() << " bytes)" << std::endl;
+	logVerbose("svc_CreateStringTable: %s (%d bytes)", message.name().c_str(), message.string_data().size());
 	MemoryBitStream stream(message.string_data().c_str(), message.string_data().size());
 	parseStringTableUpdate(stream, message.num_entries(), message.max_entries(), message.user_data_size(), message.user_data_size_bits(), message.user_data_fixed_size(), message.name() == "userinfo");
 
 	Stringtable stringTable(message.name(), message.max_entries());
 	gameState.getStringTables().push_back(stringTable);
-
-	// if (strcmp(stringTable.szName, "userinfo") == 0)
-	hexdump(message.string_data().c_str(), message.string_data().size());
 }
 
 void DemoParser::updateStringTable(CSVCMsg_UpdateStringTable &message)
 {
-	// std::cout << "svc_UpdateStringTable: " << message.table_id() << " (" << message.string_data().size() << " bytes)" << std::endl;
+	logVerbose("svc_UpdateStringTable: %d (%d bytes)", message.table_id(), message.string_data().size());
 	char *data = const_cast<char *>(message.string_data().c_str());
 	MemoryBitStream stream(message.string_data().c_str(), message.string_data().size());
 
 	Stringtable &stringTable = gameState.getStringTables()[message.table_id()];
-
-	// if (strcmp(stringTable.szName, "userinfo") == 0)
-	// hexdump(message.string_data().c_str(), message.string_data().size());
 
 	try
 	{
@@ -195,7 +184,7 @@ void DemoParser::updateStringTable(CSVCMsg_UpdateStringTable &message)
 	{
 		if (stringTable.getName() != "soundprecache")
 		{
-			std::cout << "ERROR: updateStringTable() failed: " << stringTable.getName() << std::endl;
+			log("ERROR: updateStringTable() failed: %s", stringTable.getName().c_str());
 			hexdump(message.string_data().c_str(), message.string_data().size());
 		}
 	}

@@ -13,7 +13,7 @@ void hexdump(const void *address, long  length)
 			rowLength = length - rowStart;
 		}
 
-		sprintf(buffer, " >                            "
+		sprintf_s(buffer, 100, " >                            "
 			"                      "
 			"    %08lX", reinterpret_cast<const char *>(address) + rowStart);
 
@@ -25,7 +25,7 @@ void hexdump(const void *address, long  length)
 			int index2 = 53 - 15 + indent + c;
 
 			char character = reinterpret_cast<const char *>(address)[rowStart + c];
-			sprintf(buffer + index, "%02X ", static_cast<unsigned short>(character));
+			sprintf_s(buffer + index, 100, "%02X ", static_cast<unsigned short>(character));
 
 			if(!isprint(character))  character = '.'; // nonprintable char
 			buffer[index2] = character;
