@@ -292,6 +292,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\source\utils\HexDump.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\source\utils\StringFormat.cpp"
 					>
 				</File>
@@ -395,6 +399,10 @@
 				>
 				<File
 					RelativePath="..\source\utils\EndianConverter.h"
+					>
+				</File>
+				<File
+					RelativePath="..\source\utils\HexDump.h"
 					>
 				</File>
 				<File
