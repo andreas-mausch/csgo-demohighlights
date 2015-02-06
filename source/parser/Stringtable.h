@@ -6,9 +6,13 @@
 class Stringtable
 {
 private:
-	std::vector<std::string> strings;
+	std::string name;
+	int maxEntries;
+
 public:
-	std::string getString(int index);
-	void addString(const std::string &string);
-	void updateString(int index, const std::string &string);
+	Stringtable(const std::string &name, int maxEntries);
+	~Stringtable();
+
+	const std::string &getName();
+	int getMaxEntries();
 };

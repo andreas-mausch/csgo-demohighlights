@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Player.h"
+#include "../parser/Stringtable.h"
 
 #include "../sdk/demofile.h"
 #include "../sdk/demofiledump.h"
@@ -21,7 +22,7 @@ private:
 	int ctRoundsWon;
 
 	CSVCMsg_GameEventList gameEvents;
-	std::vector<StringTableData_t> stringTables;
+	std::vector<Stringtable> stringTables;
 	std::vector<Player> players;
 
 public:
@@ -29,7 +30,7 @@ public:
 	~GameState();
 
 	const CSVCMsg_GameEventList::descriptor_t &getGameEvent(int eventId);
-	std::vector<StringTableData_t> &getStringTables();
+	std::vector<Stringtable> &getStringTables();
 
 	std::vector<Player> &getPlayers();
 	Player &findPlayerByUserId(int userId);

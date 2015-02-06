@@ -3,6 +3,7 @@
 #include "DemoParser.h"
 #include "Datatable.h"
 #include "Entities.h"
+#include "Stringtable.h"
 #include "../gamestate/GameState.h"
 
 #include "../sdk/demofile.h"
@@ -241,9 +242,7 @@ void DemoParser::createStringTable(CSVCMsg_CreateStringTable &message)
 	MemoryBitStream stream(message.string_data().c_str(), message.string_data().size());
 	parseStringTableUpdate(stream, message.num_entries(), message.max_entries(), message.user_data_size(), message.user_data_size_bits(), message.user_data_fixed_size(), message.name() == "userinfo");
 
-	StringTableData_t stringTable;
-	strncpy_s(stringTable.szName, message.name().c_str(), sizeof( stringTable.szName ));
-	stringTable.nMaxEntries = message.max_entries();
+	Stringtable stringTable(message.name(), message.max_entries());
 	gameState.getStringTables().push_back(stringTable);
 
 	// if (strcmp(stringTable.szName, "userinfo") == 0)
@@ -256,20 +255,20 @@ void DemoParser::updateStringTable(CSVCMsg_UpdateStringTable &message)
 	char *data = const_cast<char *>(message.string_data().c_str());
 	MemoryBitStream stream(message.string_data().c_str(), message.string_data().size());
 
-	StringTableData_t &stringTable = gameState.getStringTables()[message.table_id()];
+	Stringtable &stringTable = gameState.getStringTables()[message.table_id()];
 
 	// if (strcmp(stringTable.szName, "userinfo") == 0)
 		// hexdump(message.string_data().c_str(), message.string_data().size());
 
 	try
 	{
-		parseStringTableUpdate(stream, message.num_changed_entries(), stringTable.nMaxEntries, 0, 0, 0, strcmp(stringTable.szName, "userinfo") == 0);
+		parseStringTableUpdate(stream, message.num_changed_entries(), stringTable.getMaxEntries(), 0, 0, 0, stringTable.getName() == "userinfo");
 	}
 	catch (...)
 	{
-		if (strcmp(stringTable.szName, "soundprecache") != 0)
+		if (stringTable.getName() != "soundprecache")
 		{
-			std::cout << "ERROR: updateStringTable() failed: " << stringTable.szName << std::endl;
+			std::cout << "ERROR: updateStringTable() failed: " << stringTable.getName() << std::endl;
 			hexdump(message.string_data().c_str(), message.string_data().size());
 		}
 	}

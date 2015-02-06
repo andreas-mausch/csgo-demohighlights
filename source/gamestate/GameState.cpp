@@ -49,7 +49,7 @@ const CSVCMsg_GameEventList::descriptor_t &GameState::getGameEvent(int eventId)
 	throw std::bad_exception("game event not found");
 }
 
-std::vector<StringTableData_t> &GameState::getStringTables()
+std::vector<Stringtable> &GameState::getStringTables()
 {
 	return stringTables;
 }
