@@ -327,6 +327,10 @@
 					RelativePath="..\source\parser\Entities.cpp"
 					>
 				</File>
+				<File
+					RelativePath="..\source\parser\Stringtable.cpp"
+					>
+				</File>
 			</Filter>
 		</Filter>
 		<Filter
@@ -427,6 +431,10 @@
 				</File>
 				<File
 					RelativePath="..\source\parser\Entities.h"
+					>
+				</File>
+				<File
+					RelativePath="..\source\parser\Stringtable.h"
 					>
 				</File>
 			</Filter>
