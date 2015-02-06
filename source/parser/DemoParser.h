@@ -37,6 +37,7 @@ private:
 	std::ostream &outputStream;
 
 	// TODO remove / rename
+	void serverInfo(const char *bytes, int length);
 	void parsePacket2(MemoryStream &demo, int length);
 	void gameEventList(CSVCMsg_GameEventList &message);
 	void gameEvent(CSVCMsg_GameEvent &message);
@@ -49,7 +50,7 @@ private:
 	void updatePlayer(int entityId, const player_info_t *playerinfo);
 	void updatePlayer(int entityId, int userId, const std::string &name);
 
-	void logVerbose(const std::string &line);
+	void log(bool verbose, const std::string &format, ...);
 
 public:
 	DemoParser(GameState &gameState, bool verbose);

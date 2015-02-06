@@ -1,4 +1,5 @@
 #include <sstream>
+#include <stdarg.h>
 
 #include "DemoParser.h"
 #include "Datatable.h"
@@ -16,11 +17,15 @@
 #include "../utils/EndianConverter.h"
 #include "../utils/StringFormat.h"
 
-void DemoParser::logVerbose(const std::string &line)
+void DemoParser::log(bool verbose, const std::string &format, ...)
 {
-	if (verbose)
+	if (!this->verbose || verbose)
 	{
-		outputStream << "info: " << line << std::endl;
+		va_list args;
+		va_start(args, format);
+		std::string text = formatString(format, args);
+		va_end(args);
+		outputStream << "info: " << text << std::endl;
 	}
 }
 
@@ -30,13 +35,12 @@ void DemoParser::unhandledCommand(const std::string &description)
 	throw std::bad_exception(description.c_str());
 }
 
-void serverInfo(const char *bytes, int length)
+void DemoParser::serverInfo(const char *bytes, int length)
 {
-	// std::cout << "serverInfo: " << length << std::endl;
 	CSVCMsg_ServerInfo serverInfo;
 	serverInfo.ParseFromArray(bytes, length);
 	delete[] bytes;
-	// std::cout << serverInfo.DebugString() << std::endl;
+	log(true, "serverInfo: %d, %s", length, serverInfo.DebugString().c_str());
 }
 
 void DemoParser::updatePlayer(int entityId, const player_info_t *playerinfo)
@@ -44,14 +48,14 @@ void DemoParser::updatePlayer(int entityId, const player_info_t *playerinfo)
 	int userId = endian_swap(playerinfo->userID);
 	Player player(entityId, userId, playerinfo->name);
 	gameState.updatePlayer(player);
-	// std::cout << "\tplayer name: " << playerinfo->name << " / " << userId << std::endl;
+	log(true, "\tplayer name: %s / %d", playerinfo->name, userId);
 }
 
 void DemoParser::updatePlayer(int entityId, int userId, const std::string &name)
 {
 	Player player(entityId, userId, name);
 	gameState.updatePlayer(player);
-	// std::cout << "\tplayer name: " << name << " / " << userId << std::endl;
+	log(true, "\tplayer name: %s / %d", name.c_str(), userId);
 }
 
 const CSVCMsg_GameEvent::key_t& getValue(CSVCMsg_GameEvent &message, const CSVCMsg_GameEventList::descriptor_t& descriptor, const std::string &keyName)
@@ -83,7 +87,7 @@ void DemoParser::gameEvent(CSVCMsg_GameEvent &message)
 {
 	const CSVCMsg_GameEventList::descriptor_t& descriptor = gameState.getGameEvent(message.eventid());
 	std::vector<Player> &players = gameState.getPlayers();
-	// std::cout << "gameEvent: " << descriptor.name() << std::endl;
+	log(true, "gameEvent: %s" , descriptor.name().c_str());
 
 	if (descriptor.name() == "player_death")
 	{
@@ -91,7 +95,7 @@ void DemoParser::gameEvent(CSVCMsg_GameEvent &message)
 		Player &attacker = gameState.findPlayerByUserId(getValue(message, descriptor, "attacker").val_short());
 		Player &userid = gameState.findPlayerByUserId(getValue(message, descriptor, "userid").val_short());
 		userid.setAlive(false);
-		// std::cout << "gameEvent: " << descriptor.name() << ": " << toString(attacker) << " killed " << toString(userid) << "; tick dif: " << tickDif/128 << std::endl;
+		log(true, "player_death: %s killed %s", toString(attacker).c_str(), toString(userid).c_str());
 
 		if (clutch == NULL)
 		{
@@ -121,11 +125,10 @@ void DemoParser::gameEvent(CSVCMsg_GameEvent &message)
 	}
 	else if (descriptor.name() == "bomb_planted")
 	{
-		// std::cout << descriptor.name() << std::endl;
 	}
 	else if (descriptor.name() == "round_freeze_end")
 	{
-		// std::cout << descriptor.name() << "; timelimit: " << getValue(message, descriptor, "timelimit").val_long() << "; tick: " << gameState.getTick() << std::endl;
+		log(true, "timelimit: %d; tick: %d", getValue(message, descriptor, "timelimit").val_long(), gameState.getTick());
 		roundStart = gameState.getTick();
 		clutch = NULL;
 
@@ -148,17 +151,17 @@ void DemoParser::gameEvent(CSVCMsg_GameEvent &message)
 
 			player->setTeam(team);
 			player->setAlive(true);
-			// std::cout << "\t" << toString(*player) << std::endl;
+			log(true, "\t%s", toString(*player).c_str());
 		}
 	}
 	else if (descriptor.name() == "round_end")
 	{
 		Team winner = fromEngineInteger(getValue(message, descriptor, "winner").val_byte());
-		// std::cout << "gameEvent: " << descriptor.name() << " / " << toString(winner) << " - " << gameState.getPlayersAlive(Terrorists) << ":" << gameState.getPlayersAlive(CounterTerrorists) << std::endl;
+		log(true, "%s %d:%d", toString(winner).c_str(), gameState.getPlayersAlive(Terrorists), gameState.getPlayersAlive(CounterTerrorists));
 
 		if (clutch && clutch->getTeam() == winner)
 		{
-			std::cout << "CLUTCH WON " << gameState.getRoundsWon(Terrorists) << ":" << gameState.getRoundsWon(CounterTerrorists) << " - 1vs" << clutchCount << ": " << clutch->getName() << "; " << toString(winner) << std::endl;
+			log(false, "CLUTCH WON %d:%d - 1vs%d: %s; %s", gameState.getRoundsWon(Terrorists), gameState.getRoundsWon(CounterTerrorists), clutchCount, clutch->getName().c_str(), toString(winner).c_str());
 		}
 
 		gameState.addWonRound(winner);
