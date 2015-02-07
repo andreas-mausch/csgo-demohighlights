@@ -2,6 +2,7 @@
 
 #include "DemoParser.h"
 #include "Entities.h"
+#include "../filters/GameEventHandler.h"
 #include "../gamestate/GameState.h"
 #include "../sdk/demofiledump.h"
 

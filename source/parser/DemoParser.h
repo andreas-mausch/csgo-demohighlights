@@ -1,5 +1,6 @@
 #pragma once
 
+class GameEventHandler;
 class GameState;
 class MemoryStream;
 class MemoryBitStream;
@@ -13,7 +14,6 @@ struct player_info_t;
 
 #include <string>
 
-#include "../filters/GameEventHandler.h"
 #include "../sdk/demofiledump.h"
 #include "../utils/PointerVector.h"
 #include "../utils/Log.h"
