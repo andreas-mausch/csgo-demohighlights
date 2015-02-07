@@ -141,6 +141,10 @@ void DemoParser::gameEvent(CSVCMsg_GameEvent &message)
 	else if (descriptor.name() == "announce_phase_end")
 	{
 		gameState.switchTeams();
+		for (std::vector<GameEventHandler *>::iterator handler = gameEventHandlers.begin(); handler != gameEventHandlers.end(); handler++)
+		{
+			(*handler)->announcePhaseEnd();
+		}
 	}
 }
 
