@@ -336,6 +336,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\source\parser\GameEvent.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\source\parser\KillsFilter.cpp"
 					>
 				</File>
@@ -455,6 +459,10 @@
 				</File>
 				<File
 					RelativePath="..\source\parser\Entities.h"
+					>
+				</File>
+				<File
+					RelativePath="..\source\parser\GameEvent.h"
 					>
 				</File>
 				<File
