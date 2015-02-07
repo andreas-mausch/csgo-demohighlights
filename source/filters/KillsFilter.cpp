@@ -16,7 +16,7 @@ void KillsFilter::playerDeath(Player &victim, Player &attacker)
 	killsPerPlayer[attacker.getUserId()]++;
 }
 
-void KillsFilter::roundFreezeEnd()
+void KillsFilter::roundOfficiallyEnded()
 {
 	for (std::map<int, int>::iterator it = killsPerPlayer.begin(); it != killsPerPlayer.end(); it++)
 	{

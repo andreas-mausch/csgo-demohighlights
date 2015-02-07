@@ -18,6 +18,6 @@ public:
 	~KillsFilter();
 
 	virtual void playerDeath(Player &victim, Player &attacker);
-	virtual void roundFreezeEnd();
+	virtual void roundOfficiallyEnded();
 
 };
