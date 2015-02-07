@@ -16,6 +16,7 @@ struct player_info_t;
 
 #include "../filters/GameEventHandler.h"
 #include "../sdk/demofiledump.h"
+#include "../utils/PointerVector.h"
 
 struct DemoHeader
 {
@@ -46,7 +47,7 @@ private:
 	bool verbose;
 	std::ostream &outputStream;
 
-	std::vector<GameEventHandler *> gameEventHandlers;
+	PointerVector<GameEventHandler> gameEventHandlers;
 
 	// TODO remove / rename
 	void serverInfo(const char *bytes, int length);
