@@ -1,17 +1,26 @@
 #pragma once
 
+#include <vector>
 #include "GameEventHandler.h"
 
 class GameState;
 class Log;
 
+struct Clutch
+{
+	Player *player;
+	int aliveOwnTeam;
+	int aliveEnemyTeam;
+};
+
 class ClutchFilter : public GameEventHandler
 {
 private:
-	Player *clutch;
-	int clutchCount;
+	std::vector<Clutch> possibleClutches;
 	GameState &gameState;
 	Log &log;
+
+	void addPossibleClutch(Player &player);
 
 public:
 	ClutchFilter(GameState &gameState, Log &log);

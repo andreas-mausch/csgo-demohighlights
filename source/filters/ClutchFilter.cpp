@@ -3,7 +3,7 @@
 #include "../parser/DemoParser.h"
 
 ClutchFilter::ClutchFilter(GameState &gameState, Log &log)
-: clutch(NULL), clutchCount(-1), gameState(gameState), log(log)
+: gameState(gameState), log(log)
 {
 }
 
@@ -11,32 +11,50 @@ ClutchFilter::~ClutchFilter()
 {
 }
 
+void ClutchFilter::addPossibleClutch(Player &player)
+{
+	Clutch clutch;
+	clutch.player = &player;
+	clutch.aliveOwnTeam = gameState.getPlayersAlive(player.getTeam());
+	clutch.aliveEnemyTeam = gameState.getPlayersAlive(getOppositeTeam(player.getTeam()));
+
+	bool playerHasAClutchAlready = false;
+	for (std::vector<Clutch>::iterator clutch = possibleClutches.begin(); clutch != possibleClutches.end(); clutch++)
+	{
+		if (clutch->player->getUserId() == player.getUserId())
+		{
+			playerHasAClutchAlready = true;
+			break;
+		}
+	}
+
+	if (!playerHasAClutchAlready)
+	{
+		possibleClutches.push_back(clutch);
+	}
+}
+
 void ClutchFilter::playerDeath(Player &victim, Player &attacker)
 {
-	if (clutch == NULL)
-	{
-		std::vector<Player> &players = gameState.getPlayers();
+	std::vector<Player> &players = gameState.getPlayers();
 
-		if (gameState.getPlayersAlive(CounterTerrorists) == 1 && gameState.getPlayersAlive(Terrorists) > 0)
+	if (gameState.getPlayersAlive(CounterTerrorists) == 1 && gameState.getPlayersAlive(Terrorists) > 0)
+	{
+		for (std::vector<Player>::iterator player = players.begin(); player != players.end(); player++)
 		{
-			for (std::vector<Player>::iterator player = players.begin(); player != players.end(); player++)
+			if (player->isAlive() && player->getTeam() == CounterTerrorists)
 			{
-				if (player->isAlive() && player->getTeam() == CounterTerrorists)
-				{
-					clutch = &(*player);
-					clutchCount = gameState.getPlayersAlive(Terrorists);
-				}
+				addPossibleClutch(*player);
 			}
 		}
-		else if (gameState.getPlayersAlive(Terrorists) == 1 && gameState.getPlayersAlive(CounterTerrorists) > 0)
+	}
+	if (gameState.getPlayersAlive(Terrorists) == 1 && gameState.getPlayersAlive(CounterTerrorists) > 0)
+	{
+		for (std::vector<Player>::iterator player = players.begin(); player != players.end(); player++)
 		{
-			for (std::vector<Player>::iterator player = players.begin(); player != players.end(); player++)
+			if (player->isAlive() && player->getTeam() == Terrorists)
 			{
-				if (player->isAlive() && player->getTeam() == Terrorists)
-				{
-					clutch = &(*player);
-					clutchCount = gameState.getPlayersAlive(CounterTerrorists);
-				}
+				addPossibleClutch(*player);
 			}
 		}
 	}
@@ -44,13 +62,16 @@ void ClutchFilter::playerDeath(Player &victim, Player &attacker)
 
 void ClutchFilter::roundFreezeEnd()
 {
-	clutch = NULL;
+	possibleClutches.clear();
 }
 
 void ClutchFilter::roundEnd(Team winner)
 {
-	if (clutch && clutch->getTeam() == winner)
+	for (std::vector<Clutch>::iterator clutch = possibleClutches.begin(); clutch != possibleClutches.end(); clutch++)
 	{
-		log.log("CLUTCH WON %d:%d - 1vs%d: %s (%s)", gameState.getRoundsWon(Terrorists), gameState.getRoundsWon(CounterTerrorists), clutchCount, clutch->getName().c_str(), toString(winner).c_str());
+		if (clutch->player->getTeam() == winner)
+		{
+			log.log("CLUTCH WON %d:%d - %dvs%d: %s (%s)", gameState.getRoundsWon(Terrorists), gameState.getRoundsWon(CounterTerrorists), clutch->aliveOwnTeam, clutch->aliveEnemyTeam, clutch->player->getName().c_str(), toString(winner).c_str());
+		}
 	}
 }
