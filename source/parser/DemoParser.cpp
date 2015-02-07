@@ -33,48 +33,54 @@ void DemoParser::parsePacket2(MemoryStream &demo, int length)
 		case net_Tick:
 			demo.seekg(messageLength, std::ios_base::cur);
 			break;
-		case svc_ServerInfo: {
+		case svc_ServerInfo:
+		{
 			char *bytes = new char[messageLength];
 			demo.readBytes(bytes, messageLength);
 			serverInfo(bytes, messageLength);
-							 } break;
-		case svc_CreateStringTable: {
+		} break;
+		case svc_CreateStringTable:
+		{
 			char *bytes = new char[messageLength];
 			demo.readBytes(bytes, messageLength);
 			CSVCMsg_CreateStringTable message;
 			message.ParseFromArray(bytes, messageLength);
 			createStringTable(message);
-									} break;
-		case svc_UpdateStringTable: {
+		} break;
+		case svc_UpdateStringTable:
+		{
 			char *bytes = new char[messageLength];
 			demo.readBytes(bytes, messageLength);
 			CSVCMsg_UpdateStringTable message;
 			message.ParseFromArray(bytes, messageLength);
 			updateStringTable(message);
-									} break;
-		case svc_GameEvent: {
+		} break;
+		case svc_GameEvent:
+		{
 			char *bytes = new char[messageLength];
 			demo.readBytes(bytes, messageLength);
 			CSVCMsg_GameEvent message;
 			message.ParseFromArray(bytes, messageLength);
 			gameEvent(message);
-							} break;
-		case svc_GameEventList: {
+		} break;
+		case svc_GameEventList:
+		{
 			char *bytes = new char[messageLength];
 			demo.readBytes(bytes, messageLength);
 			CSVCMsg_GameEventList message;
 			message.ParseFromArray(bytes, messageLength);
 			gameEventList(message);
-								} break;
-		case svc_PacketEntities: {
+		} break;
+		case svc_PacketEntities:
+		{
 			char *bytes = new char[messageLength];
 			demo.readBytes(bytes, messageLength);
 			CSVCMsg_PacketEntities message;
 			message.ParseFromArray(bytes, messageLength);
 			packetEntities(message);
-								 } break;
+		} break;
 		default:
-			// unhandledCommand(string_format("message command: default %d", command));
+			// unhandledCommand(formatString("message command: default %d", command));
 			demo.seekg(messageLength, std::ios_base::cur);
 		}
 	}
@@ -108,9 +114,6 @@ void DemoParser::parseStringtable(MemoryBitStream &stringtables)
 
 			delete[] data;
 		}
-		else
-		{
-		}
 	}
 
 	bool clientSideData = stringtables.readBit();
@@ -129,9 +132,6 @@ void DemoParser::parseStringtable(MemoryBitStream &stringtables)
 				unsigned char *data = new unsigned char[userDataLength + 4];
 				stringtables.readBytes(data, userDataLength);
 				delete[] data;
-			}
-			else
-			{
 			}
 		}
 	}
