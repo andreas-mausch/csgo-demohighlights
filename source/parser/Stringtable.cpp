@@ -189,3 +189,70 @@ void DemoParser::updateStringTable(CSVCMsg_UpdateStringTable &message)
 		}
 	}
 }
+
+void DemoParser::parseStringtables(MemoryStream &demo)
+{
+	int length = demo.readInt();
+	log.logVerbose("parseStringtables: %d", length);
+	char *stringtablesBytes = new char[length];
+	demo.readBytes(stringtablesBytes, length);
+	MemoryBitStream stringtables(stringtablesBytes, length);
+	int tableCount = stringtables.readByte();
+	log.logVerbose("Parse stringtables tableCount: %d", tableCount);
+
+	for (int i = 0; i < tableCount; i++)
+	{
+		parseStringtable(stringtables);
+	}
+
+	delete[] stringtablesBytes;
+}
+
+void DemoParser::parseStringtable(MemoryBitStream &stringtables)
+{
+	std::string tableName = stringtables.readNullTerminatedString(256);
+	int wordCount = stringtables.readWord();
+	bool userInfo = tableName == "userinfo";
+
+	log.logVerbose("parseStringtable: %s / %d", tableName.c_str(), wordCount);
+
+	for (int i = 0; i < wordCount; i++)
+	{
+		std::string name = stringtables.readNullTerminatedString(4096);
+
+		bool hasUserData = stringtables.readBit();
+		if (hasUserData)
+		{
+			int userDataLength = stringtables.readWord();
+			unsigned char *data = new unsigned char[ userDataLength + 4 ];
+			stringtables.readBytes(data, userDataLength);
+
+			if (userInfo)
+			{
+				updatePlayer(i + 1, reinterpret_cast<const player_info_t *>(data));
+			}
+
+			delete[] data;
+		}
+	}
+
+	bool clientSideData = stringtables.readBit();
+
+	if (clientSideData)
+	{
+		for (int i = 0; i < wordCount; i++)
+		{
+			std::string name = stringtables.readNullTerminatedString(4096);
+			log.logVerbose("\tname: ", name.c_str());
+
+			bool hasUserData = stringtables.readBit();
+			if (hasUserData)
+			{
+				int userDataLength = stringtables.readWord();
+				unsigned char *data = new unsigned char[userDataLength + 4];
+				stringtables.readBytes(data, userDataLength);
+				delete[] data;
+			}
+		}
+	}
+}

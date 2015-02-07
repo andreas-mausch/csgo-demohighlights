@@ -14,6 +14,125 @@
 #include "../utils/EndianConverter.h"
 #include "../utils/StringFormat.h"
 
+DemoParser::DemoParser(GameState &gameState, bool verbose)
+: gameState(gameState), log(std::cout, verbose)
+{
+	gameEventHandlers.push_back(new PlayerConnectHandler(gameState));
+	gameEventHandlers.push_back(new ClutchFilter(gameState, log));
+	gameEventHandlers.push_back(new KillsFilter(gameState, log));
+}
+
+DemoParser::~DemoParser()
+{
+}
+
+DemoHeader DemoParser::parseHeader(MemoryStream &demo)
+{
+	DemoHeader header;
+	header.filestamp = demo.readFixedLengthString(8);
+	header.protocol = demo.readInt();
+	header.networkProtocol = demo.readInt();
+	header.serverName = demo.readFixedLengthString(MAX_OSPATH);
+	header.clientName = demo.readFixedLengthString(MAX_OSPATH);
+	header.mapName = demo.readFixedLengthString(MAX_OSPATH);
+	header.gameDirectory = demo.readFixedLengthString(MAX_OSPATH);
+	header.playbackTime = demo.readFloat();
+	header.playbackTicks = demo.readInt();
+	header.playbackFrames = demo.readInt();
+	header.signonlength = demo.readInt();
+
+	return header;
+}
+
+void DemoParser::parsePacket(MemoryStream &demo)
+{
+	int position = demo.tellg();
+	democmdinfo_t cmdinfo;
+	demo.readBytes(&cmdinfo, sizeof(democmdinfo_t));
+	int sequenceNumberIn = demo.readInt();
+	int sequenceNumberOut = demo.readInt();
+	int length = demo.readInt();
+	log.logVerbose("Parse packet. Length: %d at %d / %d", length, position, demo.tellg());
+	parsePacket2(demo, length);
+}
+
+void DemoParser::parseDatatables(MemoryStream &demo)
+{
+	int length = demo.readInt();
+	log.logVerbose("Parse datatables: %d", length);
+	char *datatablesBytes = new char[length];
+	demo.readBytes(datatablesBytes, length);
+	MemoryBitStream datatables(datatablesBytes, length);
+	ParseDataTable(datatables);
+	delete[] datatablesBytes;
+}
+
+void DemoParser::unhandledCommand(const std::string &description)
+{
+	log.log("ERROR Unhandled command: %s", description.c_str());
+	throw std::bad_exception(description.c_str());
+}
+
+void DemoParser::serverInfo(const char *bytes, int length)
+{
+	CSVCMsg_ServerInfo serverInfo;
+	serverInfo.ParseFromArray(bytes, length);
+	delete[] bytes;
+	log.logVerbose("serverInfo: %d, %s", length, serverInfo.DebugString().c_str());
+}
+
+void DemoParser::updatePlayer(int entityId, const player_info_t *playerinfo)
+{
+	int userId = endian_swap(playerinfo->userID);
+	Player player(entityId, userId, playerinfo->name);
+	gameState.updatePlayer(player);
+	log.logVerbose("\tplayer name: %s / %d", playerinfo->name, userId);
+}
+
+bool DemoParser::parseNextTick(MemoryStream &demo)
+{
+	unsigned char command = demo.readByte();
+	int tick = demo.readInt();
+	gameState.setTick(tick);
+	unsigned char playerSlot = demo.readByte();
+
+	switch (command)
+	{
+	case dem_signon:
+	case dem_packet:
+		parsePacket(demo);
+		break;
+	case dem_synctick:
+		break;
+	case dem_consolecmd:
+		unhandledCommand(formatString("command: default %d", command));
+		break;
+	case dem_usercmd:
+		unhandledCommand(formatString("command: default %d", command));
+		break;
+	case dem_datatables:
+		parseDatatables(demo);
+		break;
+	case dem_stop:
+		log.log("Game ended %d:%d", gameState.getRoundsWon(Terrorists), gameState.getRoundsWon(CounterTerrorists));
+		return false;
+	case dem_customdata:
+		unhandledCommand(formatString("command: default %d", command));
+		break;
+	case dem_stringtables:
+		parseStringtables(demo);
+		break;
+	default:
+		unhandledCommand(formatString("command: default %d", command));
+	}
+
+	gameState.setPositionInStream(demo.tellg());
+
+	log.logVerbose("GameState: %d / %d", tick, demo.tellg());
+
+	return true;
+}
+
 void DemoParser::parsePacket2(MemoryStream &demo, int length)
 {
 	int destination = (int)demo.tellg() + length;
@@ -81,190 +200,4 @@ void DemoParser::parsePacket2(MemoryStream &demo, int length)
 	}
 
 	demo.seekg(destination, std::ios_base::beg);
-}
-
-void DemoParser::parseStringtable(MemoryBitStream &stringtables)
-{
-	std::string tableName = stringtables.readNullTerminatedString(256);
-	int wordCount = stringtables.readWord();
-	bool userInfo = tableName == "userinfo";
-
-	log.logVerbose("parseStringtable: %s / %d", tableName.c_str(), wordCount);
-
-	for (int i = 0; i < wordCount; i++)
-	{
-		std::string name = stringtables.readNullTerminatedString(4096);
-
-		bool hasUserData = stringtables.readBit();
-		if (hasUserData)
-		{
-			int userDataLength = stringtables.readWord();
-			unsigned char *data = new unsigned char[ userDataLength + 4 ];
-			stringtables.readBytes(data, userDataLength);
-
-			if (userInfo)
-			{
-				updatePlayer(i + 1, reinterpret_cast<const player_info_t *>(data));
-			}
-
-			delete[] data;
-		}
-	}
-
-	bool clientSideData = stringtables.readBit();
-
-	if (clientSideData)
-	{
-		for (int i = 0; i < wordCount; i++)
-		{
-			std::string name = stringtables.readNullTerminatedString(4096);
-			log.logVerbose("\tname: ", name.c_str());
-
-			bool hasUserData = stringtables.readBit();
-			if (hasUserData)
-			{
-				int userDataLength = stringtables.readWord();
-				unsigned char *data = new unsigned char[userDataLength + 4];
-				stringtables.readBytes(data, userDataLength);
-				delete[] data;
-			}
-		}
-	}
-}
-
-DemoParser::DemoParser(GameState &gameState, bool verbose)
-: gameState(gameState), log(std::cout, verbose)
-{
-	gameEventHandlers.push_back(new PlayerConnectHandler(gameState));
-	gameEventHandlers.push_back(new ClutchFilter(gameState, log));
-	gameEventHandlers.push_back(new KillsFilter(gameState, log));
-}
-
-DemoParser::~DemoParser()
-{
-}
-
-DemoHeader DemoParser::parseHeader(MemoryStream &demo)
-{
-	DemoHeader header;
-	header.filestamp = demo.readFixedLengthString(8);
-	header.protocol = demo.readInt();
-	header.networkProtocol = demo.readInt();
-	header.serverName = demo.readFixedLengthString(MAX_OSPATH);
-	header.clientName = demo.readFixedLengthString(MAX_OSPATH);
-	header.mapName = demo.readFixedLengthString(MAX_OSPATH);
-	header.gameDirectory = demo.readFixedLengthString(MAX_OSPATH);
-	header.playbackTime = demo.readFloat();
-	header.playbackTicks = demo.readInt();
-	header.playbackFrames = demo.readInt();
-	header.signonlength = demo.readInt();
-
-	return header;
-}
-
-void DemoParser::parsePacket(MemoryStream &demo)
-{
-	int position = demo.tellg();
-	democmdinfo_t cmdinfo;
-	demo.readBytes(&cmdinfo, sizeof(democmdinfo_t));
-	int sequenceNumberIn = demo.readInt();
-	int sequenceNumberOut = demo.readInt();
-	int length = demo.readInt();
-	log.logVerbose("Parse packet. Length: %d at %d / %d", length, position, demo.tellg());
-	parsePacket2(demo, length);
-}
-
-void DemoParser::parseDatatables(MemoryStream &demo)
-{
-	int length = demo.readInt();
-	log.logVerbose("Parse datatables: %d", length);
-	char *datatablesBytes = new char[length];
-	demo.readBytes(datatablesBytes, length);
-	MemoryBitStream datatables(datatablesBytes, length);
-	ParseDataTable(datatables);
-	delete[] datatablesBytes;
-}
-
-void DemoParser::parseStringtables(MemoryStream &demo)
-{
-	int length = demo.readInt();
-	log.logVerbose("parseStringtables: %d", length);
-	char *stringtablesBytes = new char[length];
-	demo.readBytes(stringtablesBytes, length);
-	MemoryBitStream stringtables(stringtablesBytes, length);
-	int tableCount = stringtables.readByte();
-	log.logVerbose("Parse stringtables tableCount: %d", tableCount);
-
-	for (int i = 0; i < tableCount; i++)
-	{
-		parseStringtable(stringtables);
-	}
-
-	delete[] stringtablesBytes;
-}
-
-void DemoParser::unhandledCommand(const std::string &description)
-{
-	log.log("ERROR Unhandled command: %s", description.c_str());
-	throw std::bad_exception(description.c_str());
-}
-
-void DemoParser::serverInfo(const char *bytes, int length)
-{
-	CSVCMsg_ServerInfo serverInfo;
-	serverInfo.ParseFromArray(bytes, length);
-	delete[] bytes;
-	log.logVerbose("serverInfo: %d, %s", length, serverInfo.DebugString().c_str());
-}
-
-void DemoParser::updatePlayer(int entityId, const player_info_t *playerinfo)
-{
-	int userId = endian_swap(playerinfo->userID);
-	Player player(entityId, userId, playerinfo->name);
-	gameState.updatePlayer(player);
-	log.logVerbose("\tplayer name: %s / %d", playerinfo->name, userId);
-}
-
-bool DemoParser::parseNextTick(MemoryStream &demo)
-{
-	unsigned char command = demo.readByte();
-	int tick = demo.readInt();
-	gameState.setTick(tick);
-	unsigned char playerSlot = demo.readByte();
-
-	switch (command)
-	{
-	case dem_signon:
-	case dem_packet:
-		parsePacket(demo);
-		break;
-	case dem_synctick:
-		break;
-	case dem_consolecmd:
-		unhandledCommand(formatString("command: default %d", command));
-		break;
-	case dem_usercmd:
-		unhandledCommand(formatString("command: default %d", command));
-		break;
-	case dem_datatables:
-		parseDatatables(demo);
-		break;
-	case dem_stop:
-		log.log("Game ended %d:%d", gameState.getRoundsWon(Terrorists), gameState.getRoundsWon(CounterTerrorists));
-		return false;
-	case dem_customdata:
-		unhandledCommand(formatString("command: default %d", command));
-		break;
-	case dem_stringtables:
-		parseStringtables(demo);
-		break;
-	default:
-		unhandledCommand(formatString("command: default %d", command));
-	}
-
-	gameState.setPositionInStream(demo.tellg());
-
-	log.logVerbose("GameState: %d / %d", tick, demo.tellg());
-
-	return true;
 }
