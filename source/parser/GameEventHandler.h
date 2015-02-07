@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include "../gamestate/Team.h"
 
 class Player;
 
@@ -14,7 +15,7 @@ public:
 	virtual void bombPlanted() {}
 	virtual void roundStart() {}
 	virtual void roundFreezeEnd() {}
-	virtual void roundEnd() {}
+	virtual void roundEnd(Team winner) {}
 	virtual void playerConnect(const std::string &name, int entityId, int userId) {}
 	virtual void playerDisconnect(int userId) {}
 	virtual void announcePhaseEnd() {}

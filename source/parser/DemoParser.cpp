@@ -1,6 +1,7 @@
 #include <sstream>
 #include <stdarg.h>
 
+#include "ClutchFilter.h"
 #include "DemoParser.h"
 #include "Datatable.h"
 #include "Entities.h"
@@ -40,8 +41,6 @@ std::string toString(Player &player)
 }
 
 int roundStart = -1;
-Player *clutch = NULL;
-int clutchCount = 0;
 
 void DemoParser::gameEvent(CSVCMsg_GameEvent &message)
 {
@@ -54,40 +53,14 @@ void DemoParser::gameEvent(CSVCMsg_GameEvent &message)
 		int tickDif = gameState.getTick() - roundStart;
 		Player &attacker = gameState.findPlayerByUserId(getValue(message, descriptor, "attacker").val_short());
 		Player &userid = gameState.findPlayerByUserId(getValue(message, descriptor, "userid").val_short());
+		userid.setAlive(false);
 
 		for (std::vector<GameEventHandler *>::iterator handler = gameEventHandlers.begin(); handler != gameEventHandlers.end(); handler++)
 		{
 			(*handler)->playerDeath(userid, attacker);
 		}
 
-		userid.setAlive(false);
 		logVerbose("player_death: %s killed %s", toString(attacker).c_str(), toString(userid).c_str());
-
-		if (clutch == NULL)
-		{
-			if (gameState.getPlayersAlive(CounterTerrorists) == 1 && gameState.getPlayersAlive(Terrorists) > 0)
-			{
-				for (std::vector<Player>::iterator player = players.begin(); player != players.end(); player++)
-				{
-					if (player->isAlive() && player->getTeam() == CounterTerrorists)
-					{
-						clutch = &(*player);
-						clutchCount = gameState.getPlayersAlive(Terrorists);
-					}
-				}
-			}
-			else if (gameState.getPlayersAlive(Terrorists) == 1 && gameState.getPlayersAlive(CounterTerrorists) > 0)
-			{
-				for (std::vector<Player>::iterator player = players.begin(); player != players.end(); player++)
-				{
-					if (player->isAlive() && player->getTeam() == Terrorists)
-					{
-						clutch = &(*player);
-						clutchCount = gameState.getPlayersAlive(CounterTerrorists);
-					}
-				}
-			}
-		}
 	}
 	else if (descriptor.name() == "bomb_planted")
 	{
@@ -112,7 +85,6 @@ void DemoParser::gameEvent(CSVCMsg_GameEvent &message)
 		}
 
 		roundStart = gameState.getTick();
-		clutch = NULL;
 
 		for (std::vector<Player>::iterator player = players.begin(); player != players.end(); player++)
 		{
@@ -138,20 +110,14 @@ void DemoParser::gameEvent(CSVCMsg_GameEvent &message)
 	}
 	else if (descriptor.name() == "round_end")
 	{
-		for (std::vector<GameEventHandler *>::iterator handler = gameEventHandlers.begin(); handler != gameEventHandlers.end(); handler++)
-		{
-			(*handler)->roundEnd();
-		}
-
 		Team winner = fromEngineInteger(getValue(message, descriptor, "winner").val_byte());
 		logVerbose("%s %d:%d", toString(winner).c_str(), gameState.getPlayersAlive(Terrorists), gameState.getPlayersAlive(CounterTerrorists));
-
-		if (clutch && clutch->getTeam() == winner)
-		{
-			log("CLUTCH WON %d:%d - 1vs%d: %s; %s", gameState.getRoundsWon(Terrorists), gameState.getRoundsWon(CounterTerrorists), clutchCount, clutch->getName().c_str(), toString(winner).c_str());
-		}
-
 		gameState.addWonRound(winner);
+
+		for (std::vector<GameEventHandler *>::iterator handler = gameEventHandlers.begin(); handler != gameEventHandlers.end(); handler++)
+		{
+			(*handler)->roundEnd(winner);
+		}
 	}
 	else if (descriptor.name() == "player_connect")
 	{
@@ -306,6 +272,7 @@ DemoParser::DemoParser(GameState &gameState, bool verbose)
 : gameState(gameState), verbose(verbose), outputStream(std::cout)
 {
 	gameEventHandlers.push_back(new PlayerConnectHandler(gameState));
+	gameEventHandlers.push_back(new ClutchFilter(gameState, *this));
 }
 
 DemoParser::~DemoParser()

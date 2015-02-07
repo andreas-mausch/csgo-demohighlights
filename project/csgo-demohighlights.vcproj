@@ -320,6 +320,10 @@
 				Name="parser"
 				>
 				<File
+					RelativePath="..\source\parser\ClutchFilter.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\source\parser\Datatable.cpp"
 					>
 				</File>
@@ -433,6 +437,10 @@
 			<Filter
 				Name="parser"
 				>
+				<File
+					RelativePath="..\source\parser\ClutchFilter.h"
+					>
+				</File>
 				<File
 					RelativePath="..\source\parser\Datatable.h"
 					>

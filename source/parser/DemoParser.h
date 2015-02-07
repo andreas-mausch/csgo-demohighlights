@@ -31,7 +31,13 @@ struct DemoHeader
 	int signonlength;
 };
 
-class DemoParser
+class Log
+{
+public:
+	virtual void log(const char *format, ...) = 0;
+};
+
+class DemoParser : public Log
 {
 private:
 	GameState &gameState;
@@ -55,7 +61,6 @@ private:
 	void updatePlayer(int entityId, const player_info_t *playerinfo);
 	void updatePlayer(int entityId, int userId, const std::string &name);
 
-	void log(const char *format, ...);
 	void logVargs(const std::string &format, va_list args);
 	void logVerbose(const char *format, ...);
 
@@ -70,4 +75,6 @@ public:
 	DemoHeader parseHeader(MemoryStream &demo);
 
 	bool parseNextTick(MemoryStream &demo);
+	void log(const char *format, ...);
+
 };
