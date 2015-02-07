@@ -8,7 +8,6 @@
 
 int roundStartTick = -1;
 bool matchStarted = false;
-Team winner = UnknownTeam;
 
 std::string toString(Player &player)
 {
@@ -102,23 +101,27 @@ void DemoParser::roundFreezeEnd(CSVCMsg_GameEvent &message, const CSVCMsg_GameEv
 
 void DemoParser::roundEnd(CSVCMsg_GameEvent &message, const CSVCMsg_GameEventList::descriptor_t& descriptor)
 {
-	winner = fromEngineInteger(getValue(message, descriptor, "winner").val_byte());
-	log.logVerbose("roundEnd %s %d:%d", toString(winner).c_str(), gameState.getPlayersAlive(Terrorists), gameState.getPlayersAlive(CounterTerrorists));
+	Team winner = fromEngineInteger(getValue(message, descriptor, "winner").val_byte());
+	log.logVerbose("roundEnd %s %d:%d (%d T's alive, %d CT's alive)", toString(winner).c_str(), gameState.getRoundsWon(Terrorists), gameState.getRoundsWon(CounterTerrorists), gameState.getPlayersAlive(Terrorists), gameState.getPlayersAlive(CounterTerrorists));
 
 	for (PointerVector<GameEventHandler>::iterator handler = gameEventHandlers.begin(); handler != gameEventHandlers.end(); handler++)
 	{
 		(*handler)->roundEnd(winner);
 	}
+
+	if (winner == Terrorists || winner == CounterTerrorists)
+	{
+		gameState.addWonRound(winner);
+	}
 }
 
 void DemoParser::roundOfficiallyEnded(CSVCMsg_GameEvent &message, const CSVCMsg_GameEventList::descriptor_t& descriptor)
 {
+	log.logVerbose("roundOfficiallyEnded");
 	for (PointerVector<GameEventHandler>::iterator handler = gameEventHandlers.begin(); handler != gameEventHandlers.end(); handler++)
 	{
 		(*handler)->roundOfficiallyEnded();
 	}
-
-	gameState.addWonRound(winner);
 }
 
 void DemoParser::playerConnect(CSVCMsg_GameEvent &message, const CSVCMsg_GameEventList::descriptor_t& descriptor)
@@ -145,11 +148,11 @@ void DemoParser::playerDisconnect(CSVCMsg_GameEvent &message, const CSVCMsg_Game
 void DemoParser::announcePhaseEnd(CSVCMsg_GameEvent &message, const CSVCMsg_GameEventList::descriptor_t& descriptor)
 {
 	log.logVerbose("announcePhaseEnd");
-	gameState.switchTeams();
 	for (PointerVector<GameEventHandler>::iterator handler = gameEventHandlers.begin(); handler != gameEventHandlers.end(); handler++)
 	{
 		(*handler)->announcePhaseEnd();
 	}
+	gameState.switchTeams();
 }
 
 void DemoParser::gameEvent(CSVCMsg_GameEvent &message)
