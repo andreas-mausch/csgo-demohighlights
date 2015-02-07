@@ -23,7 +23,7 @@ void KillsFilter::roundOfficiallyEnded()
 		if (it->second >= 3)
 		{
 			Player &player = gameState.findPlayerByUserId(it->first);
-			log.log("KILLS %d:%d - %dk %s (%s)", gameState.getRoundsWon(Terrorists), gameState.getRoundsWon(CounterTerrorists), it->second, player.getName().c_str(), toString(player.getTeam()).c_str());
+			log.log("KILLS %d:%d - %dK %s (%s)", gameState.getRoundsWon(Terrorists), gameState.getRoundsWon(CounterTerrorists), it->second, player.getName().c_str(), toString(player.getTeam()).c_str());
 		}
 	}
 
