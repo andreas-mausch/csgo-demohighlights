@@ -336,6 +336,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\source\parser\KillsFilter.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\source\parser\PlayerConnectHandler.cpp"
 					>
 				</File>
@@ -455,6 +459,10 @@
 				</File>
 				<File
 					RelativePath="..\source\parser\GameEventHandler.h"
+					>
+				</File>
+				<File
+					RelativePath="..\source\parser\KillsFilter.h"
 					>
 				</File>
 				<File

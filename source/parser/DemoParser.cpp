@@ -5,6 +5,7 @@
 #include "DemoParser.h"
 #include "Datatable.h"
 #include "Entities.h"
+#include "KillsFilter.h"
 #include "PlayerConnectHandler.h"
 #include "Stringtable.h"
 #include "../gamestate/GameState.h"
@@ -277,6 +278,7 @@ DemoParser::DemoParser(GameState &gameState, bool verbose)
 {
 	gameEventHandlers.push_back(new PlayerConnectHandler(gameState));
 	gameEventHandlers.push_back(new ClutchFilter(gameState, *this));
+	gameEventHandlers.push_back(new KillsFilter(gameState, *this));
 }
 
 DemoParser::~DemoParser()
@@ -352,7 +354,7 @@ void DemoParser::log(const char *format, ...)
 
 void DemoParser::logVargs(const std::string &format, va_list args)
 {
-	outputStream << "info: " << formatStringVargs(format, args) << std::endl;
+	outputStream << formatStringVargs(format, args) << std::endl;
 }
 
 void DemoParser::logVerbose(const char *format, ...)
