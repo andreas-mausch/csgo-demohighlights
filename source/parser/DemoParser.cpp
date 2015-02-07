@@ -113,12 +113,13 @@ void DemoParser::gameEvent(CSVCMsg_GameEvent &message)
 	{
 		Team winner = fromEngineInteger(getValue(message, descriptor, "winner").val_byte());
 		logVerbose("%s %d:%d", toString(winner).c_str(), gameState.getPlayersAlive(Terrorists), gameState.getPlayersAlive(CounterTerrorists));
-		gameState.addWonRound(winner);
 
 		for (std::vector<GameEventHandler *>::iterator handler = gameEventHandlers.begin(); handler != gameEventHandlers.end(); handler++)
 		{
 			(*handler)->roundEnd(winner);
 		}
+
+		gameState.addWonRound(winner);
 	}
 	else if (descriptor.name() == "player_connect")
 	{
