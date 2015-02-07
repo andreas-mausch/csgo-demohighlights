@@ -320,10 +320,6 @@
 				Name="parser"
 				>
 				<File
-					RelativePath="..\source\parser\ClutchFilter.cpp"
-					>
-				</File>
-				<File
 					RelativePath="..\source\parser\Datatable.cpp"
 					>
 				</File>
@@ -340,15 +336,23 @@
 					>
 				</File>
 				<File
-					RelativePath="..\source\parser\KillsFilter.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\source\parser\PlayerConnectHandler.cpp"
-					>
-				</File>
-				<File
 					RelativePath="..\source\parser\Stringtable.cpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="filters"
+				>
+				<File
+					RelativePath="..\source\filters\ClutchFilter.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\source\filters\KillsFilter.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\source\filters\PlayerConnectHandler.cpp"
 					>
 				</File>
 			</Filter>
@@ -446,10 +450,6 @@
 				Name="parser"
 				>
 				<File
-					RelativePath="..\source\parser\ClutchFilter.h"
-					>
-				</File>
-				<File
 					RelativePath="..\source\parser\Datatable.h"
 					>
 				</File>
@@ -466,19 +466,27 @@
 					>
 				</File>
 				<File
-					RelativePath="..\source\parser\GameEventHandler.h"
-					>
-				</File>
-				<File
-					RelativePath="..\source\parser\KillsFilter.h"
-					>
-				</File>
-				<File
-					RelativePath="..\source\parser\PlayerConnectHandler.h"
-					>
-				</File>
-				<File
 					RelativePath="..\source\parser\Stringtable.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="filters"
+				>
+				<File
+					RelativePath="..\source\filters\ClutchFilter.h"
+					>
+				</File>
+				<File
+					RelativePath="..\source\filters\GameEventHandler.h"
+					>
+				</File>
+				<File
+					RelativePath="..\source\filters\KillsFilter.h"
+					>
+				</File>
+				<File
+					RelativePath="..\source\filters\PlayerConnectHandler.h"
 					>
 				</File>
 			</Filter>

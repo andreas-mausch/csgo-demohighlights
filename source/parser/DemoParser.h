@@ -14,7 +14,7 @@ struct player_info_t;
 #include <string>
 #include <vector>
 
-#include "GameEventHandler.h"
+#include "../filters/GameEventHandler.h"
 #include "../sdk/demofiledump.h"
 
 struct DemoHeader

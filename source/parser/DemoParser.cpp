@@ -1,21 +1,18 @@
 #include <stdarg.h>
 
-#include "ClutchFilter.h"
 #include "DemoParser.h"
 #include "Datatable.h"
 #include "Entities.h"
-#include "KillsFilter.h"
-#include "PlayerConnectHandler.h"
 #include "Stringtable.h"
+#include "../filters/ClutchFilter.h"
+#include "../filters/KillsFilter.h"
+#include "../filters/PlayerConnectHandler.h"
 #include "../gamestate/GameState.h"
-
 #include "../sdk/demofile.h"
 #include "../sdk/demofiledump.h"
-
 #include "../streams/MemoryStream.h"
 #include "../streams/MemoryBitStream.h"
 #include "../streams/MemoryStreamBuffer.h"
-
 #include "../utils/EndianConverter.h"
 #include "../utils/StringFormat.h"
 

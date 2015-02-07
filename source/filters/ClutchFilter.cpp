@@ -1,6 +1,6 @@
 #include "ClutchFilter.h"
-#include "DemoParser.h"
 #include "../gamestate/GameState.h"
+#include "../parser/DemoParser.h"
 
 ClutchFilter::ClutchFilter(GameState &gameState, Log &log)
 : clutch(NULL), clutchCount(-1), gameState(gameState), log(log)
