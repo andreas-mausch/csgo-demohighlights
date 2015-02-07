@@ -15,6 +15,7 @@ struct player_info_t;
 #include <vector>
 
 #include "GameEventHandler.h"
+#include "../sdk/demofiledump.h"
 
 struct DemoHeader
 {
@@ -63,6 +64,15 @@ private:
 
 	void logVargs(const std::string &format, va_list args);
 	void logVerbose(const char *format, ...);
+
+	void playerDeath(CSVCMsg_GameEvent &message, const CSVCMsg_GameEventList::descriptor_t& descriptor);
+	void bombPlanted(CSVCMsg_GameEvent &message, const CSVCMsg_GameEventList::descriptor_t& descriptor);
+	void roundStart(CSVCMsg_GameEvent &message, const CSVCMsg_GameEventList::descriptor_t& descriptor);
+	void roundFreezeEnd(CSVCMsg_GameEvent &message, const CSVCMsg_GameEventList::descriptor_t& descriptor);
+	void roundEnd(CSVCMsg_GameEvent &message, const CSVCMsg_GameEventList::descriptor_t& descriptor);
+	void playerConnect(CSVCMsg_GameEvent &message, const CSVCMsg_GameEventList::descriptor_t& descriptor);
+	void playerDisconnect(CSVCMsg_GameEvent &message, const CSVCMsg_GameEventList::descriptor_t& descriptor);
+	void announcePhaseEnd(CSVCMsg_GameEvent &message, const CSVCMsg_GameEventList::descriptor_t& descriptor);
 
 public:
 	DemoParser(GameState &gameState, bool verbose);
