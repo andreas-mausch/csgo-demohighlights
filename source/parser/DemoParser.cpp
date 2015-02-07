@@ -1,5 +1,3 @@
-#include <stdarg.h>
-
 #include "DemoParser.h"
 #include "Datatable.h"
 #include "Entities.h"
@@ -91,7 +89,7 @@ void DemoParser::parseStringtable(MemoryBitStream &stringtables)
 	int wordCount = stringtables.readWord();
 	bool userInfo = tableName == "userinfo";
 
-	logVerbose("parseStringtable: %s / %d", tableName.c_str(), wordCount);
+	log.logVerbose("parseStringtable: %s / %d", tableName.c_str(), wordCount);
 
 	for (int i = 0; i < wordCount; i++)
 	{
@@ -120,7 +118,7 @@ void DemoParser::parseStringtable(MemoryBitStream &stringtables)
 		for (int i = 0; i < wordCount; i++)
 		{
 			std::string name = stringtables.readNullTerminatedString(4096);
-			logVerbose("\tname: ", name.c_str());
+			log.logVerbose("\tname: ", name.c_str());
 
 			bool hasUserData = stringtables.readBit();
 			if (hasUserData)
@@ -135,11 +133,11 @@ void DemoParser::parseStringtable(MemoryBitStream &stringtables)
 }
 
 DemoParser::DemoParser(GameState &gameState, bool verbose)
-: gameState(gameState), verbose(verbose), outputStream(std::cout)
+: gameState(gameState), log(std::cout, verbose)
 {
 	gameEventHandlers.push_back(new PlayerConnectHandler(gameState));
-	gameEventHandlers.push_back(new ClutchFilter(gameState, *this));
-	gameEventHandlers.push_back(new KillsFilter(gameState, *this));
+	gameEventHandlers.push_back(new ClutchFilter(gameState, log));
+	gameEventHandlers.push_back(new KillsFilter(gameState, log));
 }
 
 DemoParser::~DemoParser()
@@ -172,14 +170,14 @@ void DemoParser::parsePacket(MemoryStream &demo)
 	int sequenceNumberIn = demo.readInt();
 	int sequenceNumberOut = demo.readInt();
 	int length = demo.readInt();
-	logVerbose("Parse packet. Length: %d at %d / %d", length, position, demo.tellg());
+	log.logVerbose("Parse packet. Length: %d at %d / %d", length, position, demo.tellg());
 	parsePacket2(demo, length);
 }
 
 void DemoParser::parseDatatables(MemoryStream &demo)
 {
 	int length = demo.readInt();
-	logVerbose("Parse datatables: %d", length);
+	log.logVerbose("Parse datatables: %d", length);
 	char *datatablesBytes = new char[length];
 	demo.readBytes(datatablesBytes, length);
 	MemoryBitStream datatables(datatablesBytes, length);
@@ -190,12 +188,12 @@ void DemoParser::parseDatatables(MemoryStream &demo)
 void DemoParser::parseStringtables(MemoryStream &demo)
 {
 	int length = demo.readInt();
-	logVerbose("parseStringtables: %d", length);
+	log.logVerbose("parseStringtables: %d", length);
 	char *stringtablesBytes = new char[length];
 	demo.readBytes(stringtablesBytes, length);
 	MemoryBitStream stringtables(stringtablesBytes, length);
 	int tableCount = stringtables.readByte();
-	logVerbose("Parse stringtables tableCount: %d", tableCount);
+	log.logVerbose("Parse stringtables tableCount: %d", tableCount);
 
 	for (int i = 0; i < tableCount; i++)
 	{
@@ -205,33 +203,9 @@ void DemoParser::parseStringtables(MemoryStream &demo)
 	delete[] stringtablesBytes;
 }
 
-void DemoParser::log(const char *format, ...)
-{
-	va_list args;
-	va_start(args, format);
-	logVargs(format, args);
-	va_end(args);
-}
-
-void DemoParser::logVargs(const std::string &format, va_list args)
-{
-	outputStream << formatStringVargs(format, args) << std::endl;
-}
-
-void DemoParser::logVerbose(const char *format, ...)
-{
-	if (this->verbose)
-	{
-		va_list args;
-		va_start(args, format);
-		logVargs(format, args);
-		va_end(args);
-	}
-}
-
 void DemoParser::unhandledCommand(const std::string &description)
 {
-	outputStream << "ERROR Unhandled command: " << description << std::endl;
+	log.log("ERROR Unhandled command: %s", description.c_str());
 	throw std::bad_exception(description.c_str());
 }
 
@@ -240,7 +214,7 @@ void DemoParser::serverInfo(const char *bytes, int length)
 	CSVCMsg_ServerInfo serverInfo;
 	serverInfo.ParseFromArray(bytes, length);
 	delete[] bytes;
-	logVerbose("serverInfo: %d, %s", length, serverInfo.DebugString().c_str());
+	log.logVerbose("serverInfo: %d, %s", length, serverInfo.DebugString().c_str());
 }
 
 void DemoParser::updatePlayer(int entityId, const player_info_t *playerinfo)
@@ -248,7 +222,7 @@ void DemoParser::updatePlayer(int entityId, const player_info_t *playerinfo)
 	int userId = endian_swap(playerinfo->userID);
 	Player player(entityId, userId, playerinfo->name);
 	gameState.updatePlayer(player);
-	logVerbose("\tplayer name: %s / %d", playerinfo->name, userId);
+	log.logVerbose("\tplayer name: %s / %d", playerinfo->name, userId);
 }
 
 bool DemoParser::parseNextTick(MemoryStream &demo)
@@ -276,7 +250,7 @@ bool DemoParser::parseNextTick(MemoryStream &demo)
 		parseDatatables(demo);
 		break;
 	case dem_stop:
-		log("Game ended %d:%d", gameState.getRoundsWon(Terrorists), gameState.getRoundsWon(CounterTerrorists));
+		log.log("Game ended %d:%d", gameState.getRoundsWon(Terrorists), gameState.getRoundsWon(CounterTerrorists));
 		return false;
 	case dem_customdata:
 		unhandledCommand(formatString("command: default %d", command));
@@ -290,7 +264,7 @@ bool DemoParser::parseNextTick(MemoryStream &demo)
 
 	gameState.setPositionInStream(demo.tellg());
 
-	logVerbose("GameState: %d / %d", tick, demo.tellg());
+	log.logVerbose("GameState: %d / %d", tick, demo.tellg());
 
 	return true;
 }

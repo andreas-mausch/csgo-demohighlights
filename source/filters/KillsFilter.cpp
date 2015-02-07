@@ -1,6 +1,6 @@
 #include "KillsFilter.h"
 #include "../gamestate/GameState.h"
-#include "../parser/DemoParser.h"
+#include "../utils/Log.h"
 
 KillsFilter::KillsFilter(GameState &gameState, Log &log)
 : gameState(gameState), log(log)

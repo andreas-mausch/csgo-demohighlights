@@ -12,11 +12,11 @@ class CSVCMsg_UpdateStringTable;
 struct player_info_t;
 
 #include <string>
-#include <vector>
 
 #include "../filters/GameEventHandler.h"
 #include "../sdk/demofiledump.h"
 #include "../utils/PointerVector.h"
+#include "../utils/Log.h"
 
 struct DemoHeader
 {
@@ -33,19 +33,11 @@ struct DemoHeader
 	int signonlength;
 };
 
-class Log
-{
-public:
-	virtual void log(const char *format, ...) = 0;
-};
-
-class DemoParser : public Log
+class DemoParser
 {
 private:
+	Log log;
 	GameState &gameState;
-
-	bool verbose;
-	std::ostream &outputStream;
 
 	PointerVector<GameEventHandler> gameEventHandlers;
 
@@ -62,9 +54,6 @@ private:
 
 	void updatePlayer(int entityId, const player_info_t *playerinfo);
 	void updatePlayer(int entityId, int userId, const std::string &name);
-
-	void logVargs(const std::string &format, va_list args);
-	void logVerbose(const char *format, ...);
 
 	void playerDeath(CSVCMsg_GameEvent &message, const CSVCMsg_GameEventList::descriptor_t& descriptor);
 	void bombPlanted(CSVCMsg_GameEvent &message, const CSVCMsg_GameEventList::descriptor_t& descriptor);
@@ -87,6 +76,5 @@ public:
 	DemoHeader parseHeader(MemoryStream &demo);
 
 	bool parseNextTick(MemoryStream &demo);
-	void log(const char *format, ...);
 
 };

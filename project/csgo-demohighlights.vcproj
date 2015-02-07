@@ -296,6 +296,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\source\utils\Log.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\source\utils\StringFormat.cpp"
 					>
 				</File>
@@ -423,6 +427,10 @@
 				</File>
 				<File
 					RelativePath="..\source\utils\HexDump.h"
+					>
+				</File>
+				<File
+					RelativePath="..\source\utils\Log.h"
 					>
 				</File>
 				<File
