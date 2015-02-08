@@ -11,7 +11,7 @@ public:
 	GameEventHandler() {}
 	virtual ~GameEventHandler() {}
 
-	virtual void playerDeath(Player &victim, Player &attacker) {}
+	virtual void playerDeath(Player &victim, Player &attacker, bool headshot) {}
 	virtual void bombPlanted() {}
 	virtual void roundStart() {}
 	virtual void roundFreezeEnd() {}

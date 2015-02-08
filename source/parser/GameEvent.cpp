@@ -37,11 +37,12 @@ void DemoParser::playerDeath(CSVCMsg_GameEvent &message, const CSVCMsg_GameEvent
 		int tickDif = gameState.getTick() - roundStartTick;
 		Player &attacker = gameState.findPlayerByUserId(getValue(message, descriptor, "attacker").val_short());
 		Player &userid = gameState.findPlayerByUserId(getValue(message, descriptor, "userid").val_short());
+		bool headshot = getValue(message, descriptor, "headshot").val_bool();
 		userid.setAlive(false);
 
 		for (PointerVector<GameEventHandler>::iterator handler = gameEventHandlers.begin(); handler != gameEventHandlers.end(); handler++)
 		{
-			(*handler)->playerDeath(userid, attacker);
+			(*handler)->playerDeath(userid, attacker, headshot);
 		}
 
 		log.logVerbose("player_death: %s killed %s", toString(attacker).c_str(), toString(userid).c_str());

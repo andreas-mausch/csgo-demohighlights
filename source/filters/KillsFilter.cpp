@@ -3,7 +3,7 @@
 #include "../utils/Log.h"
 
 KillsFilter::KillsFilter(GameState &gameState, Log &log)
-: gameState(gameState), log(log)
+: gameState(gameState), log(log), tRoundsWon(-1), ctRoundsWon(-1)
 {
 }
 
@@ -11,9 +11,20 @@ KillsFilter::~KillsFilter()
 {
 }
 
-void KillsFilter::playerDeath(Player &victim, Player &attacker)
+void KillsFilter::roundStart()
+{
+	tRoundsWon = gameState.getRoundsWon(Terrorists);
+	ctRoundsWon = gameState.getRoundsWon(CounterTerrorists);
+}
+
+void KillsFilter::playerDeath(Player &victim, Player &attacker, bool headshot)
 {
 	killsPerPlayer[attacker.getUserId()]++;
+
+	if (headshot)
+	{
+		headshotsPerPlayer[attacker.getUserId()]++;
+	}
 }
 
 void KillsFilter::roundOfficiallyEnded()
@@ -23,9 +34,10 @@ void KillsFilter::roundOfficiallyEnded()
 		if (it->second >= 3)
 		{
 			Player &player = gameState.findPlayerByUserId(it->first);
-			log.log("KILLS %d:%d - %dK %s (%s)", gameState.getRoundsWon(Terrorists), gameState.getRoundsWon(CounterTerrorists), it->second, player.getName().c_str(), toString(player.getTeam()).c_str());
+			log.log("KILLS %d:%d - %dK (%d Headshots) %s (%s)", tRoundsWon, ctRoundsWon, it->second, headshotsPerPlayer[player.getUserId()], player.getName().c_str(), toString(player.getTeam()).c_str());
 		}
 	}
 
 	killsPerPlayer.clear();
+	headshotsPerPlayer.clear();
 }

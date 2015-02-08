@@ -34,7 +34,7 @@ void ClutchFilter::addPossibleClutch(Player &player)
 	}
 }
 
-void ClutchFilter::playerDeath(Player &victim, Player &attacker)
+void ClutchFilter::playerDeath(Player &victim, Player &attacker, bool headshot)
 {
 	std::vector<Player> &players = gameState.getPlayers();
 

@@ -12,12 +12,17 @@ private:
 	GameState &gameState;
 	Log &log;
 	std::map<int, int> killsPerPlayer;
+	std::map<int, int> headshotsPerPlayer;
+
+	int tRoundsWon;
+	int ctRoundsWon;
 
 public:
 	KillsFilter(GameState &gameState, Log &log);
 	~KillsFilter();
 
-	virtual void playerDeath(Player &victim, Player &attacker);
+	virtual void roundStart();
+	virtual void playerDeath(Player &victim, Player &attacker, bool headshot);
 	virtual void roundOfficiallyEnded();
 
 };

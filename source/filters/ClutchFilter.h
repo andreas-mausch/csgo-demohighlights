@@ -26,7 +26,7 @@ public:
 	ClutchFilter(GameState &gameState, Log &log);
 	~ClutchFilter();
 
-	virtual void playerDeath(Player &victim, Player &attacker);
+	virtual void playerDeath(Player &victim, Player &attacker, bool headshot);
 	virtual void roundFreezeEnd();
 	virtual void roundEnd(Team winner);
 
