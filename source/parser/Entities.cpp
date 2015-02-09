@@ -1,4 +1,5 @@
 #include "Datatable.h"
+#include "DemoParser.h"
 #include "Entities.h"
 
 #include "../streams/MemoryStream.h"
@@ -12,7 +13,6 @@
 std::vector< EntityEntry * > s_Entities;
 extern int s_nServerClassBits;
 
-void packetEntities(CSVCMsg_PacketEntities &message);
 EntityEntry *FindEntity( int nEntity );
 EntityEntry *AddEntity( int nEntity, uint32 uClass, uint32 uSerialNum );
 void RemoveEntity( int nEntity);
@@ -27,7 +27,7 @@ float ReadBitNormal(MemoryBitStream &stream);
 float ReadBitFloat(MemoryBitStream &stream);
 int64 ReadSignedVarInt64(MemoryBitStream &stream);
 
-void packetEntities(CSVCMsg_PacketEntities &message)
+void DemoParser::packetEntities(CSVCMsg_PacketEntities &message)
 {
 	MemoryBitStream stream(message.entity_data().c_str(), message.entity_data().size());
 

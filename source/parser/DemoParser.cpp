@@ -73,12 +73,9 @@ void DemoParser::unhandledCommand(const std::string &description)
 	throw std::bad_exception(description.c_str());
 }
 
-void DemoParser::serverInfo(const char *bytes, int length)
+void DemoParser::serverInfo(CSVCMsg_ServerInfo &message)
 {
-	CSVCMsg_ServerInfo serverInfo;
-	serverInfo.ParseFromArray(bytes, length);
-	delete[] bytes;
-	log.logVerbose("serverInfo: %d, %s", length, serverInfo.DebugString().c_str());
+	log.logVerbose("serverInfo: %s", message.DebugString().c_str());
 }
 
 void DemoParser::updatePlayer(int entityId, const player_info_t *playerinfo)
@@ -149,49 +146,27 @@ void DemoParser::parsePacket2(MemoryStream &demo, int length)
 			break;
 		case svc_ServerInfo:
 		{
-			char *bytes = new char[messageLength];
-			demo.readBytes(bytes, messageLength);
-			serverInfo(bytes, messageLength);
+			parseMessage<CSVCMsg_ServerInfo>(demo, messageLength, &DemoParser::serverInfo);
 		} break;
 		case svc_CreateStringTable:
 		{
-			char *bytes = new char[messageLength];
-			demo.readBytes(bytes, messageLength);
-			CSVCMsg_CreateStringTable message;
-			message.ParseFromArray(bytes, messageLength);
-			createStringTable(message);
+			parseMessage<CSVCMsg_CreateStringTable>(demo, messageLength, &DemoParser::createStringTable);
 		} break;
 		case svc_UpdateStringTable:
 		{
-			char *bytes = new char[messageLength];
-			demo.readBytes(bytes, messageLength);
-			CSVCMsg_UpdateStringTable message;
-			message.ParseFromArray(bytes, messageLength);
-			updateStringTable(message);
+			parseMessage<CSVCMsg_UpdateStringTable>(demo, messageLength, &DemoParser::updateStringTable);
 		} break;
 		case svc_GameEvent:
 		{
-			char *bytes = new char[messageLength];
-			demo.readBytes(bytes, messageLength);
-			CSVCMsg_GameEvent message;
-			message.ParseFromArray(bytes, messageLength);
-			gameEvent(message);
+			parseMessage<CSVCMsg_GameEvent>(demo, messageLength, &DemoParser::gameEvent);
 		} break;
 		case svc_GameEventList:
 		{
-			char *bytes = new char[messageLength];
-			demo.readBytes(bytes, messageLength);
-			CSVCMsg_GameEventList message;
-			message.ParseFromArray(bytes, messageLength);
-			gameEventList(message);
+			parseMessage<CSVCMsg_GameEventList>(demo, messageLength, &DemoParser::gameEventList);
 		} break;
 		case svc_PacketEntities:
 		{
-			char *bytes = new char[messageLength];
-			demo.readBytes(bytes, messageLength);
-			CSVCMsg_PacketEntities message;
-			message.ParseFromArray(bytes, messageLength);
-			packetEntities(message);
+			parseMessage<CSVCMsg_PacketEntities>(demo, messageLength, &DemoParser::packetEntities);
 		} break;
 		default:
 			// unhandledCommand(formatString("message command: default %d", command));

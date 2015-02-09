@@ -42,12 +42,13 @@ private:
 	PointerVector<GameEventHandler> gameEventHandlers;
 
 	// TODO remove / rename
-	void serverInfo(const char *bytes, int length);
+	void serverInfo(CSVCMsg_ServerInfo &message);
 	void parsePacket2(MemoryStream &demo, int length);
 	void gameEventList(CSVCMsg_GameEventList &message);
 	void gameEvent(CSVCMsg_GameEvent &message);
 	void createStringTable(CSVCMsg_CreateStringTable &message);
 	void updateStringTable(CSVCMsg_UpdateStringTable &message);
+	void packetEntities(CSVCMsg_PacketEntities &message);
 	void parseStringtable(MemoryBitStream &stringtables);
 	void parseStringTableUpdate(MemoryBitStream &stream, int entryCount, int maximumEntries, int userDataSize, int userDataSizeBits, int userDataFixedSize, bool userData);
 	void unhandledCommand(const std::string &description);
@@ -64,6 +65,16 @@ private:
 	void playerDisconnect(CSVCMsg_GameEvent &message, const CSVCMsg_GameEventList::descriptor_t& descriptor);
 	void announcePhaseEnd(CSVCMsg_GameEvent &message, const CSVCMsg_GameEventList::descriptor_t& descriptor);
 	void roundOfficiallyEnded(CSVCMsg_GameEvent &message, const CSVCMsg_GameEventList::descriptor_t& descriptor);
+
+	template<typename T> void parseMessage(MemoryStream &demo, int length, void (DemoParser::*function)(T &))
+	{
+		char *bytes = new char[length];
+		demo.readBytes(bytes, length);
+		T message;
+		message.ParseFromArray(bytes, length);
+		delete[] bytes;
+		(this->*function)(message);
+	}
 
 public:
 	DemoParser(GameState &gameState, bool verbose);
