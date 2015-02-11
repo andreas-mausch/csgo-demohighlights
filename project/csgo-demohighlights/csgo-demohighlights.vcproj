@@ -249,7 +249,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\source\Main.cpp"
+				RelativePath="..\..\source\csgo-demohighlights\Main.cpp"
 				>
 			</File>
 			<Filter
@@ -259,11 +259,11 @@
 					Name="generated"
 					>
 					<File
-						RelativePath="..\source\protobuf\generated\cstrike15_usermessages_public.pb.cc"
+						RelativePath="..\..\source\csgo-demohighlights\protobuf\generated\cstrike15_usermessages_public.pb.cc"
 						>
 					</File>
 					<File
-						RelativePath="..\source\protobuf\generated\netmessages_public.pb.cc"
+						RelativePath="..\..\source\csgo-demohighlights\protobuf\generated\netmessages_public.pb.cc"
 						>
 					</File>
 				</Filter>
@@ -272,15 +272,15 @@
 				Name="streams"
 				>
 				<File
-					RelativePath="..\source\streams\MemoryBitStream.cpp"
+					RelativePath="..\..\source\csgo-demohighlights\streams\MemoryBitStream.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\source\streams\MemoryStream.cpp"
+					RelativePath="..\..\source\csgo-demohighlights\streams\MemoryStream.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\source\streams\MemoryStreamBuffer.cpp"
+					RelativePath="..\..\source\csgo-demohighlights\streams\MemoryStreamBuffer.cpp"
 					>
 				</File>
 			</Filter>
@@ -288,19 +288,19 @@
 				Name="utils"
 				>
 				<File
-					RelativePath="..\source\utils\EndianConverter.cpp"
+					RelativePath="..\..\source\csgo-demohighlights\utils\EndianConverter.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\source\utils\HexDump.cpp"
+					RelativePath="..\..\source\csgo-demohighlights\utils\HexDump.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\source\utils\Log.cpp"
+					RelativePath="..\..\source\csgo-demohighlights\utils\Log.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\source\utils\StringFormat.cpp"
+					RelativePath="..\..\source\csgo-demohighlights\utils\StringFormat.cpp"
 					>
 				</File>
 			</Filter>
@@ -308,15 +308,15 @@
 				Name="gamestate"
 				>
 				<File
-					RelativePath="..\source\gamestate\GameState.cpp"
+					RelativePath="..\..\source\csgo-demohighlights\gamestate\GameState.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\source\gamestate\Player.cpp"
+					RelativePath="..\..\source\csgo-demohighlights\gamestate\Player.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\source\gamestate\Team.cpp"
+					RelativePath="..\..\source\csgo-demohighlights\gamestate\Team.cpp"
 					>
 				</File>
 			</Filter>
@@ -324,23 +324,23 @@
 				Name="parser"
 				>
 				<File
-					RelativePath="..\source\parser\Datatable.cpp"
+					RelativePath="..\..\source\csgo-demohighlights\parser\Datatable.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\source\parser\DemoParser.cpp"
+					RelativePath="..\..\source\csgo-demohighlights\parser\DemoParser.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\source\parser\Entities.cpp"
+					RelativePath="..\..\source\csgo-demohighlights\parser\Entities.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\source\parser\GameEvent.cpp"
+					RelativePath="..\..\source\csgo-demohighlights\parser\GameEvent.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\source\parser\Stringtable.cpp"
+					RelativePath="..\..\source\csgo-demohighlights\parser\Stringtable.cpp"
 					>
 				</File>
 			</Filter>
@@ -348,15 +348,15 @@
 				Name="filters"
 				>
 				<File
-					RelativePath="..\source\filters\ClutchFilter.cpp"
+					RelativePath="..\..\source\csgo-demohighlights\filters\ClutchFilter.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\source\filters\KillsFilter.cpp"
+					RelativePath="..\..\source\csgo-demohighlights\filters\KillsFilter.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\source\filters\PlayerConnectHandler.cpp"
+					RelativePath="..\..\source\csgo-demohighlights\filters\PlayerConnectHandler.cpp"
 					>
 				</File>
 			</Filter>
@@ -367,22 +367,22 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\source\Main.h"
+				RelativePath="..\..\source\csgo-demohighlights\Main.h"
 				>
 			</File>
 			<Filter
 				Name="sdk"
 				>
 				<File
-					RelativePath="..\source\sdk\demofile.h"
+					RelativePath="..\..\source\csgo-demohighlights\sdk\demofile.h"
 					>
 				</File>
 				<File
-					RelativePath="..\source\sdk\demofiledump.h"
+					RelativePath="..\..\source\csgo-demohighlights\sdk\demofiledump.h"
 					>
 				</File>
 				<File
-					RelativePath="..\source\sdk\demofilepropdecode.h"
+					RelativePath="..\..\source\csgo-demohighlights\sdk\demofilepropdecode.h"
 					>
 				</File>
 			</Filter>
@@ -393,11 +393,11 @@
 					Name="generated"
 					>
 					<File
-						RelativePath="..\source\protobuf\generated\cstrike15_usermessages_public.pb.h"
+						RelativePath="..\..\source\csgo-demohighlights\protobuf\generated\cstrike15_usermessages_public.pb.h"
 						>
 					</File>
 					<File
-						RelativePath="..\source\protobuf\generated\netmessages_public.pb.h"
+						RelativePath="..\..\source\csgo-demohighlights\protobuf\generated\netmessages_public.pb.h"
 						>
 					</File>
 				</Filter>
@@ -406,15 +406,15 @@
 				Name="streams"
 				>
 				<File
-					RelativePath="..\source\streams\MemoryBitStream.h"
+					RelativePath="..\..\source\csgo-demohighlights\streams\MemoryBitStream.h"
 					>
 				</File>
 				<File
-					RelativePath="..\source\streams\MemoryStream.h"
+					RelativePath="..\..\source\csgo-demohighlights\streams\MemoryStream.h"
 					>
 				</File>
 				<File
-					RelativePath="..\source\streams\MemoryStreamBuffer.h"
+					RelativePath="..\..\source\csgo-demohighlights\streams\MemoryStreamBuffer.h"
 					>
 				</File>
 			</Filter>
@@ -422,27 +422,27 @@
 				Name="utils"
 				>
 				<File
-					RelativePath="..\source\utils\EndianConverter.h"
+					RelativePath="..\..\source\csgo-demohighlights\utils\EndianConverter.h"
 					>
 				</File>
 				<File
-					RelativePath="..\source\utils\HexDump.h"
+					RelativePath="..\..\source\csgo-demohighlights\utils\HexDump.h"
 					>
 				</File>
 				<File
-					RelativePath="..\source\utils\Log.h"
+					RelativePath="..\..\source\csgo-demohighlights\utils\Log.h"
 					>
 				</File>
 				<File
-					RelativePath="..\source\utils\PointerVector.h"
+					RelativePath="..\..\source\csgo-demohighlights\utils\PointerVector.h"
 					>
 				</File>
 				<File
-					RelativePath="..\source\utils\ScopedPointer.h"
+					RelativePath="..\..\source\csgo-demohighlights\utils\ScopedPointer.h"
 					>
 				</File>
 				<File
-					RelativePath="..\source\utils\StringFormat.h"
+					RelativePath="..\..\source\csgo-demohighlights\utils\StringFormat.h"
 					>
 				</File>
 			</Filter>
@@ -450,15 +450,15 @@
 				Name="gamestate"
 				>
 				<File
-					RelativePath="..\source\gamestate\GameState.h"
+					RelativePath="..\..\source\csgo-demohighlights\gamestate\GameState.h"
 					>
 				</File>
 				<File
-					RelativePath="..\source\gamestate\Player.h"
+					RelativePath="..\..\source\csgo-demohighlights\gamestate\Player.h"
 					>
 				</File>
 				<File
-					RelativePath="..\source\gamestate\Team.h"
+					RelativePath="..\..\source\csgo-demohighlights\gamestate\Team.h"
 					>
 				</File>
 			</Filter>
@@ -466,23 +466,23 @@
 				Name="parser"
 				>
 				<File
-					RelativePath="..\source\parser\Datatable.h"
+					RelativePath="..\..\source\csgo-demohighlights\parser\Datatable.h"
 					>
 				</File>
 				<File
-					RelativePath="..\source\parser\DemoParser.h"
+					RelativePath="..\..\source\csgo-demohighlights\parser\DemoParser.h"
 					>
 				</File>
 				<File
-					RelativePath="..\source\parser\Entities.h"
+					RelativePath="..\..\source\csgo-demohighlights\parser\Entities.h"
 					>
 				</File>
 				<File
-					RelativePath="..\source\parser\GameEvent.h"
+					RelativePath="..\..\source\csgo-demohighlights\parser\GameEvent.h"
 					>
 				</File>
 				<File
-					RelativePath="..\source\parser\Stringtable.h"
+					RelativePath="..\..\source\csgo-demohighlights\parser\Stringtable.h"
 					>
 				</File>
 			</Filter>
@@ -490,19 +490,19 @@
 				Name="filters"
 				>
 				<File
-					RelativePath="..\source\filters\ClutchFilter.h"
+					RelativePath="..\..\source\csgo-demohighlights\filters\ClutchFilter.h"
 					>
 				</File>
 				<File
-					RelativePath="..\source\filters\GameEventHandler.h"
+					RelativePath="..\..\source\csgo-demohighlights\filters\GameEventHandler.h"
 					>
 				</File>
 				<File
-					RelativePath="..\source\filters\KillsFilter.h"
+					RelativePath="..\..\source\csgo-demohighlights\filters\KillsFilter.h"
 					>
 				</File>
 				<File
-					RelativePath="..\source\filters\PlayerConnectHandler.h"
+					RelativePath="..\..\source\csgo-demohighlights\filters\PlayerConnectHandler.h"
 					>
 				</File>
 			</Filter>

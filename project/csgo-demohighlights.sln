@@ -1,12 +1,14 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "csgo-demohighlights", "csgo-demohighlights.vcproj", "{40361825-C9EF-4685-80D0-806506B1A180}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "csgo-demohighlights", "csgo-demohighlights\csgo-demohighlights.vcproj", "{40361825-C9EF-4685-80D0-806506B1A180}"
 	ProjectSection(ProjectDependencies) = postProject
 		{3E283F37-A4ED-41B7-A3E6-A2D89D131A30} = {3E283F37-A4ED-41B7-A3E6-A2D89D131A30}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libprotobuf", "D:\Program Files (x86)\Google Protobuf\vsprojects\libprotobuf.vcproj", "{3E283F37-A4ED-41B7-A3E6-A2D89D131A30}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "csgo-demoviewer", "csgo-demoviewer\csgo-demoviewer.vcproj", "{90930547-0A18-4581-8220-F1461B6F6B0C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,12 @@ Global
 		{3E283F37-A4ED-41B7-A3E6-A2D89D131A30}.Release|Win32.Build.0 = Release|Win32
 		{3E283F37-A4ED-41B7-A3E6-A2D89D131A30}.Release-Profile|Win32.ActiveCfg = Release|Win32
 		{3E283F37-A4ED-41B7-A3E6-A2D89D131A30}.Release-Profile|Win32.Build.0 = Release|Win32
+		{90930547-0A18-4581-8220-F1461B6F6B0C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{90930547-0A18-4581-8220-F1461B6F6B0C}.Debug|Win32.Build.0 = Debug|Win32
+		{90930547-0A18-4581-8220-F1461B6F6B0C}.Release|Win32.ActiveCfg = Release|Win32
+		{90930547-0A18-4581-8220-F1461B6F6B0C}.Release|Win32.Build.0 = Release|Win32
+		{90930547-0A18-4581-8220-F1461B6F6B0C}.Release-Profile|Win32.ActiveCfg = Release|Win32
+		{90930547-0A18-4581-8220-F1461B6F6B0C}.Release-Profile|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
