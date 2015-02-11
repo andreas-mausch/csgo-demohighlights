@@ -16,4 +16,9 @@ project/csgo-demoviewer/Debug
 project/csgo-demoviewer/Release
 project/csgo-demoviewer/Release-Profile
 
+project/csgo-demolibrary/csgo-demolibrary.vcproj.Hauptrechner.neonew.user
+project/csgo-demolibrary/Debug
+project/csgo-demolibrary/Release
+project/csgo-demolibrary/Release-Profile
+
 source/csgo-demohighlights/protobuf/generated
