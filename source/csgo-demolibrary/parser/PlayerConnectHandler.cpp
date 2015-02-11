@@ -1,6 +1,6 @@
 #include "PlayerConnectHandler.h"
-#include "../../csgo-demolibrary/gamestate/GameState.h"
-#include "../../csgo-demolibrary/gamestate/Player.h"
+#include "../gamestate/GameState.h"
+#include "../gamestate/Player.h"
 
 PlayerConnectHandler::PlayerConnectHandler(GameState &gameState)
 : gameState(gameState)

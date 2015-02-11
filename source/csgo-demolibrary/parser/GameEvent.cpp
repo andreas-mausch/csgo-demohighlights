@@ -112,12 +112,14 @@ void DemoParser::playerConnect(CSVCMsg_GameEvent &message, const CSVCMsg_GameEve
 	int entityId = getValue(message, descriptor, "index").val_byte() + 1;
 	int userId = getValue(message, descriptor, "userid").val_short();
 
+	playerConnectHandler.playerConnect(name, entityId, userId);
 	gameEventHandler.playerConnect(name, entityId, userId);
 }
 
 void DemoParser::playerDisconnect(CSVCMsg_GameEvent &message, const CSVCMsg_GameEventList::descriptor_t& descriptor)
 {
 	int userId = getValue(message, descriptor, "userid").val_short();
+	playerConnectHandler.playerDisconnect(userId);
 	gameEventHandler.playerDisconnect(userId);
 }
 

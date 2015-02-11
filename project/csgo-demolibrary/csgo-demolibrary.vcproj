@@ -186,6 +186,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\source\csgo-demolibrary\parser\PlayerConnectHandler.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\csgo-demolibrary\parser\Stringtable.cpp"
 					>
 				</File>
@@ -285,6 +289,10 @@
 				</File>
 				<File
 					RelativePath="..\..\source\csgo-demolibrary\parser\GameEventHandler.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\csgo-demolibrary\parser\PlayerConnectHandler.h"
 					>
 				</File>
 				<File

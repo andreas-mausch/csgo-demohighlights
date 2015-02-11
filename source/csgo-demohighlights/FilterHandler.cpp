@@ -1,14 +1,12 @@
 #include "FilterHandler.h"
 #include "filters/ClutchFilter.h"
 #include "filters/KillsFilter.h"
-#include "filters/PlayerConnectHandler.h"
 
 FilterHandler::FilterHandler(GameState &gameState, Log &log)
 : gameState(gameState)
 {
 	handlers.push_back(new ClutchFilter(gameState, log));
 	handlers.push_back(new KillsFilter(gameState, log));
-	handlers.push_back(new PlayerConnectHandler(gameState));
 }
 
 FilterHandler::~FilterHandler()

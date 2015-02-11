@@ -12,7 +12,7 @@
 #include "../utils/StringFormat.h"
 
 DemoParser::DemoParser(GameState &gameState, Log &log, GameEventHandler &gameEventHandler)
-: gameState(gameState), log(log), gameEventHandler(gameEventHandler)
+: gameState(gameState), log(log), gameEventHandler(gameEventHandler), playerConnectHandler(gameState)
 {
 }
 

@@ -267,10 +267,6 @@
 					RelativePath="..\..\source\csgo-demohighlights\filters\KillsFilter.cpp"
 					>
 				</File>
-				<File
-					RelativePath="..\..\source\csgo-demohighlights\filters\PlayerConnectHandler.cpp"
-					>
-				</File>
 			</Filter>
 		</Filter>
 		<Filter
@@ -295,10 +291,6 @@
 				</File>
 				<File
 					RelativePath="..\..\source\csgo-demohighlights\filters\KillsFilter.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\source\csgo-demohighlights\filters\PlayerConnectHandler.h"
 					>
 				</File>
 			</Filter>

@@ -14,6 +14,7 @@ struct player_info_t;
 
 #include <string>
 
+#include "PlayerConnectHandler.h"
 #include "../sdk/demofiledump.h"
 #include "../utils/PointerVector.h"
 #include "../utils/Log.h"
@@ -38,7 +39,9 @@ class DemoParser
 private:
 	Log &log;
 	GameState &gameState;
+
 	GameEventHandler &gameEventHandler;
+	PlayerConnectHandler playerConnectHandler;
 
 	// TODO remove / rename
 	void serverInfo(CSVCMsg_ServerInfo &message);
