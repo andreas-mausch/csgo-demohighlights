@@ -4,6 +4,7 @@
 #include "../csgo-demolibrary/utils/PointerVector.h"
 
 class GameState;
+class Log;
 
 class FilterHandler : public GameEventHandler
 {
@@ -12,7 +13,7 @@ private:
 	GameState &gameState;
 
 public:
-	FilterHandler(GameState &gameState);
+	FilterHandler(GameState &gameState, Log &log);
 	virtual ~FilterHandler();
 
 	virtual void playerDeath(Player &victim, Player &attacker, bool headshot);

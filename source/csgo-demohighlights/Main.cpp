@@ -27,8 +27,9 @@ int main()
 
 	bool end = false;
 	GameState gameState(0, demo.tellg());
-	FilterHandler filterHandler(gameState);
-	DemoParser demoParser(gameState, false, filterHandler);
+	Log log(std::cout, false);
+	FilterHandler filterHandler(gameState, log);
+	DemoParser demoParser(gameState, log, filterHandler);
 	demoParser.parseHeader(demo);
 
 	while (demoParser.parseNextTick(demo))

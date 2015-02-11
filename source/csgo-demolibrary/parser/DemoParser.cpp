@@ -11,8 +11,8 @@
 #include "../utils/EndianConverter.h"
 #include "../utils/StringFormat.h"
 
-DemoParser::DemoParser(GameState &gameState, bool verbose, GameEventHandler &gameEventHandler)
-: gameState(gameState), log(std::cout, verbose), gameEventHandler(gameEventHandler)
+DemoParser::DemoParser(GameState &gameState, Log &log, GameEventHandler &gameEventHandler)
+: gameState(gameState), log(log), gameEventHandler(gameEventHandler)
 {
 }
 

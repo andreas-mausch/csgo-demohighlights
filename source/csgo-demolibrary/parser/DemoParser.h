@@ -36,7 +36,7 @@ struct DemoHeader
 class DemoParser
 {
 private:
-	Log log;
+	Log &log;
 	GameState &gameState;
 	GameEventHandler &gameEventHandler;
 
@@ -76,7 +76,7 @@ private:
 	}
 
 public:
-	DemoParser(GameState &gameState, bool verbose, GameEventHandler &gameEventHandler);
+	DemoParser(GameState &gameState, Log &log, GameEventHandler &gameEventHandler);
 	~DemoParser();
 
 	void parsePacket(MemoryStream &demo);
