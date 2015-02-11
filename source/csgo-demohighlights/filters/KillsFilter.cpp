@@ -1,6 +1,6 @@
 #include "KillsFilter.h"
-#include "../gamestate/GameState.h"
-#include "../utils/Log.h"
+#include "../../csgo-demolibrary/gamestate/GameState.h"
+#include "../../csgo-demolibrary/utils/Log.h"
 
 KillsFilter::KillsFilter(GameState &gameState, Log &log)
 : gameState(gameState), log(log), tRoundsWon(-1), ctRoundsWon(-1)

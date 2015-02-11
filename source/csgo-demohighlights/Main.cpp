@@ -1,21 +1,11 @@
 #include <iostream>
 #include <fstream>
 
-#include "sdk/demofile.h"
-#include "sdk/demofiledump.h"
-
-#include "protobuf/generated/cstrike15_usermessages_public.pb.h"
-#include "protobuf/generated/netmessages_public.pb.h"
-
-#include "streams/MemoryStream.h"
-#include "streams/MemoryBitStream.h"
-#include "streams/MemoryStreamBuffer.h"
-
-#include "utils/EndianConverter.h"
-#include "utils/StringFormat.h"
-
-#include "parser/DemoParser.h"
-#include "gamestate/GameState.h"
+#include "FilterHandler.h"
+#include "../csgo-demolibrary/parser/DemoParser.h"
+#include "../csgo-demolibrary/gamestate/GameState.h"
+#include "../csgo-demolibrary/streams/MemoryStreamBuffer.h"
+#include "../csgo-demolibrary/streams/MemoryStream.h"
 
 std::string readFile(const std::string &filename)
 {
@@ -37,7 +27,8 @@ int main()
 
 	bool end = false;
 	GameState gameState(0, demo.tellg());
-	DemoParser demoParser(gameState, false);
+	FilterHandler filterHandler(gameState);
+	DemoParser demoParser(gameState, false, filterHandler);
 	demoParser.parseHeader(demo);
 
 	while (demoParser.parseNextTick(demo))

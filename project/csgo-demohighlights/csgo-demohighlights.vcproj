@@ -249,101 +249,13 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath="..\..\source\csgo-demohighlights\FilterHandler.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\source\csgo-demohighlights\Main.cpp"
 				>
 			</File>
-			<Filter
-				Name="protobuf"
-				>
-				<Filter
-					Name="generated"
-					>
-					<File
-						RelativePath="..\..\source\csgo-demohighlights\protobuf\generated\cstrike15_usermessages_public.pb.cc"
-						>
-					</File>
-					<File
-						RelativePath="..\..\source\csgo-demohighlights\protobuf\generated\netmessages_public.pb.cc"
-						>
-					</File>
-				</Filter>
-			</Filter>
-			<Filter
-				Name="streams"
-				>
-				<File
-					RelativePath="..\..\source\csgo-demohighlights\streams\MemoryBitStream.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\source\csgo-demohighlights\streams\MemoryStream.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\source\csgo-demohighlights\streams\MemoryStreamBuffer.cpp"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="utils"
-				>
-				<File
-					RelativePath="..\..\source\csgo-demohighlights\utils\EndianConverter.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\source\csgo-demohighlights\utils\HexDump.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\source\csgo-demohighlights\utils\Log.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\source\csgo-demohighlights\utils\StringFormat.cpp"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="gamestate"
-				>
-				<File
-					RelativePath="..\..\source\csgo-demohighlights\gamestate\GameState.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\source\csgo-demohighlights\gamestate\Player.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\source\csgo-demohighlights\gamestate\Team.cpp"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="parser"
-				>
-				<File
-					RelativePath="..\..\source\csgo-demohighlights\parser\Datatable.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\source\csgo-demohighlights\parser\DemoParser.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\source\csgo-demohighlights\parser\Entities.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\source\csgo-demohighlights\parser\GameEvent.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\source\csgo-demohighlights\parser\Stringtable.cpp"
-					>
-				</File>
-			</Filter>
 			<Filter
 				Name="filters"
 				>
@@ -367,134 +279,18 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath="..\..\source\csgo-demohighlights\FilterHandler.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\source\csgo-demohighlights\Main.h"
 				>
 			</File>
-			<Filter
-				Name="sdk"
-				>
-				<File
-					RelativePath="..\..\source\csgo-demohighlights\sdk\demofile.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\source\csgo-demohighlights\sdk\demofiledump.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\source\csgo-demohighlights\sdk\demofilepropdecode.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="protobuf"
-				>
-				<Filter
-					Name="generated"
-					>
-					<File
-						RelativePath="..\..\source\csgo-demohighlights\protobuf\generated\cstrike15_usermessages_public.pb.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\source\csgo-demohighlights\protobuf\generated\netmessages_public.pb.h"
-						>
-					</File>
-				</Filter>
-			</Filter>
-			<Filter
-				Name="streams"
-				>
-				<File
-					RelativePath="..\..\source\csgo-demohighlights\streams\MemoryBitStream.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\source\csgo-demohighlights\streams\MemoryStream.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\source\csgo-demohighlights\streams\MemoryStreamBuffer.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="utils"
-				>
-				<File
-					RelativePath="..\..\source\csgo-demohighlights\utils\EndianConverter.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\source\csgo-demohighlights\utils\HexDump.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\source\csgo-demohighlights\utils\Log.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\source\csgo-demohighlights\utils\PointerVector.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\source\csgo-demohighlights\utils\ScopedPointer.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\source\csgo-demohighlights\utils\StringFormat.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="gamestate"
-				>
-				<File
-					RelativePath="..\..\source\csgo-demohighlights\gamestate\GameState.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\source\csgo-demohighlights\gamestate\Player.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\source\csgo-demohighlights\gamestate\Team.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="parser"
-				>
-				<File
-					RelativePath="..\..\source\csgo-demohighlights\parser\Datatable.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\source\csgo-demohighlights\parser\DemoParser.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\source\csgo-demohighlights\parser\Entities.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\source\csgo-demohighlights\parser\GameEvent.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\source\csgo-demohighlights\parser\Stringtable.h"
-					>
-				</File>
-			</Filter>
 			<Filter
 				Name="filters"
 				>
 				<File
 					RelativePath="..\..\source\csgo-demohighlights\filters\ClutchFilter.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\source\csgo-demohighlights\filters\GameEventHandler.h"
 					>
 				</File>
 				<File

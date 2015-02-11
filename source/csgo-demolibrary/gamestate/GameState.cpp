@@ -1,5 +1,4 @@
 #include "GameState.h"
-#include "../Main.h"
 
 #include "../sdk/demofile.h"
 #include "../streams/MemoryStream.h"

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
-#include "GameEventHandler.h"
+#include "../../csgo-demolibrary/parser/GameEventHandler.h"
 
 class GameState;
 class Log;

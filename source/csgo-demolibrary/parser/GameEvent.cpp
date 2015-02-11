@@ -2,8 +2,8 @@
 
 #include "DemoParser.h"
 #include "Entities.h"
-#include "../filters/GameEventHandler.h"
 #include "../gamestate/GameState.h"
+#include "../parser/GameEventHandler.h"
 #include "../sdk/demofiledump.h"
 
 int roundStartTick = -1;
@@ -40,39 +40,26 @@ void DemoParser::playerDeath(CSVCMsg_GameEvent &message, const CSVCMsg_GameEvent
 		bool headshot = getValue(message, descriptor, "headshot").val_bool();
 		userid.setAlive(false);
 
-		for (PointerVector<GameEventHandler>::iterator handler = gameEventHandlers.begin(); handler != gameEventHandlers.end(); handler++)
-		{
-			(*handler)->playerDeath(userid, attacker, headshot);
-		}
-
+		gameEventHandler.playerDeath(userid, attacker, headshot);
 		log.logVerbose("player_death: %s killed %s", toString(attacker).c_str(), toString(userid).c_str());
 	}
 }
 
 void DemoParser::bombPlanted(CSVCMsg_GameEvent &message, const CSVCMsg_GameEventList::descriptor_t& descriptor)
 {
-	for (PointerVector<GameEventHandler>::iterator handler = gameEventHandlers.begin(); handler != gameEventHandlers.end(); handler++)
-	{
-		(*handler)->bombPlanted();
-	}
+	gameEventHandler.bombPlanted();
 }
 
 void DemoParser::roundStart(CSVCMsg_GameEvent &message, const CSVCMsg_GameEventList::descriptor_t& descriptor)
 {
 	log.logVerbose("roundStart: timelimit: %d; tick: %d", getValue(message, descriptor, "timelimit").val_long(), gameState.getTick());
-	for (PointerVector<GameEventHandler>::iterator handler = gameEventHandlers.begin(); handler != gameEventHandlers.end(); handler++)
-	{
-		(*handler)->roundStart();
-	}
+	gameEventHandler.roundStart();
 }
 
 void DemoParser::roundFreezeEnd(CSVCMsg_GameEvent &message, const CSVCMsg_GameEventList::descriptor_t& descriptor)
 {
 	log.logVerbose("roundFreezeEnd");
-	for (PointerVector<GameEventHandler>::iterator handler = gameEventHandlers.begin(); handler != gameEventHandlers.end(); handler++)
-	{
-		(*handler)->roundFreezeEnd();
-	}
+	gameEventHandler.roundFreezeEnd();
 
 	roundStartTick = gameState.getTick();
 
@@ -105,10 +92,7 @@ void DemoParser::roundEnd(CSVCMsg_GameEvent &message, const CSVCMsg_GameEventLis
 	Team winner = fromEngineInteger(getValue(message, descriptor, "winner").val_byte());
 	log.logVerbose("roundEnd %s %d:%d (%d T's alive, %d CT's alive)", toString(winner).c_str(), gameState.getRoundsWon(Terrorists), gameState.getRoundsWon(CounterTerrorists), gameState.getPlayersAlive(Terrorists), gameState.getPlayersAlive(CounterTerrorists));
 
-	for (PointerVector<GameEventHandler>::iterator handler = gameEventHandlers.begin(); handler != gameEventHandlers.end(); handler++)
-	{
-		(*handler)->roundEnd(winner);
-	}
+	gameEventHandler.roundEnd(winner);
 
 	if (winner == Terrorists || winner == CounterTerrorists)
 	{
@@ -119,10 +103,7 @@ void DemoParser::roundEnd(CSVCMsg_GameEvent &message, const CSVCMsg_GameEventLis
 void DemoParser::roundOfficiallyEnded(CSVCMsg_GameEvent &message, const CSVCMsg_GameEventList::descriptor_t& descriptor)
 {
 	log.logVerbose("roundOfficiallyEnded");
-	for (PointerVector<GameEventHandler>::iterator handler = gameEventHandlers.begin(); handler != gameEventHandlers.end(); handler++)
-	{
-		(*handler)->roundOfficiallyEnded();
-	}
+	gameEventHandler.roundOfficiallyEnded();
 }
 
 void DemoParser::playerConnect(CSVCMsg_GameEvent &message, const CSVCMsg_GameEventList::descriptor_t& descriptor)
@@ -131,28 +112,19 @@ void DemoParser::playerConnect(CSVCMsg_GameEvent &message, const CSVCMsg_GameEve
 	int entityId = getValue(message, descriptor, "index").val_byte() + 1;
 	int userId = getValue(message, descriptor, "userid").val_short();
 
-	for (PointerVector<GameEventHandler>::iterator handler = gameEventHandlers.begin(); handler != gameEventHandlers.end(); handler++)
-	{
-		(*handler)->playerConnect(name, entityId, userId);
-	}
+	gameEventHandler.playerConnect(name, entityId, userId);
 }
 
 void DemoParser::playerDisconnect(CSVCMsg_GameEvent &message, const CSVCMsg_GameEventList::descriptor_t& descriptor)
 {
 	int userId = getValue(message, descriptor, "userid").val_short();
-	for (PointerVector<GameEventHandler>::iterator handler = gameEventHandlers.begin(); handler != gameEventHandlers.end(); handler++)
-	{
-		(*handler)->playerDisconnect(userId);
-	}
+	gameEventHandler.playerDisconnect(userId);
 }
 
 void DemoParser::announcePhaseEnd(CSVCMsg_GameEvent &message, const CSVCMsg_GameEventList::descriptor_t& descriptor)
 {
 	log.logVerbose("announcePhaseEnd");
-	for (PointerVector<GameEventHandler>::iterator handler = gameEventHandlers.begin(); handler != gameEventHandlers.end(); handler++)
-	{
-		(*handler)->announcePhaseEnd();
-	}
+	gameEventHandler.announcePhaseEnd();
 	gameState.switchTeams();
 }
 

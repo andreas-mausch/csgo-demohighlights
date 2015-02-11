@@ -1,6 +1,6 @@
 #pragma once
 
-#include "GameEventHandler.h"
+#include "../../csgo-demolibrary/parser/GameEventHandler.h"
 
 class GameState;
 

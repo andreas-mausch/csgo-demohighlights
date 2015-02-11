@@ -1,6 +1,6 @@
 #include "ClutchFilter.h"
-#include "../gamestate/GameState.h"
-#include "../utils/Log.h"
+#include "../../csgo-demolibrary/gamestate/GameState.h"
+#include "../../csgo-demolibrary/utils/Log.h"
 
 ClutchFilter::ClutchFilter(GameState &gameState, Log &log)
 : gameState(gameState), log(log)

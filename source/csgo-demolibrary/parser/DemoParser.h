@@ -38,8 +38,7 @@ class DemoParser
 private:
 	Log log;
 	GameState &gameState;
-
-	PointerVector<GameEventHandler> gameEventHandlers;
+	GameEventHandler &gameEventHandler;
 
 	// TODO remove / rename
 	void serverInfo(CSVCMsg_ServerInfo &message);
@@ -77,7 +76,7 @@ private:
 	}
 
 public:
-	DemoParser(GameState &gameState, bool verbose);
+	DemoParser(GameState &gameState, bool verbose, GameEventHandler &gameEventHandler);
 	~DemoParser();
 
 	void parsePacket(MemoryStream &demo);

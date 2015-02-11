@@ -2,9 +2,6 @@
 #include "Datatable.h"
 #include "Entities.h"
 #include "Stringtable.h"
-#include "../filters/ClutchFilter.h"
-#include "../filters/KillsFilter.h"
-#include "../filters/PlayerConnectHandler.h"
 #include "../gamestate/GameState.h"
 #include "../sdk/demofile.h"
 #include "../sdk/demofiledump.h"
@@ -14,12 +11,9 @@
 #include "../utils/EndianConverter.h"
 #include "../utils/StringFormat.h"
 
-DemoParser::DemoParser(GameState &gameState, bool verbose)
-: gameState(gameState), log(std::cout, verbose)
+DemoParser::DemoParser(GameState &gameState, bool verbose, GameEventHandler &gameEventHandler)
+: gameState(gameState), log(std::cout, verbose), gameEventHandler(gameEventHandler)
 {
-	gameEventHandlers.push_back(new PlayerConnectHandler(gameState));
-	gameEventHandlers.push_back(new ClutchFilter(gameState, log));
-	gameEventHandlers.push_back(new KillsFilter(gameState, log));
 }
 
 DemoParser::~DemoParser()
