@@ -85,7 +85,7 @@ struct Prop_t
 		float m_float;
 		const char *m_pString;
 		int64 m_int64;
-		Vector m_vector;
+		DemofileVector m_vector;
 	} m_value;
 	int m_nNumElements;
 };

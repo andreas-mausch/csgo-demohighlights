@@ -15,6 +15,7 @@ struct player_info_t;
 #include <string>
 
 #include "PlayerConnectHandler.h"
+#include "../gamestate/Weapon.h"
 #include "../sdk/demofiledump.h"
 #include "../utils/PointerVector.h"
 #include "../utils/Log.h"
@@ -67,6 +68,8 @@ private:
 	void playerDisconnect(CSVCMsg_GameEvent &message, const CSVCMsg_GameEventList::descriptor_t& descriptor);
 	void announcePhaseEnd(CSVCMsg_GameEvent &message, const CSVCMsg_GameEventList::descriptor_t& descriptor);
 	void roundOfficiallyEnded(CSVCMsg_GameEvent &message, const CSVCMsg_GameEventList::descriptor_t& descriptor);
+	void weaponFire(CSVCMsg_GameEvent &message, const CSVCMsg_GameEventList::descriptor_t& descriptor);
+	void grenadeDetonate(Weapon type, CSVCMsg_GameEvent &message, const CSVCMsg_GameEventList::descriptor_t& descriptor);
 
 	template<typename T> void parseMessage(MemoryStream &demo, int length, void (DemoParser::*function)(T &))
 	{

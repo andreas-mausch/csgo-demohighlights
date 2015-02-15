@@ -130,6 +130,48 @@ void DemoParser::announcePhaseEnd(CSVCMsg_GameEvent &message, const CSVCMsg_Game
 	gameState.switchTeams();
 }
 
+void DemoParser::weaponFire(CSVCMsg_GameEvent &message, const CSVCMsg_GameEventList::descriptor_t& descriptor)
+{
+	int userId = getValue(message, descriptor, "userid").val_short();
+	std::string weapon = getValue(message, descriptor, "weapon").val_string();
+
+	Player &player = gameState.findPlayerByUserId(userId);
+
+	if (weapon == "smokegrenade")
+	{
+		gameEventHandler.grenadeThrown(SMOKEGRENADE, player);
+	}
+	else if (weapon == "flashbang")
+	{
+		gameEventHandler.grenadeThrown(FLASHBANG, player);
+	}
+	else if (weapon == "hegrenade")
+	{
+		gameEventHandler.grenadeThrown(HE_GRENADE, player);
+	}
+	else if (weapon == "decoy")
+	{
+		gameEventHandler.grenadeThrown(DECOY, player);
+	}
+	else if (weapon == "molotov" || weapon == "incgrenade")
+	{
+		gameEventHandler.grenadeThrown(MOLOTOV, player);
+	}
+}
+
+void DemoParser::grenadeDetonate(Weapon type, CSVCMsg_GameEvent &message, const CSVCMsg_GameEventList::descriptor_t& descriptor)
+{
+	int userId = getValue(message, descriptor, "userid").val_short();
+	float x = getValue(message, descriptor, "x").val_float();
+	float y = getValue(message, descriptor, "y").val_float();
+	float z = getValue(message, descriptor, "z").val_float();
+
+	Player &player = gameState.findPlayerByUserId(userId);
+	Vector position(x, y, z);
+
+	gameEventHandler.grenadeDetonate(type, player, position);
+}
+
 void DemoParser::gameEvent(CSVCMsg_GameEvent &message)
 {
 	const CSVCMsg_GameEventList::descriptor_t& descriptor = gameState.getGameEvent(message.eventid());
@@ -174,6 +216,30 @@ void DemoParser::gameEvent(CSVCMsg_GameEvent &message)
 	else if (descriptor.name() == "round_announce_match_start")
 	{
 		matchStarted = true;
+	}
+	else if (descriptor.name() == "weapon_fire")
+	{
+		weaponFire(message, descriptor);
+	}
+	else if (descriptor.name() == "hegrenade_detonate")
+	{
+		grenadeDetonate(HE_GRENADE, message, descriptor);
+	}
+	else if (descriptor.name() == "flashbang_detonate")
+	{
+		grenadeDetonate(FLASHBANG, message, descriptor);
+	}
+	else if (descriptor.name() == "smokegrenade_detonate")
+	{
+		grenadeDetonate(SMOKEGRENADE, message, descriptor);
+	}
+	else if (descriptor.name() == "molotov_detonate")
+	{
+		grenadeDetonate(MOLOTOV, message, descriptor);
+	}
+	else if (descriptor.name() == "decoy_detonate")
+	{
+		grenadeDetonate(DECOY, message, descriptor);
 	}
 }
 

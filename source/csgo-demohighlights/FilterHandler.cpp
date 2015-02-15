@@ -1,11 +1,13 @@
 #include "FilterHandler.h"
 #include "filters/ClutchFilter.h"
+#include "filters/GrenadeFilter.h"
 #include "filters/KillsFilter.h"
 
 FilterHandler::FilterHandler(GameState &gameState, Log &log)
 : gameState(gameState)
 {
 	handlers.push_back(new ClutchFilter(gameState, log));
+	handlers.push_back(new GrenadeFilter(gameState, log));
 	handlers.push_back(new KillsFilter(gameState, log));
 }
 
@@ -82,5 +84,21 @@ void FilterHandler::announcePhaseEnd()
 	for (PointerVector<GameEventHandler>::iterator handler = handlers.begin(); handler != handlers.end(); handler++)
 	{
 		(*handler)->announcePhaseEnd();
+	}
+}
+
+void FilterHandler::grenadeThrown(Weapon type, Player &player)
+{
+	for (PointerVector<GameEventHandler>::iterator handler = handlers.begin(); handler != handlers.end(); handler++)
+	{
+		(*handler)->grenadeThrown(type, player);
+	}
+}
+
+void FilterHandler::grenadeDetonate(Weapon type, Player &player, Vector position)
+{
+	for (PointerVector<GameEventHandler>::iterator handler = handlers.begin(); handler != handlers.end(); handler++)
+	{
+		(*handler)->grenadeDetonate(type, player, position);
 	}
 }

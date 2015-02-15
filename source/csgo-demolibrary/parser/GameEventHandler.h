@@ -2,6 +2,8 @@
 
 #include <string>
 #include "../gamestate/Team.h"
+#include "../gamestate/Weapon.h"
+#include "../utils/Vector.h"
 
 class Player;
 
@@ -20,5 +22,7 @@ public:
 	virtual void playerConnect(const std::string &name, int entityId, int userId) {}
 	virtual void playerDisconnect(int userId) {}
 	virtual void announcePhaseEnd() {}
+	virtual void grenadeThrown(Weapon type, Player &player) {}
+	virtual void grenadeDetonate(Weapon type, Player &player, Vector position) {}
 
 };

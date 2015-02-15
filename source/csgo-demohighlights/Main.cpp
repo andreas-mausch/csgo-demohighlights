@@ -10,6 +10,12 @@
 std::string readFile(const std::string &filename)
 {
 	std::ifstream file(filename.c_str(), std::ios_base::binary);
+
+	if (!file)
+	{
+		return "";
+	}
+
 	file.seekg(0, std::ios::end);
 	size_t size = file.tellg();
 	std::string buffer(size, ' ');
@@ -22,6 +28,13 @@ int main()
 {
 	const std::string filename = "demo.dem";
 	std::string stringBuffer = readFile(filename);
+
+	if (stringBuffer.length() == 0)
+	{
+		std::cout << "error reading file." << std::endl;
+		return -1;
+	}
+
 	MemoryStreamBuffer demoBuffer(const_cast<char *>(stringBuffer.c_str()), stringBuffer.length());
 	MemoryStream demo(demoBuffer);
 

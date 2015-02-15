@@ -390,7 +390,7 @@ float Float_Decode( MemoryBitStream &entityBitBuffer, const CSVCMsg_SendTable::s
 	return fVal;
 }
 
-void Vector_Decode( MemoryBitStream &entityBitBuffer, const CSVCMsg_SendTable::sendprop_t *pSendProp, Vector &v )
+void Vector_Decode( MemoryBitStream &entityBitBuffer, const CSVCMsg_SendTable::sendprop_t *pSendProp, DemofileVector &v )
 {
 	v.x = Float_Decode( entityBitBuffer, pSendProp );
 	v.y = Float_Decode( entityBitBuffer, pSendProp );
@@ -421,7 +421,7 @@ void Vector_Decode( MemoryBitStream &entityBitBuffer, const CSVCMsg_SendTable::s
 	}
 }
 
-void VectorXY_Decode( MemoryBitStream &entityBitBuffer, const CSVCMsg_SendTable::sendprop_t *pSendProp, Vector &v )
+void VectorXY_Decode( MemoryBitStream &entityBitBuffer, const CSVCMsg_SendTable::sendprop_t *pSendProp, DemofileVector &v )
 {
 	v.x = Float_Decode( entityBitBuffer, pSendProp );
 	v.y = Float_Decode( entityBitBuffer, pSendProp );

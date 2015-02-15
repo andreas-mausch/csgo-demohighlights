@@ -25,5 +25,7 @@ public:
 	virtual void playerConnect(const std::string &name, int entityId, int userId);
 	virtual void playerDisconnect(int userId);
 	virtual void announcePhaseEnd();
+	virtual void grenadeThrown(Weapon type, Player &player);
+	virtual void grenadeDetonate(Weapon type, Player &player, Vector position);
 
 };

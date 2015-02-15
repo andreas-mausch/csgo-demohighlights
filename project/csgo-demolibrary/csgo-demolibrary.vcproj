@@ -44,8 +44,8 @@
 				AdditionalIncludeDirectories="&quot;D:\Program Files (x86)\Google Protobuf\src&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
 				MinimalRebuild="true"
-				BasicRuntimeChecks="3"
-				RuntimeLibrary="0"
+				BasicRuntimeChecks="0"
+				RuntimeLibrary="1"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				DebugInformationFormat="4"
@@ -245,6 +245,10 @@
 					RelativePath="..\..\source\csgo-demolibrary\utils\StringFormat.cpp"
 					>
 				</File>
+				<File
+					RelativePath="..\..\source\csgo-demolibrary\utils\Vector.cpp"
+					>
+				</File>
 			</Filter>
 		</Filter>
 		<Filter
@@ -265,6 +269,10 @@
 				</File>
 				<File
 					RelativePath="..\..\source\csgo-demolibrary\gamestate\Team.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\csgo-demolibrary\gamestate\Weapon.h"
 					>
 				</File>
 			</Filter>
@@ -373,6 +381,10 @@
 				</File>
 				<File
 					RelativePath="..\..\source\csgo-demolibrary\utils\StringFormat.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\csgo-demolibrary\utils\Vector.h"
 					>
 				</File>
 			</Filter>

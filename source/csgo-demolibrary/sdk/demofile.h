@@ -115,7 +115,7 @@ struct QAngle
 		z = _z;
 	}
 };
-struct Vector
+struct DemofileVector
 {
 	float x, y, z;
 	void Init( void )
@@ -167,7 +167,7 @@ struct democmdinfo_t
 			return *this;
 		}
 
-		const Vector& GetViewOrigin( void )
+		const DemofileVector& GetViewOrigin( void )
 		{
 			if ( flags & FDEMO_USE_ORIGIN2 )
 			{
@@ -204,12 +204,12 @@ struct democmdinfo_t
 		int32		flags;
 
 		// original origin/viewangles
-		Vector		viewOrigin;
+		DemofileVector		viewOrigin;
 		QAngle		viewAngles;
 		QAngle		localViewAngles;
 
 		// Resampled origin/viewangles
-		Vector		viewOrigin2;
+		DemofileVector		viewOrigin2;
 		QAngle		viewAngles2;
 		QAngle		localViewAngles2;
 	};
