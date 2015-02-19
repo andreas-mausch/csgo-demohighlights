@@ -5,6 +5,7 @@
 #include "ImageDecoder.h"
 #include "RenderBitmap.h"
 #include "../csgo-demolibrary/gamestate/GameState.h"
+#include "../csgo-demolibrary/parser/Entities.h"
 #include "../csgo-demolibrary/utils/StringFormat.h"
 #include "../../resources/resource.h"
 
@@ -83,8 +84,31 @@ LRESULT CALLBACK GameStateControl::callback(HWND window, UINT message, WPARAM wP
 				{
 					GameState &gameState = *reinterpret_cast<GameState *>(lParam);
 					HDC dc = GetDC(window);
-					std::string text = formatString("players: %d", gameState.getPlayers().size());
-					TextOutA(dc, 10, 10, text.c_str(), text.length());
+					int y = 10;
+					std::string text = formatString("players: %d; tick: %d", gameState.getPlayers().size(), gameState.getTick());
+					TextOutA(dc, 10, y, text.c_str(), text.length());
+
+					std::vector<Player> &players = gameState.getPlayers();
+					for (std::vector<Player>::iterator player = players.begin(); player != players.end(); player++)
+					{
+						int entityId = player->getEntityId();
+						EntityEntry *entity = FindEntity(entityId);
+
+						if (entity)
+						{
+							PropEntry *prop = entity->FindProp("m_vecOrigin");
+
+							if (prop)
+							{
+								DemofileVector position = prop->m_pPropValue->m_value.m_vector;
+								int teamInt = prop->m_pPropValue->m_value.m_int;
+								y += 20;
+								std::string text = formatString("player: %s, %d, %.2f, %.2f, %.2f", player->getName().c_str(), teamInt, position.x, position.y, position.z);
+								TextOutA(dc, 10, y, text.c_str(), text.length());
+							}
+						}
+					}
+
 					ReleaseDC(window, dc);
 				} break;
 			}
