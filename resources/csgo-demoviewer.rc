@@ -53,7 +53,7 @@ END
 //
 
 IDD_DEMOVIEWER DIALOGEX 0, 0, 570, 527
-STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "CS:GO Demoviewer"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
@@ -85,7 +85,7 @@ END
 // PNG
 //
 
-IDB_DE_DUST2            PNG                     "de_dust2.png"
+IDB_DE_DUST2            PNG                  "de_dust2.png"
 #endif    // Deutsch (Deutschland) resources
 /////////////////////////////////////////////////////////////////////////////
 
