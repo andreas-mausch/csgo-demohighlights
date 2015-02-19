@@ -7,11 +7,22 @@ enum GameStateControlMessage
 	GAMESTATECONTROL_SET
 };
 
+class GameState;
+
 class GameStateControl
 {
 private:
 	HWND window;
 	HBITMAP dust2;
+
+	HDC backbuffer;
+	HBITMAP backbufferBitmap;
+
+	GameState *gameState;
+
+	void deleteBackbuffer();
+	void createBackbuffer();
+	void paintBackbuffer();
 
 	void onCreate();
 	void onPaint();

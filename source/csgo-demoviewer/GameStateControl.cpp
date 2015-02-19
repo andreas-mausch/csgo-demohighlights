@@ -10,7 +10,7 @@
 #include "../../resources/resource.h"
 
 GameStateControl::GameStateControl(HWND window)
-: window(window)
+: window(window), gameState(NULL)
 {
 	ImageDecoder imageDecoder;
 	dust2 = imageDecoder.loadImageFromResource(MAKEINTRESOURCE(IDB_DE_DUST2), L"PNG");
@@ -36,18 +36,83 @@ void GameStateControl::registerControl()
 	RegisterClassEx(&windowClass);
 }
 
+void GameStateControl::deleteBackbuffer()
+{
+	DeleteObject(backbufferBitmap);
+	backbufferBitmap = NULL;
+
+	DeleteDC(backbuffer);
+	backbuffer = NULL;
+}
+
+void GameStateControl::createBackbuffer()
+{
+	deleteBackbuffer();
+
+	RECT clientRect;
+	GetClientRect(window, &clientRect);
+
+	HDC deviceContext = GetDC(window);
+
+	backbuffer = CreateCompatibleDC(deviceContext);
+	backbufferBitmap = CreateCompatibleBitmap(deviceContext, clientRect.right, clientRect.bottom);
+	SelectObject(backbuffer, backbufferBitmap);
+
+	ReleaseDC(window, deviceContext);
+
+	paintBackbuffer();
+}
+
+void GameStateControl::paintBackbuffer()
+{
+	renderBitmap(backbuffer, dust2, 0, 0);
+
+					int y = 10;
+					std::string text = formatString("players: %d; tick: %d", gameState->getPlayers().size(), gameState->getTick());
+					TextOutA(backbuffer, 10, y, text.c_str(), text.length());
+
+					std::vector<Player> &players = gameState->getPlayers();
+					for (std::vector<Player>::iterator player = players.begin(); player != players.end(); player++)
+					{
+						int entityId = player->getEntityId();
+						EntityEntry *entity = FindEntity(entityId);
+
+						if (entity)
+						{
+							PropEntry *prop = entity->FindProp("m_vecOrigin");
+
+							if (prop)
+							{
+								DemofileVector position = prop->m_pPropValue->m_value.m_vector;
+								int teamInt = prop->m_pPropValue->m_value.m_int;
+								y += 20;
+								std::string text = formatString("player: %s, %d, %.2f, %.2f, %.2f", player->getName().c_str(), teamInt, position.x, position.y, position.z);
+								TextOutA(backbuffer, 10, y, text.c_str(), text.length());
+							}
+						}
+					}
+}
+
 void GameStateControl::onCreate()
 {
+	createBackbuffer();
 }
+
 
 void GameStateControl::onPaint()
 {
+	if (!backbuffer)
+	{
+		createBackbuffer();
+	}
+	paintBackbuffer();
+
 	RECT clientRect;
 	GetClientRect(window, &clientRect);
 
 	PAINTSTRUCT paint;
-	HDC deviceContext = BeginPaint(window, &paint);
-	renderBitmap(paint.hdc, dust2, 0, 0);
+	BeginPaint(window, &paint);
+	BitBlt(paint.hdc, 0, 0, clientRect.right, clientRect.bottom, backbuffer, 0, 0, SRCCOPY);
 	EndPaint(window, &paint);
 }
 
@@ -82,34 +147,8 @@ LRESULT CALLBACK GameStateControl::callback(HWND window, UINT message, WPARAM wP
 			{
 				case GAMESTATECONTROL_SET:
 				{
-					GameState &gameState = *reinterpret_cast<GameState *>(lParam);
-					HDC dc = GetDC(window);
-					int y = 10;
-					std::string text = formatString("players: %d; tick: %d", gameState.getPlayers().size(), gameState.getTick());
-					TextOutA(dc, 10, y, text.c_str(), text.length());
-
-					std::vector<Player> &players = gameState.getPlayers();
-					for (std::vector<Player>::iterator player = players.begin(); player != players.end(); player++)
-					{
-						int entityId = player->getEntityId();
-						EntityEntry *entity = FindEntity(entityId);
-
-						if (entity)
-						{
-							PropEntry *prop = entity->FindProp("m_vecOrigin");
-
-							if (prop)
-							{
-								DemofileVector position = prop->m_pPropValue->m_value.m_vector;
-								int teamInt = prop->m_pPropValue->m_value.m_int;
-								y += 20;
-								std::string text = formatString("player: %s, %d, %.2f, %.2f, %.2f", player->getName().c_str(), teamInt, position.x, position.y, position.z);
-								TextOutA(dc, 10, y, text.c_str(), text.length());
-							}
-						}
-					}
-
-					ReleaseDC(window, dc);
+					control->gameState = reinterpret_cast<GameState *>(lParam);
+					RedrawWindow(window, NULL, NULL, RDW_INVALIDATE | RDW_NOCHILDREN);
 				} break;
 			}
 		} break;
