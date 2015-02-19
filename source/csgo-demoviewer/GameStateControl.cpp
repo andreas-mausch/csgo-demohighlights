@@ -74,6 +74,7 @@ void GameStateControl::paintBackbuffer()
 					std::vector<Player> &players = gameState->getPlayers();
 					for (std::vector<Player>::iterator player = players.begin(); player != players.end(); player++)
 					{
+						DemofileVector position; position.x = 0.0f; position.y = 0.0f; position.z = 0.0f;
 						int entityId = player->getEntityId();
 						EntityEntry *entity = FindEntity(entityId);
 
@@ -83,13 +84,13 @@ void GameStateControl::paintBackbuffer()
 
 							if (prop)
 							{
-								DemofileVector position = prop->m_pPropValue->m_value.m_vector;
-								int teamInt = prop->m_pPropValue->m_value.m_int;
-								y += 20;
-								std::string text = formatString("player: %s, %d, %.2f, %.2f, %.2f", player->getName().c_str(), teamInt, position.x, position.y, position.z);
-								TextOutA(backbuffer, 10, y, text.c_str(), text.length());
+								position = prop->m_pPropValue->m_value.m_vector;
 							}
 						}
+
+						y += 20;
+						std::string text = formatString("player: %s, %.2f, %.2f, %.2f", player->getName().c_str(), position.x, position.y, position.z);
+						TextOutA(backbuffer, 10, y, text.c_str(), text.length());
 					}
 }
 

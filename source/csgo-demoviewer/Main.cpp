@@ -38,7 +38,7 @@ DWORD WINAPI myThread(void *p)
 	while (demoParser.parseNextTick(demo))
 	{
 		demoviewerDialog.renderGameState(gameState);
-		Sleep(1);
+		Sleep(200);
 	}
 
 	return 0;
