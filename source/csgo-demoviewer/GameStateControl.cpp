@@ -75,6 +75,7 @@ void GameStateControl::paintBackbuffer()
 					for (std::vector<Player>::iterator player = players.begin(); player != players.end(); player++)
 					{
 						DemofileVector position; position.x = 0.0f; position.y = 0.0f; position.z = 0.0f;
+						float z = 0.0f;
 						int entityId = player->getEntityId();
 						EntityEntry *entity = FindEntity(entityId);
 
@@ -86,10 +87,16 @@ void GameStateControl::paintBackbuffer()
 							{
 								position = prop->m_pPropValue->m_value.m_vector;
 							}
+							prop = entity->FindProp("m_vecOrigin[2]");
+
+							if (prop)
+							{
+								z = prop->m_pPropValue->m_value.m_float;
+							}
 						}
 
 						y += 20;
-						std::string text = formatString("player: %s, %.2f, %.2f, %.2f", player->getName().c_str(), position.x, position.y, position.z);
+						std::string text = formatString("player: %s, %.2f, %.2f, %.2f", player->getName().c_str(), position.x, position.y, z);
 						TextOutA(backbuffer, 10, y, text.c_str(), text.length());
 					}
 }
