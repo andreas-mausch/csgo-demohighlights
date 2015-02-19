@@ -60,6 +60,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="comctl32.lib windowscodecs.lib msimg32.lib"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -132,6 +133,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="comctl32.lib windowscodecs.lib msimg32.lib"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -179,7 +181,23 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\source\csgo-demoviewer\GameStateControl.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\source\csgo-demoviewer\ImageDecoder.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\source\csgo-demoviewer\Main.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\source\csgo-demoviewer\RenderBitmap.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\source\csgo-demoviewer\Resource.cpp"
 				>
 			</File>
 		</Filter>
@@ -197,7 +215,19 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\source\csgo-demoviewer\resource.h"
+				RelativePath="..\..\source\csgo-demoviewer\GameStateControl.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\source\csgo-demoviewer\ImageDecoder.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\source\csgo-demoviewer\RenderBitmap.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\source\csgo-demoviewer\Resource.h"
 				>
 			</File>
 		</Filter>
@@ -212,6 +242,22 @@
 			</File>
 			<File
 				RelativePath="..\..\resources\de_dust2.bmp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\resources\de_dust2.png"
+				>
+			</File>
+			<File
+				RelativePath=".\de_dust2.png"
+				>
+			</File>
+			<File
+				RelativePath="..\..\resources\png1.png"
+				>
+			</File>
+			<File
+				RelativePath="..\..\resources\resource.h"
 				>
 			</File>
 		</Filter>

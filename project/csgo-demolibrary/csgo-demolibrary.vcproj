@@ -242,6 +242,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\source\csgo-demolibrary\utils\StringConvert.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\csgo-demolibrary\utils\StringFormat.cpp"
 					>
 				</File>
@@ -377,6 +381,10 @@
 				</File>
 				<File
 					RelativePath="..\..\source\csgo-demolibrary\utils\ScopedPointer.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\csgo-demolibrary\utils\StringConvert.h"
 					>
 				</File>
 				<File

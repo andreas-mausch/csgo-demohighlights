@@ -1,7 +1,7 @@
 #include <windows.h>
 
 #include "DemoviewerDialog.h"
-#include "resource.h"
+#include "../../resources/resource.h"
 
 DemoviewerDialog::DemoviewerDialog()
 : Dialog(NULL, IDD_DEMOVIEWER)

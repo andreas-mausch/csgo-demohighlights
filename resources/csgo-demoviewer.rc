@@ -52,12 +52,12 @@ END
 // Dialog
 //
 
-IDD_DEMOVIEWER DIALOGEX 0, 0, 544, 503
+IDD_DEMOVIEWER DIALOGEX 0, 0, 570, 527
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "CS:GO Demoviewer"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    CONTROL         102,IDC_STATIC,"Static",SS_BITMAP,7,7,530,489
+    CONTROL         "Benutzerdefiniert1",IDC_GAMESTATE,"GameStateControl",WS_TABSTOP,7,7,556,513
 END
 
 
@@ -72,9 +72,9 @@ BEGIN
     IDD_DEMOVIEWER, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 537
+        RIGHTMARGIN, 563
         TOPMARGIN, 7
-        BOTTOMMARGIN, 496
+        BOTTOMMARGIN, 520
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -82,10 +82,10 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 //
-// Bitmap
+// PNG
 //
 
-IDB_DE_DUST2            BITMAP                  "C:\\Users\\neonew\\Documents\\Programmieren\\csgo-demohighlights\\resources\\de_dust2.bmp"
+IDB_DE_DUST2            PNG                     "de_dust2.png"
 #endif    // Deutsch (Deutschland) resources
 /////////////////////////////////////////////////////////////////////////////
 

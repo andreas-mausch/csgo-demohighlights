@@ -23,3 +23,5 @@ project/csgo-demolibrary/Release
 project/csgo-demolibrary/Release-Profile
 
 source/csgo-demolibrary/protobuf/generated
+
+resources/csgo-demoviewer.aps
