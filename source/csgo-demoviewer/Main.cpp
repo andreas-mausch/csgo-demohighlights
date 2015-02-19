@@ -12,17 +12,10 @@
 #include "../csgo-demolibrary/streams/MemoryStream.h"
 #include "../csgo-demolibrary/utils/File.h"
 
-int WINAPI WinMain(HINSTANCE instance, HINSTANCE previousInstance, LPSTR commandLine, int showCommand)
+DemoviewerDialog demoviewerDialog;
+
+DWORD WINAPI myThread(void *p)
 {
-	CoInitialize(NULL);
-
-	INITCOMMONCONTROLSEX icex;
-	icex.dwSize = sizeof(INITCOMMONCONTROLSEX);
-	icex.dwICC = ICC_LISTVIEW_CLASSES | ICC_BAR_CLASSES | ICC_PROGRESS_CLASS | ICC_STANDARD_CLASSES | ICC_TAB_CLASSES | ICC_WIN95_CLASSES;
-	InitCommonControlsEx(&icex);
-
-	GameStateControl::registerControl();
-
 	const std::string filename = "demo.dem";
 	std::string stringBuffer = readFile(filename);
 
@@ -42,8 +35,29 @@ int WINAPI WinMain(HINSTANCE instance, HINSTANCE previousInstance, LPSTR command
 	DemoParser demoParser(gameState, log, filterHandler);
 	demoParser.parseHeader(demo);
 
-	DemoviewerDialog demoviewerDialog;
+	while (demoParser.parseNextTick(demo))
+	{
+		demoviewerDialog.renderGameState(gameState);
+		Sleep(1);
+	}
+
+	return 0;
+}
+
+int WINAPI WinMain(HINSTANCE instance, HINSTANCE previousInstance, LPSTR commandLine, int showCommand)
+{
+	CoInitialize(NULL);
+
+	INITCOMMONCONTROLSEX icex;
+	icex.dwSize = sizeof(INITCOMMONCONTROLSEX);
+	icex.dwICC = ICC_LISTVIEW_CLASSES | ICC_BAR_CLASSES | ICC_PROGRESS_CLASS | ICC_STANDARD_CLASSES | ICC_TAB_CLASSES | ICC_WIN95_CLASSES;
+	InitCommonControlsEx(&icex);
+
+	GameStateControl::registerControl();
+
 	demoviewerDialog.open();
+
+	CreateThread(NULL, 0, myThread, NULL, 0, NULL);
 
 	while (demoviewerDialog.getHandle())
 	{

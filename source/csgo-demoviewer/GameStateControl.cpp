@@ -77,8 +77,14 @@ LRESULT CALLBACK GameStateControl::callback(HWND window, UINT message, WPARAM wP
 		{
 			switch (wParam)
 			{
+				case GAMESTATECONTROL_SET:
+				{
+					HDC dc = GetDC(window);
+					Ellipse(dc, 10, 10, 30, 30);
+					ReleaseDC(window, dc);
+				} break;
 			}
-		}
+		} break;
 	}
 
 	return DefWindowProc(window, message, wParam, lParam);

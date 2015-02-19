@@ -2,6 +2,8 @@
 
 #include "Dialog.h"
 
+class GameState;
+
 class DemoviewerDialog : public Dialog
 {
 private:
@@ -14,4 +16,7 @@ public:
 
 	virtual INT_PTR callback(HWND dialog, UINT message, WPARAM wParam, LPARAM lParam);
 	bool handleMessages();
+
+	void renderGameState(GameState &gameState);
+
 };

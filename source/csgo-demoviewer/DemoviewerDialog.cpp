@@ -1,6 +1,8 @@
 #include <windows.h>
 
 #include "DemoviewerDialog.h"
+#include "GameStateControl.h"
+#include "../csgo-demolibrary/gamestate/GameState.h"
 #include "../../resources/resource.h"
 
 DemoviewerDialog::DemoviewerDialog()
@@ -14,6 +16,11 @@ DemoviewerDialog::~DemoviewerDialog()
 
 void DemoviewerDialog::onPaint()
 {
+}
+
+void DemoviewerDialog::renderGameState(GameState &gameState)
+{
+	SendDlgItemMessage(dialog, IDC_GAMESTATE, WM_GAMESTATECONTROL, GAMESTATECONTROL_SET, reinterpret_cast<LPARAM>(&gameState));
 }
 
 bool DemoviewerDialog::handleMessages()
