@@ -251,19 +251,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\resources\de_dust2.bmp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\resources\de_dust2.png"
-				>
-			</File>
-			<File
-				RelativePath=".\de_dust2.png"
-				>
-			</File>
-			<File
-				RelativePath="..\..\resources\png1.png"
 				>
 			</File>
 			<File
