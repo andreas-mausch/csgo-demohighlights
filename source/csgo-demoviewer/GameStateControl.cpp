@@ -7,13 +7,20 @@
 #include "../csgo-demolibrary/gamestate/GameState.h"
 #include "../csgo-demolibrary/parser/Entities.h"
 #include "../csgo-demolibrary/utils/StringFormat.h"
+#include "../csgo-demolibrary/utils/Vector.h"
 #include "../../resources/resource.h"
+
+COLORREF tColor = RGB(253, 205, 59);
+COLORREF ctColor = RGB(90, 160, 222);
+HBRUSH tBrush, ctBrush;
 
 GameStateControl::GameStateControl(HWND window)
 : window(window), gameState(NULL)
 {
 	ImageDecoder imageDecoder;
 	dust2 = imageDecoder.loadImageFromResource(MAKEINTRESOURCE(IDB_DE_DUST2), L"PNG");
+	tBrush = CreateSolidBrush(tColor);
+	ctBrush = CreateSolidBrush(ctColor);
 }
 
 GameStateControl::~GameStateControl()
@@ -63,6 +70,23 @@ void GameStateControl::createBackbuffer()
 	paintBackbuffer();
 }
 
+Vector worldToScreen(Vector position)
+{
+	return Vector((position.x + 2387.0f) / 5.54f, (3314.08f - position.y) / 5.54f, 0.0f);
+}
+
+void drawPosition(HDC deviceContext, Vector position, const std::string &name)
+{
+	Vector screen = worldToScreen(position);
+	int size = 4;
+	Ellipse(deviceContext, screen.x - size, screen.y - size, screen.x + size, screen.y + size);
+	RECT rect;
+	rect.left = screen.x + 10;
+	rect.top = screen.y - 7;
+	DrawTextA(deviceContext, name.c_str(), name.length(), &rect, DT_CALCRECT);
+	DrawTextA(deviceContext, name.c_str(), name.length(), &rect, 0);
+}
+
 void GameStateControl::paintBackbuffer()
 {
 	renderBitmap(backbuffer, dust2, 0, 0);
@@ -97,7 +121,11 @@ void GameStateControl::paintBackbuffer()
 
 						y += 20;
 						std::string text = formatString("player: %s, %.2f, %.2f, %.2f", player->getName().c_str(), position.x, position.y, z);
-						TextOutA(backbuffer, 10, y, text.c_str(), text.length());
+						//TextOutA(backbuffer, 10, y, text.c_str(), text.length());
+						SetTextColor(backbuffer, player->isAlive() ? (player->getTeam() == Terrorists ? tColor : ctColor) : RGB(200, 200, 200));
+						SetBkMode(backbuffer, TRANSPARENT);
+						SelectObject(backbuffer, player->getTeam() == Terrorists ? tBrush : ctBrush);
+						drawPosition(backbuffer, Vector(position.x, position.y, position.z), player->getName());
 					}
 }
 

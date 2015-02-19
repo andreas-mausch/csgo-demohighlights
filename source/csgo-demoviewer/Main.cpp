@@ -35,10 +35,16 @@ DWORD WINAPI myThread(void *p)
 	DemoParser demoParser(gameState, log, filterHandler);
 	demoParser.parseHeader(demo);
 
+	int tick = 0;
+	while (tick < 7500)
+	{
+		demoParser.parseNextTick(demo);
+		tick = gameState.getTick();
+	}
 	while (demoParser.parseNextTick(demo))
 	{
 		demoviewerDialog.renderGameState(gameState);
-		Sleep(200);
+		Sleep(50);
 	}
 
 	return 0;
