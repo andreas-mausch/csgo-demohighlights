@@ -234,6 +234,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\source\csgo-demolibrary\utils\File.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\csgo-demolibrary\utils\HexDump.cpp"
 					>
 				</File>
@@ -365,6 +369,10 @@
 				>
 				<File
 					RelativePath="..\..\source\csgo-demolibrary\utils\EndianConverter.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\csgo-demolibrary\utils\File.h"
 					>
 				</File>
 				<File

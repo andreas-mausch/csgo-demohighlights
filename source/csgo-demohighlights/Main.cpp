@@ -1,28 +1,9 @@
-#include <iostream>
-#include <fstream>
-
 #include "FilterHandler.h"
 #include "../csgo-demolibrary/parser/DemoParser.h"
 #include "../csgo-demolibrary/gamestate/GameState.h"
 #include "../csgo-demolibrary/streams/MemoryStreamBuffer.h"
 #include "../csgo-demolibrary/streams/MemoryStream.h"
-
-std::string readFile(const std::string &filename)
-{
-	std::ifstream file(filename.c_str(), std::ios_base::binary);
-
-	if (!file)
-	{
-		return "";
-	}
-
-	file.seekg(0, std::ios::end);
-	size_t size = file.tellg();
-	std::string buffer(size, ' ');
-	file.seekg(0);
-	file.read(&buffer[0], size);
-	return buffer;
-}
+#include "../csgo-demolibrary/utils/File.h"
 
 int main()
 {
