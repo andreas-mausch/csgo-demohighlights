@@ -2,7 +2,6 @@
 
 #include "DemoviewerDialog.h"
 #include "GameStateControl.h"
-#include "../csgo-demolibrary/gamestate/GameState.h"
 #include "../../resources/resource.h"
 
 DemoviewerDialog::DemoviewerDialog()

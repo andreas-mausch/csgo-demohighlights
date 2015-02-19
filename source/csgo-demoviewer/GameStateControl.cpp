@@ -4,6 +4,8 @@
 #include "GameStateControl.h"
 #include "ImageDecoder.h"
 #include "RenderBitmap.h"
+#include "../csgo-demolibrary/gamestate/GameState.h"
+#include "../csgo-demolibrary/utils/StringFormat.h"
 #include "../../resources/resource.h"
 
 GameStateControl::GameStateControl(HWND window)
@@ -79,8 +81,10 @@ LRESULT CALLBACK GameStateControl::callback(HWND window, UINT message, WPARAM wP
 			{
 				case GAMESTATECONTROL_SET:
 				{
+					GameState &gameState = *reinterpret_cast<GameState *>(lParam);
 					HDC dc = GetDC(window);
-					Ellipse(dc, 10, 10, 30, 30);
+					std::string text = formatString("players: %d", gameState.getPlayers().size());
+					TextOutA(dc, 10, 10, text.c_str(), text.length());
 					ReleaseDC(window, dc);
 				} break;
 			}
