@@ -53,6 +53,14 @@ void DemoParser::bombPlanted(CSVCMsg_GameEvent &message, const CSVCMsg_GameEvent
 void DemoParser::roundStart(CSVCMsg_GameEvent &message, const CSVCMsg_GameEventList::descriptor_t& descriptor)
 {
 	log.logVerbose("roundStart: timelimit: %d; tick: %d", getValue(message, descriptor, "timelimit").val_long(), gameState.getTick());
+
+	std::vector<Player> &players = gameState.getPlayers();
+	for (std::vector<Player>::iterator player = players.begin(); player != players.end(); player++)
+	{
+		player->setAlive(true);
+		log.logVerbose("\t%s", toString(*player).c_str());
+	}
+
 	gameEventHandler.roundStart();
 }
 
@@ -62,13 +70,6 @@ void DemoParser::roundFreezeEnd(CSVCMsg_GameEvent &message, const CSVCMsg_GameEv
 	gameEventHandler.roundFreezeEnd();
 
 	roundStartTick = gameState.getTick();
-
-	std::vector<Player> &players = gameState.getPlayers();
-	for (std::vector<Player>::iterator player = players.begin(); player != players.end(); player++)
-	{
-		player->setAlive(true);
-		log.logVerbose("\t%s", toString(*player).c_str());
-	}
 }
 
 void DemoParser::roundEnd(CSVCMsg_GameEvent &message, const CSVCMsg_GameEventList::descriptor_t& descriptor)
