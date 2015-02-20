@@ -70,17 +70,17 @@ Player &GameState::findPlayerByUserId(int userId)
 	return *player;
 }
 
-Player &GameState::findPlayerByEntityId(int entityId)
+Player *GameState::findPlayerByEntityIdIfExists(int entityId)
 {
 	for (std::vector<Player>::iterator it = players.begin(); it != players.end(); ++it)
 	{
 		if (it->getEntityId() == entityId)
 		{
-			return *it;
+			return &*it;
 		}
 	}
 
-	throw std::bad_exception("player not found");
+	return NULL;
 }
 
 Player *GameState::findPlayerByUserIdIfExists(int userId)
@@ -112,31 +112,36 @@ void GameState::updatePlayer(Player &player)
 
 void GameState::updatePlayerTeam(int entityId, Team team)
 {
-	findPlayerByEntityId(entityId).setTeam(team);
+	Player *player = findPlayerByEntityIdIfExists(entityId);
+
+	if (player)
+	{
+		player->setTeam(team);
+	}
 }
 
 void GameState::updatePlayerPositionXY(int entityId, float x, float y)
 {
-	Player &player = findPlayerByEntityId(entityId);
+	Player *player = findPlayerByEntityIdIfExists(entityId);
 
-	if (player.isAlive())
+	if (player && player->isAlive())
 	{
-		Vector position = player.getPosition();
+		Vector position = player->getPosition();
 		position.x = x;
 		position.y = y;
-		player.setPosition(position);
+		player->setPosition(position);
 	}
 }
 
 void GameState::updatePlayerPositionZ(int entityId, float z)
 {
-	Player &player = findPlayerByEntityId(entityId);
+	Player *player = findPlayerByEntityIdIfExists(entityId);
 
-	if (player.isAlive())
+	if (player && player->isAlive())
 	{
-		Vector position = player.getPosition();
+		Vector position = player->getPosition();
 		position.z = z;
-		player.setPosition(position);
+		player->setPosition(position);
 	}
 }
 

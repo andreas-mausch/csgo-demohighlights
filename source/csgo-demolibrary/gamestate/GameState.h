@@ -25,7 +25,7 @@ private:
 	std::vector<Stringtable> stringTables;
 	std::vector<Player> players;
 
-	Player &findPlayerByEntityId(int entitydId);
+	Player *findPlayerByEntityIdIfExists(int entitydId);
 
 public:
 	GameState(int tick, int positionInStream);
