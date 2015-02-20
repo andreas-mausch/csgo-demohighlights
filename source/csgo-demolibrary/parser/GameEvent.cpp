@@ -66,22 +66,6 @@ void DemoParser::roundFreezeEnd(CSVCMsg_GameEvent &message, const CSVCMsg_GameEv
 	std::vector<Player> &players = gameState.getPlayers();
 	for (std::vector<Player>::iterator player = players.begin(); player != players.end(); player++)
 	{
-		int entityId = player->getEntityId();
-		EntityEntry *entity = FindEntity(entityId);
-		Team team = UnknownTeam;
-
-		if (entity)
-		{
-			PropEntry *prop = entity->FindProp("m_iTeamNum");
-
-			if (prop)
-			{
-				int teamInt = prop->m_pPropValue->m_value.m_int;
-				team = fromEngineInteger(teamInt);
-			}
-		}
-
-		player->setTeam(team);
 		player->setAlive(true);
 		log.logVerbose("\t%s", toString(*player).c_str());
 	}

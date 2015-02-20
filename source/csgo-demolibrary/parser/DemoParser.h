@@ -71,6 +71,8 @@ private:
 	void weaponFire(CSVCMsg_GameEvent &message, const CSVCMsg_GameEventList::descriptor_t& descriptor);
 	void grenadeDetonate(Weapon type, CSVCMsg_GameEvent &message, const CSVCMsg_GameEventList::descriptor_t& descriptor);
 
+	bool ReadNewEntity( MemoryBitStream &entityBitBuffer, EntityEntry *pEntity );
+
 	template<typename T> void parseMessage(MemoryStream &demo, int length, void (DemoParser::*function)(T &))
 	{
 		char *bytes = new char[length];

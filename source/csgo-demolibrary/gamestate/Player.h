@@ -3,6 +3,7 @@
 #include <string>
 
 #include "Team.h"
+#include "../utils/Vector.h"
 
 class Player
 {
@@ -12,6 +13,7 @@ private:
 	std::string name;
 	bool alive;
 	Team team;
+	Vector position;
 
 public:
 	Player(int entityId, int userId, const std::string &name);
@@ -19,6 +21,9 @@ public:
 
 	int getUserId();
 	int getEntityId();
+
+	Vector getPosition();
+	void setPosition(Vector position);
 
 	const std::string &getName();
 

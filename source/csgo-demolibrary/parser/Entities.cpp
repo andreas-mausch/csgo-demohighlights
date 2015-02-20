@@ -2,13 +2,13 @@
 #include "DemoParser.h"
 #include "Entities.h"
 
+#include "../gamestate/GameState.h"
+#include "../protobuf/generated/netmessages_public.pb.h"
+#include "../sdk/demofile.h"
+#include "../sdk/demofiledump.h"
 #include "../streams/MemoryStream.h"
 #include "../streams/MemoryBitStream.h"
 #include "../streams/MemoryStreamBuffer.h"
-
-#include "../sdk/demofile.h"
-#include "../sdk/demofiledump.h"
-#include "../protobuf/generated/netmessages_public.pb.h"
 
 std::vector< EntityEntry * > s_Entities;
 extern int s_nServerClassBits;
@@ -16,7 +16,6 @@ extern int s_nServerClassBits;
 EntityEntry *FindEntity( int nEntity );
 EntityEntry *AddEntity( int nEntity, uint32 uClass, uint32 uSerialNum );
 void RemoveEntity( int nEntity);
-bool ReadNewEntity( MemoryBitStream &entityBitBuffer, EntityEntry *pEntity );
 int ReadFieldIndex( MemoryBitStream &entityBitBuffer, int lastIndex, bool bNewWay );
 Prop_t *DecodeProp( MemoryBitStream &entityBitBuffer, FlattenedPropEntry *pFlattenedProp, uint32 uClass, int nFieldIndex, bool bQuiet );
 
@@ -220,7 +219,7 @@ void RemoveEntity( int nEntity )
 	}
 }
 
-bool ReadNewEntity( MemoryBitStream &entityBitBuffer, EntityEntry *pEntity )
+bool DemoParser::ReadNewEntity( MemoryBitStream &entityBitBuffer, EntityEntry *pEntity )
 {
 	bool bNewWay = entityBitBuffer.readBit();
 
@@ -243,7 +242,24 @@ bool ReadNewEntity( MemoryBitStream &entityBitBuffer, EntityEntry *pEntity )
 		if ( pSendProp )
 		{
 			Prop_t *pProp = DecodeProp( entityBitBuffer, pSendProp, pEntity->m_uClass, fieldIndices[ i ], true);
-			pEntity->AddOrUpdateProp( pSendProp, pProp );
+
+			if (pTable->net_table_name() == "DT_CSPlayer")
+			{
+				const std::string &name = pSendProp->m_prop->var_name();
+				if (name == "m_iTeamNum")
+				{
+					gameState.updatePlayerTeam(pEntity->m_nEntity, fromEngineInteger(pProp->m_value.m_int));
+				}
+				else if (name == "m_vecOrigin")
+				{
+					DemofileVector &vector = pProp->m_value.m_vector;
+					gameState.updatePlayerPositionXY(pEntity->m_nEntity, vector.x, vector.y);
+				}
+				else if (name == "m_vecOrigin[2]")
+				{
+					gameState.updatePlayerPositionZ(pEntity->m_nEntity, pProp->m_value.m_float);
+				}
+			}
 		}
 		else
 		{

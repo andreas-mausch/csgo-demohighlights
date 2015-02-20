@@ -2,9 +2,9 @@
 
 #include "Player.h"
 #include "../parser/Stringtable.h"
-
 #include "../sdk/demofile.h"
 #include "../sdk/demofiledump.h"
+#include "../utils/Vector.h"
 
 #include "../protobuf/generated/netmessages_public.pb.h"
 
@@ -25,6 +25,8 @@ private:
 	std::vector<Stringtable> stringTables;
 	std::vector<Player> players;
 
+	Player &findPlayerByEntityId(int entitydId);
+
 public:
 	GameState(int tick, int positionInStream);
 	~GameState();
@@ -35,7 +37,12 @@ public:
 	std::vector<Player> &getPlayers();
 	Player &findPlayerByUserId(int userId);
 	Player *findPlayerByUserIdIfExists(int userId);
+
 	void updatePlayer(Player &player);
+	void updatePlayerTeam(int entityId, Team team);
+	void updatePlayerPositionXY(int entityId, float x, float y);
+	void updatePlayerPositionZ(int entityId, float z);
+
 	void disconnect(int userId);
 	int getPlayersAlive(Team team);
 
