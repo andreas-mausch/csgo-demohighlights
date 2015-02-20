@@ -26,6 +26,14 @@ float ReadBitNormal(MemoryBitStream &stream);
 float ReadBitFloat(MemoryBitStream &stream);
 int64 ReadSignedVarInt64(MemoryBitStream &stream);
 
+int Int_Decode( MemoryBitStream &entityBitBuffer, const CSVCMsg_SendTable::sendprop_t *pSendProp );
+float Float_Decode( MemoryBitStream &entityBitBuffer, const CSVCMsg_SendTable::sendprop_t *pSendProp );
+void Vector_Decode( MemoryBitStream &entityBitBuffer, const CSVCMsg_SendTable::sendprop_t *pSendProp, DemofileVector &v );
+void VectorXY_Decode( MemoryBitStream &entityBitBuffer, const CSVCMsg_SendTable::sendprop_t *pSendProp, DemofileVector &v );
+const char *String_Decode( MemoryBitStream &entityBitBuffer, const CSVCMsg_SendTable::sendprop_t *pSendProp );
+Prop_t *Array_Decode( MemoryBitStream &entityBitBuffer, FlattenedPropEntry *pFlattenedProp, int nNumElements, uint32 uClass, int nFieldIndex, bool bQuiet );
+int64 Int64_Decode( MemoryBitStream &entityBitBuffer, const CSVCMsg_SendTable::sendprop_t *pSendProp );
+
 void DemoParser::packetEntities(CSVCMsg_PacketEntities &message)
 {
 	MemoryBitStream stream(message.entity_data().c_str(), message.entity_data().size());
@@ -241,23 +249,54 @@ bool DemoParser::ReadNewEntity( MemoryBitStream &entityBitBuffer, EntityEntry *p
 		FlattenedPropEntry *pSendProp = GetSendPropByIndex( pEntity->m_uClass, fieldIndices[ i ] );
 		if ( pSendProp )
 		{
-			Prop_t *pProp = DecodeProp( entityBitBuffer, pSendProp, pEntity->m_uClass, fieldIndices[ i ], true);
+			int valueInt;
+			int64 valueInt64;
+			float valueFloat;
+			DemofileVector valueVector;
+			const char *valueString;
+
+			const CSVCMsg_SendTable::sendprop_t *pSendProp2 = pSendProp->m_prop;
+			switch ( pSendProp2->type() )
+			{
+				case DPT_Int:
+					valueInt = Int_Decode( entityBitBuffer, pSendProp2 );
+					break;
+				case DPT_Float:
+					valueFloat = Float_Decode( entityBitBuffer, pSendProp2 );
+					break;
+				case DPT_Vector:
+					Vector_Decode( entityBitBuffer, pSendProp2, valueVector );
+					break;
+				case DPT_VectorXY:
+					VectorXY_Decode( entityBitBuffer, pSendProp2, valueVector );
+					break;
+				case DPT_String:
+					valueString = String_Decode( entityBitBuffer, pSendProp2 );
+					break;
+				case DPT_Array:
+					Array_Decode( entityBitBuffer, pSendProp, pSendProp2->num_elements(), pEntity->m_uClass, fieldIndices[ i ], true );
+					break;
+				case DPT_DataTable:
+					break;
+				case DPT_Int64:
+					valueInt64 = Int64_Decode( entityBitBuffer, pSendProp2 );
+					break;
+			}
 
 			if (pTable->net_table_name() == "DT_CSPlayer")
 			{
 				const std::string &name = pSendProp->m_prop->var_name();
 				if (name == "m_iTeamNum")
 				{
-					gameState.updatePlayerTeam(pEntity->m_nEntity, fromEngineInteger(pProp->m_value.m_int));
+					gameState.updatePlayerTeam(pEntity->m_nEntity, fromEngineInteger(valueInt));
 				}
 				else if (name == "m_vecOrigin")
 				{
-					DemofileVector &vector = pProp->m_value.m_vector;
-					gameState.updatePlayerPositionXY(pEntity->m_nEntity, vector.x, vector.y);
+					gameState.updatePlayerPositionXY(pEntity->m_nEntity, valueVector.x, valueVector.y);
 				}
 				else if (name == "m_vecOrigin[2]")
 				{
-					gameState.updatePlayerPositionZ(pEntity->m_nEntity, pProp->m_value.m_float);
+					gameState.updatePlayerPositionZ(pEntity->m_nEntity, valueFloat);
 				}
 			}
 		}
