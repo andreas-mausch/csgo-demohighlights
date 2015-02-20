@@ -19,7 +19,7 @@ bool MemoryBitStream::readBit()
 
 	char byte = buffer[position / 8];
 	int shift = position % 8;
-	bool bit =  (byte >> shift) & 1;
+	bool bit = (byte >> shift) & 1;
 	position++;
 	return bit;
 }
@@ -84,10 +84,7 @@ void MemoryBitStream::readBytes(void *buffer, int length)
 unsigned int MemoryBitStream::ReadUBitLong(int numbits)
 {
 	unsigned int result = 0;
-	for (int i = 0; i < numbits; i++)
-	{
-		result |= readBit() << i;
-	}
+	readBits(&result, numbits);
 	return result;
 }
 
