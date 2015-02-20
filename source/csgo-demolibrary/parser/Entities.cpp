@@ -231,7 +231,9 @@ bool DemoParser::ReadNewEntity( MemoryBitStream &entityBitBuffer, EntityEntry *p
 {
 	bool bNewWay = entityBitBuffer.readBit();
 
-	std::vector< int > fieldIndices;
+	const int MAX_FIELD_INDICES = 1000;
+	int fieldIndicesCount = 0;
+	int fieldIndices[MAX_FIELD_INDICES];
 
 	int index = -1;
 	do
@@ -239,12 +241,13 @@ bool DemoParser::ReadNewEntity( MemoryBitStream &entityBitBuffer, EntityEntry *p
 		index = ReadFieldIndex( entityBitBuffer, index, bNewWay );
 		if ( index != -1 )
 		{
-			fieldIndices.push_back( index );
+			fieldIndices[fieldIndicesCount] = index;
+			fieldIndicesCount++;
 		}
 	} while (index != -1);
 
 	CSVCMsg_SendTable *pTable = GetTableByClassID( pEntity->m_uClass );
-	for ( unsigned int i = 0; i < fieldIndices.size(); i++ )
+	for ( unsigned int i = 0; i < fieldIndicesCount; i++ )
 	{
 		FlattenedPropEntry *pSendProp = GetSendPropByIndex( pEntity->m_uClass, fieldIndices[ i ] );
 		if ( pSendProp )
