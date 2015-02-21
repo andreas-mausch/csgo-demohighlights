@@ -73,15 +73,33 @@ Vector worldToScreen(Vector position)
 	return Vector((position.x + 2387.0f) / 5.54f, (3314.08f - position.y) / 5.54f, 0.0f);
 }
 
-void drawPosition(HDC deviceContext, Vector position, const std::string &name, int health)
+void drawPlayer(HDC deviceContext, Player &player)
 {
-	Vector screen = worldToScreen(position);
-	int size = 6;
+	SelectObject(deviceContext, GetStockObject(BLACK_BRUSH));
+	Vector screen = worldToScreen(player.getPosition());
+	int size = 8;
 	Ellipse(deviceContext, screen.x - size, screen.y - size, screen.x + size, screen.y + size);
+	SelectObject(deviceContext, player.getTeam() == Terrorists ? tBrush : ctBrush);
+
+	if (player.getHealth() == 100)
+	{
+		Ellipse(deviceContext, screen.x - size, screen.y - size, screen.x + size, screen.y + size);
+	}
+	else if (player.getHealth() > 0)
+	{
+double PI = 3.1415926;
+double sa = 2.0 * PI * 0 / 100.0;
+double ea = 2.0 * PI * player.getHealth() / 100.0;
+int xsa = screen.x + size * sin( sa );
+int ysa = screen.y + size * cos( sa );
+int xea = screen.x + size * sin( ea );
+int yea = screen.y + size * cos( ea );
+	Pie(deviceContext, screen.x - size, screen.y - size, screen.x + size, screen.y + size, xsa, ysa, xea, yea);
+	}
 	RECT rect;
 	rect.left = screen.x + 10;
 	rect.top = screen.y - 7;
-	std::string text = formatString("%s (%d)", name.c_str(), health);
+	std::string text = formatString("%s (%d)", player.getName().c_str(), player.getHealth());
 	SelectObject(deviceContext, GetStockObject(DEFAULT_GUI_FONT));
 	DrawTextA(deviceContext, text.c_str(), text.length(), &rect, DT_CALCRECT);
 	DrawTextA(deviceContext, text.c_str(), text.length(), &rect, 0);
@@ -105,8 +123,7 @@ void GameStateControl::paintBackbuffer()
 						{
 							SetTextColor(backbuffer, player->isAlive() ? (player->getTeam() == Terrorists ? tColor : ctColor) : RGB(200, 200, 200));
 							SetBkMode(backbuffer, TRANSPARENT);
-							SelectObject(backbuffer, player->getTeam() == Terrorists ? tBrush : ctBrush);
-							drawPosition(backbuffer, player->getPosition(), player->getName(), player->getHealth());
+							drawPlayer(backbuffer, *player);
 						}
 					}
 }
