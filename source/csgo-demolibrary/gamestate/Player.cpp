@@ -2,7 +2,7 @@
 #include "GameState.h"
 
 Player::Player(int entityId, int userId, const std::string &name)
-: entityId(entityId), userId(userId), name(name), team(UnknownTeam), alive(false), position(-1.0f, -1.0f, -1.0f)
+: entityId(entityId), userId(userId), name(name), team(UnknownTeam), alive(false), position(-1.0f, -1.0f, -1.0f), observer(false)
 {
 }
 
@@ -61,4 +61,14 @@ Vector Player::getPosition()
 void Player::setPosition(Vector position)
 {
 	this->position = position;
+}
+
+bool Player::isObserver()
+{
+	return observer;
+}
+
+void Player::setObserver(bool observer)
+{
+	this->observer = observer;
 }

@@ -145,6 +145,16 @@ void GameState::updatePlayerPositionZ(int entityId, float z)
 	}
 }
 
+void GameState::updatePlayerObserverMode(int entityId, bool observer)
+{
+	Player *player = findPlayerByEntityIdIfExists(entityId);
+
+	if (player)
+	{
+		player->setObserver(observer);
+	}
+}
+
 int GameState::getPlayersAlive(Team team)
 {
 	int playersAlive = 0;

@@ -12,6 +12,7 @@ private:
 	int userId;
 	std::string name;
 	bool alive;
+	bool observer;
 	Team team;
 	Vector position;
 
@@ -33,4 +34,7 @@ public:
 
 	bool isAlive();
 	void setAlive(bool alive);
+
+	bool isObserver();
+	void setObserver(bool observer);
 };

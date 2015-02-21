@@ -42,6 +42,7 @@ public:
 	void updatePlayerTeam(int entityId, Team team);
 	void updatePlayerPositionXY(int entityId, float x, float y);
 	void updatePlayerPositionZ(int entityId, float z);
+	void updatePlayerObserverMode(int entityId, bool observer);
 
 	void disconnect(int userId);
 	int getPlayersAlive(Team team);

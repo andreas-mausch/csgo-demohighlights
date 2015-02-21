@@ -301,6 +301,10 @@ bool DemoParser::ReadNewEntity( MemoryBitStream &entityBitBuffer, EntityEntry *p
 				{
 					gameState.updatePlayerPositionZ(pEntity->m_nEntity, valueFloat);
 				}
+				else if (name == "m_iObserverMode")
+				{
+					gameState.updatePlayerObserverMode(pEntity->m_nEntity, valueInt != OBS_MODE_NONE);
+				}
 			}
 		}
 		else

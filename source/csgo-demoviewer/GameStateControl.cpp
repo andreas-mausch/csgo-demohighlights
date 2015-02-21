@@ -99,10 +99,13 @@ void GameStateControl::paintBackbuffer()
 					std::vector<Player> &players = gameState->getPlayers();
 					for (std::vector<Player>::iterator player = players.begin(); player != players.end(); player++)
 					{
-						SetTextColor(backbuffer, player->isAlive() ? (player->getTeam() == Terrorists ? tColor : ctColor) : RGB(200, 200, 200));
-						SetBkMode(backbuffer, TRANSPARENT);
-						SelectObject(backbuffer, player->getTeam() == Terrorists ? tBrush : ctBrush);
-						drawPosition(backbuffer, player->getPosition(), player->getName());
+						if (!(player->isObserver() && player->isAlive()))
+						{
+							SetTextColor(backbuffer, player->isAlive() ? (player->getTeam() == Terrorists ? tColor : ctColor) : RGB(200, 200, 200));
+							SetBkMode(backbuffer, TRANSPARENT);
+							SelectObject(backbuffer, player->getTeam() == Terrorists ? tBrush : ctBrush);
+							drawPosition(backbuffer, player->getPosition(), player->getName());
+						}
 					}
 }
 
