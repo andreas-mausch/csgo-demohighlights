@@ -76,8 +76,9 @@ Vector worldToScreen(Vector position)
 void drawPlayer(HDC deviceContext, Player &player)
 {
 	SelectObject(deviceContext, GetStockObject(BLACK_BRUSH));
+	SelectObject(deviceContext, GetStockObject(BLACK_PEN));
 	Vector screen = worldToScreen(player.getPosition());
-	int size = 8;
+	int size = 5;
 	Ellipse(deviceContext, screen.x - size, screen.y - size, screen.x + size, screen.y + size);
 	SelectObject(deviceContext, player.getTeam() == Terrorists ? tBrush : ctBrush);
 
