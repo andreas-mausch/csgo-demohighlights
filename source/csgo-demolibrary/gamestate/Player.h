@@ -15,6 +15,7 @@ private:
 	bool observer;
 	Team team;
 	Vector position;
+	int health;
 
 public:
 	Player(int entityId, int userId, const std::string &name);
@@ -37,4 +38,7 @@ public:
 
 	bool isObserver();
 	void setObserver(bool observer);
+
+	int getHealth();
+	void setHealth(int health);
 };

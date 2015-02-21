@@ -305,6 +305,10 @@ bool DemoParser::ReadNewEntity( MemoryBitStream &entityBitBuffer, EntityEntry *p
 				{
 					gameState.updatePlayerObserverMode(pEntity->m_nEntity, valueInt != OBS_MODE_NONE);
 				}
+				else if (name == "m_iHealth")
+				{
+					gameState.updatePlayerHealth(pEntity->m_nEntity, valueInt);
+				}
 			}
 		}
 		else

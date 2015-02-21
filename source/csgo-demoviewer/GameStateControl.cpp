@@ -73,16 +73,18 @@ Vector worldToScreen(Vector position)
 	return Vector((position.x + 2387.0f) / 5.54f, (3314.08f - position.y) / 5.54f, 0.0f);
 }
 
-void drawPosition(HDC deviceContext, Vector position, const std::string &name)
+void drawPosition(HDC deviceContext, Vector position, const std::string &name, int health)
 {
 	Vector screen = worldToScreen(position);
-	int size = 4;
+	int size = 6;
 	Ellipse(deviceContext, screen.x - size, screen.y - size, screen.x + size, screen.y + size);
 	RECT rect;
 	rect.left = screen.x + 10;
 	rect.top = screen.y - 7;
-	DrawTextA(deviceContext, name.c_str(), name.length(), &rect, DT_CALCRECT);
-	DrawTextA(deviceContext, name.c_str(), name.length(), &rect, 0);
+	std::string text = formatString("%s (%d)", name.c_str(), health);
+	SelectObject(deviceContext, GetStockObject(DEFAULT_GUI_FONT));
+	DrawTextA(deviceContext, text.c_str(), text.length(), &rect, DT_CALCRECT);
+	DrawTextA(deviceContext, text.c_str(), text.length(), &rect, 0);
 }
 
 void GameStateControl::paintBackbuffer()
@@ -104,7 +106,7 @@ void GameStateControl::paintBackbuffer()
 							SetTextColor(backbuffer, player->isAlive() ? (player->getTeam() == Terrorists ? tColor : ctColor) : RGB(200, 200, 200));
 							SetBkMode(backbuffer, TRANSPARENT);
 							SelectObject(backbuffer, player->getTeam() == Terrorists ? tBrush : ctBrush);
-							drawPosition(backbuffer, player->getPosition(), player->getName());
+							drawPosition(backbuffer, player->getPosition(), player->getName(), player->getHealth());
 						}
 					}
 }

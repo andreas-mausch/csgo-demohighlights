@@ -155,6 +155,16 @@ void GameState::updatePlayerObserverMode(int entityId, bool observer)
 	}
 }
 
+void GameState::updatePlayerHealth(int entityId, int health)
+{
+	Player *player = findPlayerByEntityIdIfExists(entityId);
+
+	if (player)
+	{
+		player->setHealth(health);
+	}
+}
+
 int GameState::getPlayersAlive(Team team)
 {
 	int playersAlive = 0;
