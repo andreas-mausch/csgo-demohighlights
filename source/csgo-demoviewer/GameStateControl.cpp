@@ -158,6 +158,33 @@ void GameStateControl::renderScore()
 	DrawTextA(backbuffer, text.c_str(), text.length(), &rect, 0);
 }
 
+void GameStateControl::renderTime()
+{
+	int timeLeft = gameState->getBombTimeLeft();
+	SetTextColor(backbuffer, RGB(255, 128, 0));
+	if (timeLeft == -1)
+	{
+		SetTextColor(backbuffer, RGB(255, 255, 255));
+		timeLeft = gameState->getRoundTimeLeft();
+	}
+
+	std::string text = formatString("%d:%02d", timeLeft / 60, timeLeft % 60);
+
+	RECT clientRect;
+	GetClientRect(window, &clientRect);
+	RECT rect;
+	rect.left = 0;
+	rect.top = 35;
+	SelectObject(backbuffer, GetStockObject(DEFAULT_GUI_FONT));
+	SetBkMode(backbuffer, TRANSPARENT);
+	DrawTextA(backbuffer, text.c_str(), text.length(), &rect, DT_CALCRECT);
+
+	rect.left += (clientRect.right - rect.right) / 2;
+	rect.right += (clientRect.right - rect.right) / 2;
+
+	DrawTextA(backbuffer, text.c_str(), text.length(), &rect, 0);
+}
+
 void GameStateControl::renderMapBackground()
 {
 	RECT clientRect;
@@ -197,6 +224,7 @@ void GameStateControl::paintBackbuffer()
 	renderGeneralInfo();
 	renderPlayers();
 	renderScore();
+	renderTime();
 }
 
 void GameStateControl::onCreate()

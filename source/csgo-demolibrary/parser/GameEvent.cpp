@@ -6,7 +6,6 @@
 #include "../parser/GameEventHandler.h"
 #include "../sdk/demofiledump.h"
 
-int roundStartTick = -1;
 bool matchStarted = false;
 
 std::string toString(Player &player)
@@ -34,7 +33,6 @@ void DemoParser::playerDeath(CSVCMsg_GameEvent &message, const CSVCMsg_GameEvent
 {
 	if (matchStarted)
 	{
-		int tickDif = gameState.getTick() - roundStartTick;
 		Player &attacker = gameState.findPlayerByUserId(getValue(message, descriptor, "attacker").val_short());
 		Player &userid = gameState.findPlayerByUserId(getValue(message, descriptor, "userid").val_short());
 		bool headshot = getValue(message, descriptor, "headshot").val_bool();
@@ -48,11 +46,16 @@ void DemoParser::playerDeath(CSVCMsg_GameEvent &message, const CSVCMsg_GameEvent
 void DemoParser::bombPlanted(CSVCMsg_GameEvent &message, const CSVCMsg_GameEventList::descriptor_t& descriptor)
 {
 	gameEventHandler.bombPlanted();
+	gameState.setBombPlantedTick(gameState.getTick());
 }
 
 void DemoParser::roundStart(CSVCMsg_GameEvent &message, const CSVCMsg_GameEventList::descriptor_t& descriptor)
 {
-	log.logVerbose("roundStart: timelimit: %d; tick: %d", getValue(message, descriptor, "timelimit").val_long(), gameState.getTick());
+	gameState.setRoundStartedTick(gameState.getTick());
+	gameState.setBombPlantedTick(-1);
+	int roundTime = getValue(message, descriptor, "timelimit").val_long();
+	gameState.setRoundTime(roundTime);
+	log.logVerbose("roundStart: timelimit: %d; tick: %d", roundTime, gameState.getTick());
 
 	std::vector<Player> &players = gameState.getPlayers();
 	for (std::vector<Player>::iterator player = players.begin(); player != players.end(); player++)
@@ -68,8 +71,7 @@ void DemoParser::roundFreezeEnd(CSVCMsg_GameEvent &message, const CSVCMsg_GameEv
 {
 	log.logVerbose("roundFreezeEnd");
 	gameEventHandler.roundFreezeEnd();
-
-	roundStartTick = gameState.getTick();
+	gameState.setRoundStartedTick(gameState.getTick());
 }
 
 void DemoParser::roundEnd(CSVCMsg_GameEvent &message, const CSVCMsg_GameEventList::descriptor_t& descriptor)

@@ -11,6 +11,8 @@
 #include "../utils/EndianConverter.h"
 #include "../utils/StringFormat.h"
 
+#include <sstream>
+
 DemoParser::DemoParser(GameState &gameState, Log &log, GameEventHandler &gameEventHandler)
 : gameState(gameState), log(log), gameEventHandler(gameEventHandler), playerConnectHandler(gameState)
 {
@@ -34,6 +36,7 @@ DemoHeader DemoParser::parseHeader(MemoryStream &demo)
 	header.playbackTicks = demo.readInt();
 	header.playbackFrames = demo.readInt();
 	header.signonlength = demo.readInt();
+	gameState.setHeader(header);
 
 	return header;
 }
@@ -78,6 +81,26 @@ void DemoParser::updatePlayer(int entityId, const player_info_t *playerinfo)
 	Player player(entityId, userId, playerinfo->name);
 	gameState.updatePlayer(player);
 	log.logVerbose("\tplayer name: %s / %d", playerinfo->name, userId);
+}
+
+void DemoParser::setConVar(CNETMsg_SetConVar &message)
+{
+	int size = message.convars().cvars_size();
+
+	for (int i = 0; i < size; i++)
+	{
+		const CMsg_CVars_CVar &cvar = message.convars().cvars(i);
+		if (cvar.has_name() && cvar.has_value())
+		{
+			if (cvar.name() == "mp_c4timer")
+			{
+				std::string value = cvar.value();
+				int bombTimer;
+				std::istringstream(value) >> bombTimer;
+				gameState.setBombTimer(bombTimer);
+			}
+		}
+	}
 }
 
 bool DemoParser::parseNextTick(MemoryStream &demo)
@@ -161,6 +184,10 @@ void DemoParser::parsePacket2(MemoryStream &demo, int length)
 		case svc_PacketEntities:
 		{
 			parseMessage<CSVCMsg_PacketEntities>(demo, messageLength, &DemoParser::packetEntities);
+		} break;
+		case net_SetConVar:
+		{
+			parseMessage<CNETMsg_SetConVar>(demo, messageLength, &DemoParser::setConVar);
 		} break;
 		default:
 			// unhandledCommand(formatString("message command: default %d", command));

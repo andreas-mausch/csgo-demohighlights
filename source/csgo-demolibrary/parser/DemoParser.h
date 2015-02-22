@@ -54,6 +54,7 @@ private:
 	void packetEntities(CSVCMsg_PacketEntities &message);
 	void parseStringtable(MemoryBitStream &stringtables);
 	void parseStringTableUpdate(MemoryBitStream &stream, int entryCount, int maximumEntries, int userDataSize, int userDataSizeBits, int userDataFixedSize, bool userData);
+	void setConVar(CNETMsg_SetConVar &message);
 	void unhandledCommand(const std::string &description);
 
 	void updatePlayer(int entityId, const player_info_t *playerinfo);

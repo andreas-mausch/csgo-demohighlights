@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Player.h"
+#include "../parser/DemoParser.h"
 #include "../parser/Stringtable.h"
 #include "../sdk/demofile.h"
 #include "../sdk/demofiledump.h"
@@ -15,13 +16,21 @@ class MemoryStream;
 class GameState
 {
 private:
+	DemoHeader header;
 	int tick;
 	int positionInStream;
+
+	int roundTime;
+	int bombTimer;
+	int roundStartedTick;
+	int bombPlantedTick;
 
 	CSVCMsg_GameEventList gameEvents;
 	std::vector<Stringtable> stringTables;
 	std::vector<Player> players;
 	std::vector<Team> teams;
+
+	int getTicksPerSecond();
 
 	Player *findPlayerByEntityIdIfExists(int entitydId);
 
@@ -31,6 +40,8 @@ public:
 
 	const CSVCMsg_GameEventList::descriptor_t &getGameEvent(int eventId);
 	std::vector<Stringtable> &getStringTables();
+
+	void setHeader(DemoHeader header);
 
 	std::vector<Player> &getPlayers();
 	Player &findPlayerByUserId(int userId);
@@ -58,4 +69,12 @@ public:
 	void setTick(int tick);
 	void setPositionInStream(int positionInStream);
 	void setGameEvents(CSVCMsg_GameEventList &message);
+
+	void setRoundTime(int seconds);
+	void setRoundStartedTick(int tick);
+	void setBombTimer(int seconds);
+	void setBombPlantedTick(int tick);
+	int getBombTimeLeft();
+	int getRoundTimeLeft();
+
 };

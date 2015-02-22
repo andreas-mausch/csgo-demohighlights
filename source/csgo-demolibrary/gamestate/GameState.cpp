@@ -5,12 +5,17 @@
 #include "../utils/StringFormat.h"
 
 GameState::GameState(int tick, int positionInStream)
-	: tick(tick), positionInStream(positionInStream)
+	: tick(tick), positionInStream(positionInStream), bombTimer(45)
 {
 }
 
 GameState::~GameState()
 {
+}
+
+void GameState::setHeader(DemoHeader header)
+{
+	this->header = header;
 }
 
 int GameState::getTick()
@@ -241,4 +246,44 @@ void GameState::updateTeamType(int entityId, TeamType type)
 void GameState::updateTeamScore(int entityId, int score)
 {
 	getTeamByEntityId(entityId).setScore(score);
+}
+
+void GameState::setRoundTime(int seconds)
+{
+	roundTime = seconds;
+}
+
+void GameState::setRoundStartedTick(int tick)
+{
+	roundStartedTick = tick;
+}
+
+void GameState::setBombTimer(int seconds)
+{
+	bombTimer = seconds;
+}
+
+void GameState::setBombPlantedTick(int tick)
+{
+	bombPlantedTick = tick;
+}
+
+int GameState::getTicksPerSecond()
+{
+	return static_cast<int>(static_cast<float>(header.playbackTicks) / header.playbackTime);
+}
+
+int GameState::getRoundTimeLeft()
+{
+	return roundTime - (tick - roundStartedTick) / getTicksPerSecond();
+}
+
+int GameState::getBombTimeLeft()
+{
+	if (bombPlantedTick == -1)
+	{
+		return -1;
+	}
+
+	return bombTimer - (tick - bombPlantedTick) / getTicksPerSecond();
 }
