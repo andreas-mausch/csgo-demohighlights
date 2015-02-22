@@ -24,6 +24,7 @@ private:
 	int bombTimer;
 	int roundStartedTick;
 	int bombPlantedTick;
+	Vector bombPosition;
 
 	CSVCMsg_GameEventList gameEvents;
 	std::vector<Stringtable> stringTables;
@@ -77,8 +78,12 @@ public:
 	void setRoundTime(int seconds);
 	void setRoundStartedTick(int tick);
 	void setBombTimer(int seconds);
+	int getBombPlantedTick();
 	void setBombPlantedTick(int tick);
 	int getBombTimeLeft();
 	int getRoundTimeLeft();
+
+	Vector getBombPosition();
+	void setBombPosition(Vector position);
 
 };

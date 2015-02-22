@@ -194,6 +194,20 @@ void GameStateControl::renderTime()
 	DrawTextA(backbuffer, text.c_str(), text.length(), &rect, 0);
 }
 
+void GameStateControl::renderBomb()
+{
+	RECT clientRect;
+	GetClientRect(window, &clientRect);
+
+	if (gameState->getBombPlantedTick() != -1)
+	{
+		Vector screen = worldToScreen(gameState->getBombPosition(), clientRect.right, clientRect.bottom);
+		SetTextColor(backbuffer, RGB(255, 64, 64));
+		SetBkMode(backbuffer, TRANSPARENT);
+		renderText(screen.x - 5, screen.y - 5, "[X]");
+	}
+}
+
 void GameStateControl::renderMapBackground()
 {
 	RECT clientRect;
@@ -234,6 +248,7 @@ void GameStateControl::paintBackbuffer()
 	renderPlayers();
 	renderScore();
 	renderTime();
+	renderBomb();
 }
 
 void GameStateControl::onCreate()

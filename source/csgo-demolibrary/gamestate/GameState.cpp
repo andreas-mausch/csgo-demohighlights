@@ -5,7 +5,7 @@
 #include "../utils/StringFormat.h"
 
 GameState::GameState(int tick, int positionInStream)
-	: tick(tick), positionInStream(positionInStream), bombTimer(45)
+	: tick(tick), positionInStream(positionInStream), bombTimer(45), bombPosition(-1.0f, -1.0f, -1.0f)
 {
 }
 
@@ -297,6 +297,11 @@ void GameState::setBombTimer(int seconds)
 	bombTimer = seconds;
 }
 
+int GameState::getBombPlantedTick()
+{
+	return bombPlantedTick;
+}
+
 void GameState::setBombPlantedTick(int tick)
 {
 	bombPlantedTick = tick;
@@ -320,4 +325,14 @@ int GameState::getBombTimeLeft()
 	}
 
 	return bombTimer - (tick - bombPlantedTick) / getTicksPerSecond();
+}
+
+Vector GameState::getBombPosition()
+{
+	return bombPosition;
+}
+
+void GameState::setBombPosition(Vector position)
+{
+	bombPosition = position;
 }

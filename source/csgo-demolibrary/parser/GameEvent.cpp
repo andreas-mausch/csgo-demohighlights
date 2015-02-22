@@ -46,7 +46,9 @@ void DemoParser::playerDeath(CSVCMsg_GameEvent &message, const CSVCMsg_GameEvent
 void DemoParser::bombPlanted(CSVCMsg_GameEvent &message, const CSVCMsg_GameEventList::descriptor_t& descriptor)
 {
 	int userId = getValue(message, descriptor, "userid").val_short();
+	Player &player = gameState.findPlayerByUserId(userId);
 	gameState.updatePlayerPlanting(userId, false);
+	gameState.setBombPosition(player.getPosition());
 
 	gameEventHandler.bombPlanted();
 	gameState.setBombPlantedTick(gameState.getTick());
@@ -187,6 +189,7 @@ void DemoParser::bombDefused(CSVCMsg_GameEvent &message, const CSVCMsg_GameEvent
 {
 	int userId = getValue(message, descriptor, "userid").val_short();
 	gameState.updatePlayerDefusing(userId, false, false);
+	gameState.setBombPlantedTick(-1);
 }
 
 void DemoParser::gameEvent(CSVCMsg_GameEvent &message)
