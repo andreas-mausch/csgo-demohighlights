@@ -2,7 +2,7 @@
 #include "GameState.h"
 
 Player::Player(int entityId, int userId, const std::string &name)
-: entityId(entityId), userId(userId), name(name), team(UnknownTeam), alive(false), position(-1.0f, -1.0f, -1.0f), observer(false), health(-1)
+: entityId(entityId), userId(userId), name(name), team(UnknownTeam), alive(false), position(-1.0f, -1.0f, -1.0f), observer(false), health(-1), eyeAngle(-1.0f, -1.0f, -1.0f)
 {
 }
 
@@ -73,4 +73,14 @@ int Player::getHealth()
 void Player::setHealth(int health)
 {
 	this->health = health;
+}
+
+Vector Player::getEyeAngle()
+{
+	return eyeAngle;
+}
+
+void Player::setEyeAngle(Vector angle)
+{
+	eyeAngle = angle;
 }

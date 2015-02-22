@@ -16,6 +16,7 @@ private:
 	TeamType team;
 	Vector position;
 	int health;
+	Vector eyeAngle;
 
 public:
 	Player(int entityId, int userId, const std::string &name);
@@ -40,4 +41,7 @@ public:
 
 	int getHealth();
 	void setHealth(int health);
+
+	Vector getEyeAngle();
+	void setEyeAngle(Vector angle);
 };

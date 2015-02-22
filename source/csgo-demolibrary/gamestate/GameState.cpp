@@ -170,6 +170,30 @@ void GameState::updatePlayerHealth(int entityId, int health)
 	}
 }
 
+void GameState::updatePlayerEyeAngleX(int entityId, float x)
+{
+	Player *player = findPlayerByEntityIdIfExists(entityId);
+
+	if (player)
+	{
+		Vector angle = player->getEyeAngle();
+		angle.x = x;
+		player->setEyeAngle(angle);
+	}
+}
+
+void GameState::updatePlayerEyeAngleY(int entityId, float y)
+{
+	Player *player = findPlayerByEntityIdIfExists(entityId);
+
+	if (player)
+	{
+		Vector angle = player->getEyeAngle();
+		angle.y = y;
+		player->setEyeAngle(angle);
+	}
+}
+
 int GameState::getPlayersAlive(TeamType type)
 {
 	int playersAlive = 0;

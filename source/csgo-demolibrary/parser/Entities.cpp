@@ -315,6 +315,14 @@ bool DemoParser::ReadNewEntity(MemoryBitStream &entityBitBuffer, EntityEntry *pE
 				{
 					gameState.updatePlayerHealth(pEntity->m_nEntity, valueInt);
 				}
+				else if (name == "m_angEyeAngles[0]")
+				{
+					gameState.updatePlayerEyeAngleX(pEntity->m_nEntity, valueFloat);
+				}
+				else if (name == "m_angEyeAngles[1]")
+				{
+					gameState.updatePlayerEyeAngleY(pEntity->m_nEntity, valueFloat);
+				}
 			}
 			else if (pTable->net_table_name() == "DT_CSTeam")
 			{

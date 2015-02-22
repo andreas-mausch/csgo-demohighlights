@@ -53,6 +53,8 @@ public:
 	void updatePlayerPositionZ(int entityId, float z);
 	void updatePlayerObserverMode(int entityId, bool observer);
 	void updatePlayerHealth(int entityId, int health);
+	void updatePlayerEyeAngleX(int entityId, float x);
+	void updatePlayerEyeAngleY(int entityId, float y);
 
 	Team &getTeam(TeamType type);
 	Team &getTeamByEntityId(int entityId);
