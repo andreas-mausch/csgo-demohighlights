@@ -16,7 +16,7 @@ void ClutchFilter::addPossibleClutch(Player &player)
 	Clutch clutch;
 	clutch.player = &player;
 	clutch.aliveOwnTeam = gameState.getPlayersAlive(player.getTeam());
-	clutch.aliveEnemyTeam = gameState.getPlayersAlive(getOppositeTeam(player.getTeam()));
+	clutch.aliveEnemyTeam = gameState.getPlayersAlive(Team::getOppositeTeam(player.getTeam()));
 
 	bool playerHasAClutchAlready = false;
 	for (std::vector<Clutch>::iterator clutch = possibleClutches.begin(); clutch != possibleClutches.end(); clutch++)
@@ -65,13 +65,13 @@ void ClutchFilter::roundFreezeEnd()
 	possibleClutches.clear();
 }
 
-void ClutchFilter::roundEnd(Team winner)
+void ClutchFilter::roundEnd(TeamType winner)
 {
 	for (std::vector<Clutch>::iterator clutch = possibleClutches.begin(); clutch != possibleClutches.end(); clutch++)
 	{
 		if (clutch->player->getTeam() == winner)
 		{
-			log.log("CLUTCH WON %d:%d - %dvs%d: %s (%s)", gameState.getRoundsWon(Terrorists), gameState.getRoundsWon(CounterTerrorists), clutch->aliveOwnTeam, clutch->aliveEnemyTeam, clutch->player->getName().c_str(), toString(winner).c_str());
+			log.log("CLUTCH WON %d:%d - %dvs%d: %s (%s)", gameState.getRoundsWon(Terrorists), gameState.getRoundsWon(CounterTerrorists), clutch->aliveOwnTeam, clutch->aliveEnemyTeam, clutch->player->getName().c_str(), Team::toString(winner).c_str());
 		}
 	}
 }

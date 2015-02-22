@@ -18,12 +18,10 @@ private:
 	int tick;
 	int positionInStream;
 
-	int tRoundsWon;
-	int ctRoundsWon;
-
 	CSVCMsg_GameEventList gameEvents;
 	std::vector<Stringtable> stringTables;
 	std::vector<Player> players;
+	std::vector<Team> teams;
 
 	Player *findPlayerByEntityIdIfExists(int entitydId);
 
@@ -39,22 +37,25 @@ public:
 	Player *findPlayerByUserIdIfExists(int userId);
 
 	void updatePlayer(Player &player);
-	void updatePlayerTeam(int entityId, Team team);
+	void updatePlayerTeam(int entityId, TeamType team);
 	void updatePlayerPositionXY(int entityId, float x, float y);
 	void updatePlayerPositionZ(int entityId, float z);
 	void updatePlayerObserverMode(int entityId, bool observer);
 	void updatePlayerHealth(int entityId, int health);
 
-	void disconnect(int userId);
-	int getPlayersAlive(Team team);
+	Team &getTeam(TeamType type);
+	Team &getTeamByEntityId(int entityId);
+	void addTeam(int entityId);
+	void updateTeamScore(int entityId, int score);
+	void updateTeamType(int entityId, TeamType type);
+	void updateTeamname(int entityId, const std::string &name);
+	int getRoundsWon(TeamType type);
 
-	void switchTeams();
+	void disconnect(int userId);
+	int getPlayersAlive(TeamType type);
 
 	int getTick();
 	void setTick(int tick);
 	void setPositionInStream(int positionInStream);
 	void setGameEvents(CSVCMsg_GameEventList &message);
-
-	int getRoundsWon(Team team);
-	void addWonRound(Team team);
 };

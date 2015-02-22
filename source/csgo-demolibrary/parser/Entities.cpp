@@ -112,7 +112,7 @@ void DemoParser::packetEntities(CSVCMsg_PacketEntities &message)
 					uint32 uClass = stream.ReadUBitLong( s_nServerClassBits );
 					uint32 uSerialNum = stream.ReadUBitLong( NUM_NETWORKED_EHANDLE_SERIAL_NUMBER_BITS );
 					EntityEntry *pEntity = AddEntity( nNewEntity, uClass, uSerialNum );
-					if ( !ReadNewEntity( stream, pEntity ) )
+					if ( !ReadNewEntity(stream, pEntity) )
 					{
 						printf( "*****Error reading entity! Bailing on this PacketEntities!\n" );
 						return;
@@ -140,7 +140,7 @@ void DemoParser::packetEntities(CSVCMsg_PacketEntities &message)
 					EntityEntry *pEntity = FindEntity( nNewEntity );
 					if ( pEntity )
 					{
-						if ( !ReadNewEntity( stream, pEntity ) )
+						if (!ReadNewEntity(stream, pEntity))
 						{
 							printf( "*****Error reading entity! Bailing on this PacketEntities!\n" );
 							return;
@@ -195,7 +195,7 @@ EntityEntry *FindEntity( int nEntity )
 	return NULL;
 }
 
-EntityEntry *AddEntity( int nEntity, uint32 uClass, uint32 uSerialNum )
+EntityEntry *DemoParser::AddEntity(int nEntity, uint32 uClass, uint32 uSerialNum)
 {
 	// if entity already exists, then replace it, else add it
 	EntityEntry *pEntity = FindEntity( nEntity );
@@ -206,6 +206,12 @@ EntityEntry *AddEntity( int nEntity, uint32 uClass, uint32 uSerialNum )
 	}
 	else
 	{
+		CSVCMsg_SendTable *pTable = GetTableByClassID( uClass );
+		if (pTable->net_table_name() == "DT_CSTeam")
+		{
+			gameState.addTeam(nEntity);
+		}
+
 		pEntity = new EntityEntry( nEntity, uClass, uSerialNum );
 		s_Entities.push_back( pEntity );
 	}
@@ -227,7 +233,7 @@ void RemoveEntity( int nEntity )
 	}
 }
 
-bool DemoParser::ReadNewEntity( MemoryBitStream &entityBitBuffer, EntityEntry *pEntity )
+bool DemoParser::ReadNewEntity(MemoryBitStream &entityBitBuffer, EntityEntry *pEntity)
 {
 	bool bNewWay = entityBitBuffer.readBit();
 
@@ -286,12 +292,12 @@ bool DemoParser::ReadNewEntity( MemoryBitStream &entityBitBuffer, EntityEntry *p
 					break;
 			}
 
+			const std::string &name = pSendProp->m_prop->var_name();
 			if (pTable->net_table_name() == "DT_CSPlayer")
 			{
-				const std::string &name = pSendProp->m_prop->var_name();
 				if (name == "m_iTeamNum")
 				{
-					gameState.updatePlayerTeam(pEntity->m_nEntity, fromEngineInteger(valueInt));
+					gameState.updatePlayerTeam(pEntity->m_nEntity, Team::fromEngineInteger(valueInt));
 				}
 				else if (name == "m_vecOrigin")
 				{
@@ -308,6 +314,21 @@ bool DemoParser::ReadNewEntity( MemoryBitStream &entityBitBuffer, EntityEntry *p
 				else if (name == "m_iHealth")
 				{
 					gameState.updatePlayerHealth(pEntity->m_nEntity, valueInt);
+				}
+			}
+			else if (pTable->net_table_name() == "DT_CSTeam")
+			{
+				if (name == "m_scoreTotal")
+				{
+					gameState.updateTeamScore(pEntity->m_nEntity, valueInt);
+				}
+				else if (name == "m_iTeamNum")
+				{
+					gameState.updateTeamType(pEntity->m_nEntity, Team::fromEngineInteger(valueInt));
+				}
+				else if (name == "m_szTeamname")
+				{
+					gameState.updateTeamname(pEntity->m_nEntity, valueString);
 				}
 			}
 		}

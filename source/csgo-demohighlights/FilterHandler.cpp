@@ -47,7 +47,7 @@ void FilterHandler::roundFreezeEnd()
 	}
 }
 
-void FilterHandler::roundEnd(Team winner)
+void FilterHandler::roundEnd(TeamType winner)
 {
 	for (PointerVector<GameEventHandler>::iterator handler = handlers.begin(); handler != handlers.end(); handler++)
 	{

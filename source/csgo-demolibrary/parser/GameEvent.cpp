@@ -12,7 +12,7 @@ bool matchStarted = false;
 std::string toString(Player &player)
 {
 	std::stringstream output;
-	output << player.getName() << " (" << toString(player.getTeam()) << ")";
+	output << player.getName() << " (" << Team::toString(player.getTeam()) << ")";
 	return output.str();
 }
 
@@ -74,15 +74,10 @@ void DemoParser::roundFreezeEnd(CSVCMsg_GameEvent &message, const CSVCMsg_GameEv
 
 void DemoParser::roundEnd(CSVCMsg_GameEvent &message, const CSVCMsg_GameEventList::descriptor_t& descriptor)
 {
-	Team winner = fromEngineInteger(getValue(message, descriptor, "winner").val_byte());
-	log.logVerbose("roundEnd %s %d:%d (%d T's alive, %d CT's alive)", toString(winner).c_str(), gameState.getRoundsWon(Terrorists), gameState.getRoundsWon(CounterTerrorists), gameState.getPlayersAlive(Terrorists), gameState.getPlayersAlive(CounterTerrorists));
+	TeamType winner = Team::fromEngineInteger(getValue(message, descriptor, "winner").val_byte());
+	log.logVerbose("roundEnd %s %d:%d (%d T's alive, %d CT's alive)", Team::toString(winner).c_str(), gameState.getRoundsWon(Terrorists), gameState.getRoundsWon(CounterTerrorists), gameState.getPlayersAlive(Terrorists), gameState.getPlayersAlive(CounterTerrorists));
 
 	gameEventHandler.roundEnd(winner);
-
-	if (winner == Terrorists || winner == CounterTerrorists)
-	{
-		gameState.addWonRound(winner);
-	}
 }
 
 void DemoParser::roundOfficiallyEnded(CSVCMsg_GameEvent &message, const CSVCMsg_GameEventList::descriptor_t& descriptor)
@@ -112,7 +107,6 @@ void DemoParser::announcePhaseEnd(CSVCMsg_GameEvent &message, const CSVCMsg_Game
 {
 	log.logVerbose("announcePhaseEnd");
 	gameEventHandler.announcePhaseEnd();
-	gameState.switchTeams();
 }
 
 void DemoParser::weaponFire(CSVCMsg_GameEvent &message, const CSVCMsg_GameEventList::descriptor_t& descriptor)

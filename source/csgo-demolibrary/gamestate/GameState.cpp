@@ -5,7 +5,7 @@
 #include "../utils/StringFormat.h"
 
 GameState::GameState(int tick, int positionInStream)
-	: tick(tick), positionInStream(positionInStream), tRoundsWon(0), ctRoundsWon(0)
+	: tick(tick), positionInStream(positionInStream)
 {
 }
 
@@ -110,7 +110,7 @@ void GameState::updatePlayer(Player &player)
 	}
 }
 
-void GameState::updatePlayerTeam(int entityId, Team team)
+void GameState::updatePlayerTeam(int entityId, TeamType team)
 {
 	Player *player = findPlayerByEntityIdIfExists(entityId);
 
@@ -165,13 +165,13 @@ void GameState::updatePlayerHealth(int entityId, int health)
 	}
 }
 
-int GameState::getPlayersAlive(Team team)
+int GameState::getPlayersAlive(TeamType type)
 {
 	int playersAlive = 0;
 
 	for(std::vector<Player>::iterator it = players.begin(); it != players.end(); ++it)
 	{
-		if (it->getTeam() == team && it->isAlive())
+		if (it->getTeam() == type && it->isAlive())
 		{
 			playersAlive++;
 		}
@@ -180,28 +180,9 @@ int GameState::getPlayersAlive(Team team)
 	return playersAlive;
 }
 
-int GameState::getRoundsWon(Team team)
+int GameState::getRoundsWon(TeamType type)
 {
-	switch (team)
-	{
-	case Terrorists:
-		return tRoundsWon;
-	case CounterTerrorists:
-		return ctRoundsWon;
-	}
-
-	throw std::bad_exception("invalid call getRoundsWon()");
-}
-
-void GameState::addWonRound(Team team)
-{
-	switch (team)
-	{
-	case Terrorists:
-		tRoundsWon++; return;
-	case CounterTerrorists:
-		ctRoundsWon++; return;
-	}
+	return getTeam(type).getScore();
 }
 
 void GameState::disconnect(int userId)
@@ -216,16 +197,48 @@ void GameState::disconnect(int userId)
 	}
 }
 
-void GameState::switchTeams()
+Team &GameState::getTeam(TeamType type)
 {
-	for(std::vector<Player>::iterator it = players.begin(); it != players.end(); ++it)
+	for(std::vector<Team>::iterator it = teams.begin(); it != teams.end(); ++it)
 	{
-		it->switchTeam();
+		if (it->getType() == type)
+		{
+			return *it;
+		}
 	}
 
-	int tRoundsWon = this->tRoundsWon;
-	int ctRoundsWon = this->ctRoundsWon;
+	throw std::bad_exception("team not found");
+}
 
-	this->tRoundsWon = ctRoundsWon;
-	this->ctRoundsWon = tRoundsWon;
+Team &GameState::getTeamByEntityId(int entityId)
+{
+	for(std::vector<Team>::iterator it = teams.begin(); it != teams.end(); ++it)
+	{
+		if (it->getEntityId() == entityId)
+		{
+			return *it;
+		}
+	}
+
+	throw std::bad_exception("team not found");
+}
+
+void GameState::addTeam(int entityId)
+{
+	teams.push_back(Team(entityId));
+}
+
+void GameState::updateTeamname(int entityId, const std::string &name)
+{
+	getTeamByEntityId(entityId).setName(name);
+}
+
+void GameState::updateTeamType(int entityId, TeamType type)
+{
+	getTeamByEntityId(entityId).setType(type);
+}
+
+void GameState::updateTeamScore(int entityId, int score)
+{
+	getTeamByEntityId(entityId).setScore(score);
 }

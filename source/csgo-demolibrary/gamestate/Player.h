@@ -13,7 +13,7 @@ private:
 	std::string name;
 	bool alive;
 	bool observer;
-	Team team;
+	TeamType team;
 	Vector position;
 	int health;
 
@@ -29,9 +29,8 @@ public:
 
 	const std::string &getName();
 
-	Team getTeam();
-	void setTeam(Team team);
-	void switchTeam();
+	TeamType getTeam();
+	void setTeam(TeamType team);
 
 	bool isAlive();
 	void setAlive(bool alive);

@@ -20,22 +20,14 @@ const std::string &Player::getName()
 	return name;
 }
 
-Team Player::getTeam()
+TeamType Player::getTeam()
 {
 	return team;
 }
 
-void Player::setTeam(Team team)
+void Player::setTeam(TeamType team)
 {
 	this->team = team;
-}
-
-void Player::switchTeam()
-{
-	if (team == Terrorists || team == CounterTerrorists)
-	{
-		team = getOppositeTeam(team);
-	}
 }
 
 bool Player::isAlive()

@@ -28,6 +28,6 @@ public:
 
 	virtual void playerDeath(Player &victim, Player &attacker, bool headshot);
 	virtual void roundFreezeEnd();
-	virtual void roundEnd(Team winner);
+	virtual void roundEnd(TeamType winner);
 
 };

@@ -17,7 +17,7 @@ public:
 	virtual void bombPlanted() {}
 	virtual void roundStart() {}
 	virtual void roundFreezeEnd() {}
-	virtual void roundEnd(Team winner) {}
+	virtual void roundEnd(TeamType winner) {}
 	virtual void roundOfficiallyEnded() {}
 	virtual void playerConnect(const std::string &name, int entityId, int userId) {}
 	virtual void playerDisconnect(int userId) {}

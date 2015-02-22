@@ -1,6 +1,50 @@
 #include "Team.h"
 
-Team fromEngineInteger(int i)
+Team::Team(int entityId)
+: entityId(entityId), score(0), type(UnknownTeam)
+{
+}
+
+Team::~Team()
+{
+}
+
+int Team::getScore()
+{
+	return score;
+}
+
+void Team::setScore(int score)
+{
+	this->score = score;
+}
+
+const std::string &Team::getName()
+{
+	return name;
+}
+
+int Team::getEntityId()
+{
+	return entityId;
+}
+
+void Team::setName(const std::string &name)
+{
+	this->name = name;
+}
+
+TeamType Team::getType()
+{
+	return type;
+}
+
+void Team::setType(TeamType type)
+{
+	this->type = type;
+}
+
+TeamType Team::fromEngineInteger(int i)
 {
 	switch (i)
 	{
@@ -13,9 +57,9 @@ Team fromEngineInteger(int i)
 	return UnknownTeam;
 }
 
-Team getOppositeTeam(Team team)
+TeamType Team::getOppositeTeam(TeamType type)
 {
-	switch (team)
+	switch (type)
 	{
 	case Terrorists:
 		return CounterTerrorists;
@@ -26,9 +70,9 @@ Team getOppositeTeam(Team team)
 	throw std::bad_exception("no opposite team");
 }
 
-std::string toString(Team team)
+std::string Team::toString(TeamType type)
 {
-	switch (team)
+	switch (type)
 	{
 	case Terrorists:
 		return "Terrorists";

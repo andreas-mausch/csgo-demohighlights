@@ -71,7 +71,8 @@ private:
 	void weaponFire(CSVCMsg_GameEvent &message, const CSVCMsg_GameEventList::descriptor_t& descriptor);
 	void grenadeDetonate(Weapon type, CSVCMsg_GameEvent &message, const CSVCMsg_GameEventList::descriptor_t& descriptor);
 
-	bool ReadNewEntity( MemoryBitStream &entityBitBuffer, EntityEntry *pEntity );
+	EntityEntry *AddEntity(int nEntity, uint32 uClass, uint32 uSerialNum);
+	bool ReadNewEntity(MemoryBitStream &entityBitBuffer, EntityEntry *pEntity);
 
 	template<typename T> void parseMessage(MemoryStream &demo, int length, void (DemoParser::*function)(T &))
 	{
