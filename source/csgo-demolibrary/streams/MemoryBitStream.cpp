@@ -26,14 +26,7 @@ bool MemoryBitStream::readBit()
 
 void MemoryBitStream::readBits(void *buffer, int bitCount)
 {
-	int bitsLeft = bitCount;
-	if (bitCount > 8)
-	{
-		readBytes(buffer, bitCount / 8);
-		bitsLeft = bitCount % 8;
-	}
-
-	for (int targetBit = bitCount - bitsLeft; targetBit < bitCount; targetBit++)
+	for (int targetBit = 0; targetBit < bitCount; targetBit++)
 	{
 		reinterpret_cast<char *>(buffer)[targetBit / 8] |= readBit() << (targetBit % 8);
 	}
