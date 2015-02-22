@@ -32,6 +32,7 @@ private:
 	void renderGeneralInfo();
 	void renderPlayers();
 	void renderPlayer(Player &player);
+	void renderScore(int t, int ct);
 	void renderPercentagePie(int x, int y, int radius, int percentage);
 	void renderText(int x, int y, const std::string &text);
 

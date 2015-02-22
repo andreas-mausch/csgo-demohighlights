@@ -138,6 +138,26 @@ void GameStateControl::renderPlayer(Player &player)
 	renderText(screen.x + 10, screen.y - 7, text);
 }
 
+void GameStateControl::renderScore(int t, int ct)
+{
+	std::string text = formatString("%d:%d", t, ct);
+	RECT clientRect;
+	GetClientRect(window, &clientRect);
+
+	RECT rect;
+	rect.left = 0;
+	rect.top = 20;
+	SelectObject(backbuffer, GetStockObject(DEFAULT_GUI_FONT));
+	SetTextColor(backbuffer, RGB(255, 255, 255));
+	SetBkMode(backbuffer, TRANSPARENT);
+	DrawTextA(backbuffer, text.c_str(), text.length(), &rect, DT_CALCRECT);
+
+	rect.left += (clientRect.right - rect.right) / 2;
+	rect.right += (clientRect.right - rect.right) / 2;
+
+	DrawTextA(backbuffer, text.c_str(), text.length(), &rect, 0);
+}
+
 void GameStateControl::renderMapBackground()
 {
 	RECT clientRect;
@@ -173,6 +193,7 @@ void GameStateControl::paintBackbuffer()
 	renderMapBackground();
 	renderGeneralInfo();
 	renderPlayers();
+	renderScore(gameState->getRoundsWon(Terrorists), gameState->getRoundsWon(CounterTerrorists));
 }
 
 void GameStateControl::onCreate()
