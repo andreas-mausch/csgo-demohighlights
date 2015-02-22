@@ -78,25 +78,37 @@ void drawPlayer(HDC deviceContext, Player &player)
 	SelectObject(deviceContext, GetStockObject(BLACK_BRUSH));
 	SelectObject(deviceContext, GetStockObject(BLACK_PEN));
 	Vector screen = worldToScreen(player.getPosition());
-	int size = 5;
-	Ellipse(deviceContext, screen.x - size, screen.y - size, screen.x + size, screen.y + size);
-	SelectObject(deviceContext, player.getTeam() == Terrorists ? tBrush : ctBrush);
 
-	if (player.getHealth() == 100)
+	int size = 5;
+	if (player.isAlive())
 	{
 		Ellipse(deviceContext, screen.x - size, screen.y - size, screen.x + size, screen.y + size);
+		SelectObject(deviceContext, player.getTeam() == Terrorists ? tBrush : ctBrush);
+
+		if (player.getHealth() == 100)
+		{
+			Ellipse(deviceContext, screen.x - size, screen.y - size, screen.x + size, screen.y + size);
+		}
+		else if (player.getHealth() > 0)
+		{
+	double PI = 3.1415926;
+	double sa = 2.0 * PI * 0 / 100.0;
+	double ea = 2.0 * PI * player.getHealth() / 100.0;
+	int xsa = screen.x + size * sin( sa );
+	int ysa = screen.y + size * cos( sa );
+	int xea = screen.x + size * sin( ea );
+	int yea = screen.y + size * cos( ea );
+		Pie(deviceContext, screen.x - size, screen.y - size, screen.x + size, screen.y + size, xsa, ysa, xea, yea);
+		}
 	}
-	else if (player.getHealth() > 0)
+	else
 	{
-double PI = 3.1415926;
-double sa = 2.0 * PI * 0 / 100.0;
-double ea = 2.0 * PI * player.getHealth() / 100.0;
-int xsa = screen.x + size * sin( sa );
-int ysa = screen.y + size * cos( sa );
-int xea = screen.x + size * sin( ea );
-int yea = screen.y + size * cos( ea );
-	Pie(deviceContext, screen.x - size, screen.y - size, screen.x + size, screen.y + size, xsa, ysa, xea, yea);
+		MoveToEx(deviceContext, screen.x - size, screen.y - size, NULL);
+		LineTo(deviceContext, screen.x + size, screen.y + size);
+		MoveToEx(deviceContext, screen.x + size, screen.y - size, NULL);
+		LineTo(deviceContext, screen.x - size, screen.y + size);
 	}
+
 	RECT rect;
 	rect.left = screen.x + 10;
 	rect.top = screen.y - 7;
