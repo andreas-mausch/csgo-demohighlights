@@ -112,7 +112,15 @@ void drawPlayer(HDC deviceContext, Player &player)
 	RECT rect;
 	rect.left = screen.x + 10;
 	rect.top = screen.y - 7;
-	std::string text = formatString("%s (%d)", player.getName().c_str(), player.getHealth());
+	std::string text;
+	if (player.isAlive())
+	{
+		text = formatString("%s (%d)", player.getName().c_str(), player.getHealth());
+	}
+	else
+	{
+		text = formatString("%s", player.getName().c_str());
+	}
 	SelectObject(deviceContext, GetStockObject(DEFAULT_GUI_FONT));
 	DrawTextA(deviceContext, text.c_str(), text.length(), &rect, DT_CALCRECT);
 	DrawTextA(deviceContext, text.c_str(), text.length(), &rect, 0);
