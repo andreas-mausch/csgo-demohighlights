@@ -17,6 +17,11 @@ private:
 	Vector position;
 	int health;
 	Vector eyeAngle;
+	bool planting;
+	int plantingTick;
+	bool defusing;
+	int defusingTick;
+	bool kit;
 
 public:
 	Player(int entityId, int userId, const std::string &name);
@@ -44,4 +49,13 @@ public:
 
 	Vector getEyeAngle();
 	void setEyeAngle(Vector angle);
+
+	bool isPlanting();
+	int getPlantingTick();
+	void setPlanting(bool planting, int plantingTick);
+
+	bool isDefusing();
+	int getDefusingTick();
+	bool hasKit();
+	void setDefusing(bool defusing, int defusingTick, bool kit);
 };

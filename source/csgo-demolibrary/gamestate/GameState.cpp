@@ -194,6 +194,16 @@ void GameState::updatePlayerEyeAngleY(int entityId, float y)
 	}
 }
 
+void GameState::updatePlayerPlanting(int userId, bool planting)
+{
+	findPlayerByUserId(userId).setPlanting(planting, tick);
+}
+
+void GameState::updatePlayerDefusing(int userId, bool defusing, bool kit)
+{
+	findPlayerByUserId(userId).setDefusing(defusing, tick, kit);
+}
+
 int GameState::getPlayersAlive(TeamType type)
 {
 	int playersAlive = 0;

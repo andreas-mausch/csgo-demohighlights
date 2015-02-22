@@ -2,7 +2,7 @@
 #include "GameState.h"
 
 Player::Player(int entityId, int userId, const std::string &name)
-: entityId(entityId), userId(userId), name(name), team(UnknownTeam), alive(false), position(-1.0f, -1.0f, -1.0f), observer(false), health(-1), eyeAngle(-1.0f, -1.0f, -1.0f)
+: entityId(entityId), userId(userId), name(name), team(UnknownTeam), alive(false), position(-1.0f, -1.0f, -1.0f), observer(false), health(-1), eyeAngle(-1.0f, -1.0f, -1.0f), planting(false), defusing(false)
 {
 }
 
@@ -83,4 +83,42 @@ Vector Player::getEyeAngle()
 void Player::setEyeAngle(Vector angle)
 {
 	eyeAngle = angle;
+}
+
+bool Player::isPlanting()
+{
+	return planting;
+}
+
+int Player::getPlantingTick()
+{
+	return plantingTick;
+}
+
+void Player::setPlanting(bool planting, int plantingTick)
+{
+	this->planting = planting;
+	this->plantingTick = plantingTick;
+}
+
+bool Player::isDefusing()
+{
+	return defusing;
+}
+
+int Player::getDefusingTick()
+{
+	return defusingTick;
+}
+
+bool Player::hasKit()
+{
+	return kit;
+}
+
+void Player::setDefusing(bool defusing, int defusingTick, bool kit)
+{
+	this->defusing = defusing;
+	this->defusingTick = defusingTick;
+	this->kit = kit;
 }

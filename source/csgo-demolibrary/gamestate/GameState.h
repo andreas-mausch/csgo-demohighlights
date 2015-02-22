@@ -55,6 +55,8 @@ public:
 	void updatePlayerHealth(int entityId, int health);
 	void updatePlayerEyeAngleX(int entityId, float x);
 	void updatePlayerEyeAngleY(int entityId, float y);
+	void updatePlayerPlanting(int userId, bool planting);
+	void updatePlayerDefusing(int userId, bool defusing, bool kit);
 
 	Team &getTeam(TeamType type);
 	Team &getTeamByEntityId(int entityId);

@@ -129,6 +129,15 @@ void GameStateControl::renderPlayer(Player &player)
 	if (player.isAlive())
 	{
 		text = formatString("%s (%d)", player.getName().c_str(), player.getHealth());
+
+		if (player.isPlanting())
+		{
+			text += " (planting)";
+		}
+		else if (player.isDefusing())
+		{
+			text += " (defusing)";
+		}
 	}
 	else
 	{

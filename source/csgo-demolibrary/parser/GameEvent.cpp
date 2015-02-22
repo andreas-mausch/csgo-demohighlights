@@ -45,6 +45,9 @@ void DemoParser::playerDeath(CSVCMsg_GameEvent &message, const CSVCMsg_GameEvent
 
 void DemoParser::bombPlanted(CSVCMsg_GameEvent &message, const CSVCMsg_GameEventList::descriptor_t& descriptor)
 {
+	int userId = getValue(message, descriptor, "userid").val_short();
+	gameState.updatePlayerPlanting(userId, false);
+
 	gameEventHandler.bombPlanted();
 	gameState.setBombPlantedTick(gameState.getTick());
 }
@@ -61,6 +64,8 @@ void DemoParser::roundStart(CSVCMsg_GameEvent &message, const CSVCMsg_GameEventL
 	for (std::vector<Player>::iterator player = players.begin(); player != players.end(); player++)
 	{
 		player->setAlive(true);
+		player->setPlanting(false, -1);
+		player->setDefusing(false, -1, false);
 		log.logVerbose("\t%s", toString(*player).c_str());
 	}
 
@@ -153,6 +158,37 @@ void DemoParser::grenadeDetonate(Weapon type, CSVCMsg_GameEvent &message, const 
 	gameEventHandler.grenadeDetonate(type, player, position);
 }
 
+void DemoParser::bombBeginPlant(CSVCMsg_GameEvent &message, const CSVCMsg_GameEventList::descriptor_t& descriptor)
+{
+	int userId = getValue(message, descriptor, "userid").val_short();
+	gameState.updatePlayerPlanting(userId, true);
+}
+
+void DemoParser::bombAbortPlant(CSVCMsg_GameEvent &message, const CSVCMsg_GameEventList::descriptor_t& descriptor)
+{
+	int userId = getValue(message, descriptor, "userid").val_short();
+	gameState.updatePlayerPlanting(userId, false);
+}
+
+void DemoParser::bombBeginDefuse(CSVCMsg_GameEvent &message, const CSVCMsg_GameEventList::descriptor_t& descriptor)
+{
+	int userId = getValue(message, descriptor, "userid").val_short();
+	bool kit = getValue(message, descriptor, "haskit").val_bool();
+	gameState.updatePlayerDefusing(userId, true, kit);
+}
+
+void DemoParser::bombAbortDefuse(CSVCMsg_GameEvent &message, const CSVCMsg_GameEventList::descriptor_t& descriptor)
+{
+	int userId = getValue(message, descriptor, "userid").val_short();
+	gameState.updatePlayerDefusing(userId, false, false);
+}
+
+void DemoParser::bombDefused(CSVCMsg_GameEvent &message, const CSVCMsg_GameEventList::descriptor_t& descriptor)
+{
+	int userId = getValue(message, descriptor, "userid").val_short();
+	gameState.updatePlayerDefusing(userId, false, false);
+}
+
 void DemoParser::gameEvent(CSVCMsg_GameEvent &message)
 {
 	const CSVCMsg_GameEventList::descriptor_t& descriptor = gameState.getGameEvent(message.eventid());
@@ -221,6 +257,30 @@ void DemoParser::gameEvent(CSVCMsg_GameEvent &message)
 	else if (descriptor.name() == "decoy_detonate")
 	{
 		grenadeDetonate(DECOY, message, descriptor);
+	}
+	else if (descriptor.name() == "bomb_beginplant")
+	{
+		bombBeginPlant(message, descriptor);
+	}
+	else if (descriptor.name() == "bomb_abortplant")
+	{
+		bombAbortPlant(message, descriptor);
+	}
+	else if (descriptor.name() == "bomb_planted")
+	{
+		bombPlanted(message, descriptor);
+	}
+	else if (descriptor.name() == "bomb_begindefuse")
+	{
+		bombBeginDefuse(message, descriptor);
+	}
+	else if (descriptor.name() == "bomb_abortdefuse")
+	{
+		bombAbortDefuse(message, descriptor);
+	}
+	else if (descriptor.name() == "bomb_defused")
+	{
+		bombDefused(message, descriptor);
 	}
 }
 
