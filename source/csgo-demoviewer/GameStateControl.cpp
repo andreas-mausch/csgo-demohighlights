@@ -138,9 +138,9 @@ void GameStateControl::renderPlayer(Player &player)
 	renderText(screen.x + 10, screen.y - 7, text);
 }
 
-void GameStateControl::renderScore(int t, int ct)
+void GameStateControl::renderScore()
 {
-	std::string text = formatString("%d:%d", t, ct);
+	std::string text = formatString("%d:%d", gameState->getRoundsWon(Terrorists), gameState->getRoundsWon(CounterTerrorists));
 	RECT clientRect;
 	GetClientRect(window, &clientRect);
 
@@ -168,10 +168,13 @@ void GameStateControl::renderMapBackground()
 
 void GameStateControl::renderGeneralInfo()
 {
+	RECT clientRect;
+	GetClientRect(window, &clientRect);
+
 	SetTextColor(backbuffer, RGB(255, 255, 255));
 	SetBkMode(backbuffer, TRANSPARENT);
-	std::string text = formatString("players: %d; tick: %d", gameState->getPlayers().size(), gameState->getTick());
-	renderText(10, 10, text);
+	std::string text = formatString("tick: %d", gameState->getTick());
+	renderText(clientRect.right - 80, clientRect.bottom - 20, text);
 }
 
 void GameStateControl::renderPlayers()
@@ -193,7 +196,7 @@ void GameStateControl::paintBackbuffer()
 	renderMapBackground();
 	renderGeneralInfo();
 	renderPlayers();
-	renderScore(gameState->getRoundsWon(Terrorists), gameState->getRoundsWon(CounterTerrorists));
+	renderScore();
 }
 
 void GameStateControl::onCreate()
@@ -221,6 +224,7 @@ void GameStateControl::onPaint()
 void GameStateControl::onSize(int width, int height)
 {
 	createBackbuffer();
+	InvalidateRect(window, NULL, TRUE);
 }
 
 LRESULT CALLBACK GameStateControl::callback(HWND window, UINT message, WPARAM wParam, LPARAM lParam)
