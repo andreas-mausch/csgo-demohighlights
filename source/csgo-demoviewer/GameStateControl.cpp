@@ -68,16 +68,16 @@ void GameStateControl::createBackbuffer()
 	ReleaseDC(window, deviceContext);
 }
 
-Vector worldToScreen(Vector position)
+Vector worldToScreen(Vector position, int width, int height)
 {
-	return Vector((position.x + 2387.0f) / 5.54f, (3314.08f - position.y) / 5.54f, 0.0f);
+	return Vector((position.x + 2387.0f) / 4407.0f * width, (3314.08f - position.y) / 4407.0f * height, 0.0f);
 }
 
-void drawPlayer(HDC deviceContext, Player &player)
+void drawPlayer(HDC deviceContext, Player &player, int width, int height)
 {
 	SelectObject(deviceContext, GetStockObject(BLACK_BRUSH));
 	SelectObject(deviceContext, GetStockObject(BLACK_PEN));
-	Vector screen = worldToScreen(player.getPosition());
+	Vector screen = worldToScreen(player.getPosition(), width, height);
 
 	int size = 5;
 	if (player.isAlive())
@@ -131,8 +131,7 @@ void GameStateControl::paintBackbuffer()
 	RECT clientRect;
 	GetClientRect(window, &clientRect);
 
-	FillRect(backbuffer, &clientRect, ctBrush);
-	renderBitmap(backbuffer, dust2, 0, 0);
+	renderBitmapStretched(backbuffer, dust2, 0, 0, clientRect.right, clientRect.bottom);
 
 					std::string text = formatString("players: %d; tick: %d", gameState->getPlayers().size(), gameState->getTick());
 					TextOutA(backbuffer, 10, 10, text.c_str(), text.length());
@@ -144,7 +143,7 @@ void GameStateControl::paintBackbuffer()
 						{
 							SetTextColor(backbuffer, player->isAlive() ? (player->getTeam() == Terrorists ? tColor : ctColor) : RGB(200, 200, 200));
 							SetBkMode(backbuffer, TRANSPARENT);
-							drawPlayer(backbuffer, *player);
+							drawPlayer(backbuffer, *player, clientRect.right, clientRect.bottom);
 						}
 					}
 }
