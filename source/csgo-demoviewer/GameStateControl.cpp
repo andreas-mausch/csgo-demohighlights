@@ -10,12 +10,8 @@
 #include "../csgo-demolibrary/utils/Vector.h"
 #include "../../resources/resource.h"
 
-COLORREF tColor = RGB(253, 205, 59);
-COLORREF ctColor = RGB(90, 160, 222);
-HBRUSH tBrush, ctBrush;
-
 GameStateControl::GameStateControl(HWND window)
-: window(window), gameState(NULL)
+: window(window), gameState(NULL), tColor(RGB(253, 205, 59)), ctColor(RGB(90, 160, 222))
 {
 	ImageDecoder imageDecoder;
 	dust2 = imageDecoder.loadImageFromResource(MAKEINTRESOURCE(IDB_DE_DUST2), L"PNG");
@@ -25,6 +21,8 @@ GameStateControl::GameStateControl(HWND window)
 
 GameStateControl::~GameStateControl()
 {
+	DeleteObject(ctBrush);
+	DeleteObject(tBrush);
 	DeleteObject(dust2);
 }
 

@@ -19,6 +19,11 @@ private:
 	HDC backbuffer;
 	HBITMAP backbufferBitmap;
 
+	COLORREF tColor;
+	COLORREF ctColor;
+	HBRUSH tBrush;
+	HBRUSH ctBrush;
+
 	GameState *gameState;
 
 	void renderMapBackground();
