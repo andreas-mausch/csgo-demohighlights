@@ -83,6 +83,16 @@ void GameStateControl::renderPercentagePie(int x, int y, int radius, int percent
 	Pie(backbuffer, x - radius, y - radius, x + radius, y + radius, xsa, ysa, xea, yea);
 }
 
+void GameStateControl::renderText(int x, int y, const std::string &text)
+{
+	RECT rect;
+	rect.left = x;
+	rect.top = y;
+	SelectObject(backbuffer, GetStockObject(DEFAULT_GUI_FONT));
+	DrawTextA(backbuffer, text.c_str(), text.length(), &rect, DT_CALCRECT);
+	DrawTextA(backbuffer, text.c_str(), text.length(), &rect, 0);
+}
+
 void GameStateControl::renderPlayer(Player &player)
 {
 	RECT clientRect;
@@ -125,12 +135,7 @@ void GameStateControl::renderPlayer(Player &player)
 		text = formatString("%s", player.getName().c_str());
 	}
 
-	RECT rect;
-	rect.left = screen.x + 10;
-	rect.top = screen.y - 7;
-	SelectObject(backbuffer, GetStockObject(DEFAULT_GUI_FONT));
-	DrawTextA(backbuffer, text.c_str(), text.length(), &rect, DT_CALCRECT);
-	DrawTextA(backbuffer, text.c_str(), text.length(), &rect, 0);
+	renderText(screen.x + 10, screen.y - 7, text);
 }
 
 void GameStateControl::renderMapBackground()
@@ -146,7 +151,7 @@ void GameStateControl::renderGeneralInfo()
 	SetTextColor(backbuffer, RGB(255, 255, 255));
 	SetBkMode(backbuffer, TRANSPARENT);
 	std::string text = formatString("players: %d; tick: %d", gameState->getPlayers().size(), gameState->getTick());
-	TextOutA(backbuffer, 10, 10, text.c_str(), text.length());
+	renderText(10, 10, text);
 }
 
 void GameStateControl::renderPlayers()

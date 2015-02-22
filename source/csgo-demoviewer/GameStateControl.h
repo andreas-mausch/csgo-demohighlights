@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 #define WM_GAMESTATECONTROL (WM_USER+1)
 
 enum GameStateControlMessage
@@ -31,6 +33,7 @@ private:
 	void renderPlayers();
 	void renderPlayer(Player &player);
 	void renderPercentagePie(int x, int y, int radius, int percentage);
+	void renderText(int x, int y, const std::string &text);
 
 	void deleteBackbuffer();
 	void createBackbuffer();
