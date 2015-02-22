@@ -8,6 +8,7 @@ enum GameStateControlMessage
 };
 
 class GameState;
+class Player;
 
 class GameStateControl
 {
@@ -19,6 +20,12 @@ private:
 	HBITMAP backbufferBitmap;
 
 	GameState *gameState;
+
+	void renderMapBackground();
+	void renderGeneralInfo();
+	void renderPlayers();
+	void renderPlayer(Player &player);
+	void renderPercentagePie(int x, int y, int radius, int percentage);
 
 	void deleteBackbuffer();
 	void createBackbuffer();

@@ -73,45 +73,50 @@ Vector worldToScreen(Vector position, int width, int height)
 	return Vector((position.x + 2387.0f) / 4407.0f * width, (3314.08f - position.y) / 4407.0f * height, 0.0f);
 }
 
-void drawPlayer(HDC deviceContext, Player &player, int width, int height)
+void GameStateControl::renderPercentagePie(int x, int y, int radius, int percentage)
 {
-	SelectObject(deviceContext, GetStockObject(BLACK_BRUSH));
-	SelectObject(deviceContext, GetStockObject(BLACK_PEN));
-	Vector screen = worldToScreen(player.getPosition(), width, height);
+	double PI = 3.1415926;
+	double sa = 2.0 * PI * 0 / 100.0;
+	double ea = 2.0 * PI * percentage / 100.0;
+	int xsa = x + radius * sin(sa);
+	int ysa = y + radius * cos(sa);
+	int xea = x + radius * sin(ea);
+	int yea = y + radius * cos(ea);
+	Pie(backbuffer, x - radius, y - radius, x + radius, y + radius, xsa, ysa, xea, yea);
+}
+
+void GameStateControl::renderPlayer(Player &player)
+{
+	RECT clientRect;
+	GetClientRect(window, &clientRect);
+
+	SelectObject(backbuffer, GetStockObject(BLACK_BRUSH));
+	SelectObject(backbuffer, GetStockObject(BLACK_PEN));
+	Vector screen = worldToScreen(player.getPosition(), clientRect.right, clientRect.bottom);
 
 	int size = 5;
 	if (player.isAlive())
 	{
-		Ellipse(deviceContext, screen.x - size, screen.y - size, screen.x + size, screen.y + size);
-		SelectObject(deviceContext, player.getTeam() == Terrorists ? tBrush : ctBrush);
+		Ellipse(backbuffer, screen.x - size, screen.y - size, screen.x + size, screen.y + size);
+		SelectObject(backbuffer, player.getTeam() == Terrorists ? tBrush : ctBrush);
 
 		if (player.getHealth() == 100)
 		{
-			Ellipse(deviceContext, screen.x - size, screen.y - size, screen.x + size, screen.y + size);
+			Ellipse(backbuffer, screen.x - size, screen.y - size, screen.x + size, screen.y + size);
 		}
 		else if (player.getHealth() > 0)
 		{
-	double PI = 3.1415926;
-	double sa = 2.0 * PI * 0 / 100.0;
-	double ea = 2.0 * PI * player.getHealth() / 100.0;
-	int xsa = screen.x + size * sin( sa );
-	int ysa = screen.y + size * cos( sa );
-	int xea = screen.x + size * sin( ea );
-	int yea = screen.y + size * cos( ea );
-		Pie(deviceContext, screen.x - size, screen.y - size, screen.x + size, screen.y + size, xsa, ysa, xea, yea);
+			renderPercentagePie(screen.x, screen.y, size, player.getHealth());
 		}
 	}
 	else
 	{
-		MoveToEx(deviceContext, screen.x - size, screen.y - size, NULL);
-		LineTo(deviceContext, screen.x + size, screen.y + size);
-		MoveToEx(deviceContext, screen.x + size, screen.y - size, NULL);
-		LineTo(deviceContext, screen.x - size, screen.y + size);
+		MoveToEx(backbuffer, screen.x - size, screen.y - size, NULL);
+		LineTo(backbuffer, screen.x + size, screen.y + size);
+		MoveToEx(backbuffer, screen.x + size, screen.y - size, NULL);
+		LineTo(backbuffer, screen.x - size, screen.y + size);
 	}
 
-	RECT rect;
-	rect.left = screen.x + 10;
-	rect.top = screen.y - 7;
 	std::string text;
 	if (player.isAlive())
 	{
@@ -121,31 +126,50 @@ void drawPlayer(HDC deviceContext, Player &player, int width, int height)
 	{
 		text = formatString("%s", player.getName().c_str());
 	}
-	SelectObject(deviceContext, GetStockObject(DEFAULT_GUI_FONT));
-	DrawTextA(deviceContext, text.c_str(), text.length(), &rect, DT_CALCRECT);
-	DrawTextA(deviceContext, text.c_str(), text.length(), &rect, 0);
+
+	RECT rect;
+	rect.left = screen.x + 10;
+	rect.top = screen.y - 7;
+	SelectObject(backbuffer, GetStockObject(DEFAULT_GUI_FONT));
+	DrawTextA(backbuffer, text.c_str(), text.length(), &rect, DT_CALCRECT);
+	DrawTextA(backbuffer, text.c_str(), text.length(), &rect, 0);
 }
 
-void GameStateControl::paintBackbuffer()
+void GameStateControl::renderMapBackground()
 {
 	RECT clientRect;
 	GetClientRect(window, &clientRect);
 
 	renderBitmapStretched(backbuffer, dust2, 0, 0, clientRect.right, clientRect.bottom);
+}
 
-					std::string text = formatString("players: %d; tick: %d", gameState->getPlayers().size(), gameState->getTick());
-					TextOutA(backbuffer, 10, 10, text.c_str(), text.length());
+void GameStateControl::renderGeneralInfo()
+{
+	SetTextColor(backbuffer, RGB(255, 255, 255));
+	SetBkMode(backbuffer, TRANSPARENT);
+	std::string text = formatString("players: %d; tick: %d", gameState->getPlayers().size(), gameState->getTick());
+	TextOutA(backbuffer, 10, 10, text.c_str(), text.length());
+}
 
-					std::vector<Player> &players = gameState->getPlayers();
-					for (std::vector<Player>::iterator player = players.begin(); player != players.end(); player++)
-					{
-						if (!(player->isObserver() && player->isAlive()))
-						{
-							SetTextColor(backbuffer, player->isAlive() ? (player->getTeam() == Terrorists ? tColor : ctColor) : RGB(200, 200, 200));
-							SetBkMode(backbuffer, TRANSPARENT);
-							drawPlayer(backbuffer, *player, clientRect.right, clientRect.bottom);
-						}
-					}
+void GameStateControl::renderPlayers()
+{
+	std::vector<Player> &players = gameState->getPlayers();
+	for (std::vector<Player>::iterator player = players.begin(); player != players.end(); player++)
+	{
+		if (!(player->isObserver() && player->isAlive()))
+		{
+			SetTextColor(backbuffer, player->isAlive() ? (player->getTeam() == Terrorists ? tColor : ctColor) : RGB(200, 200, 200));
+			SetBkMode(backbuffer, TRANSPARENT);
+			renderPlayer(*player);
+		}
+	}
+}
+
+void GameStateControl::paintBackbuffer()
+{
+	renderMapBackground();
+	renderGeneralInfo();
+	renderPlayers();
 }
 
 void GameStateControl::onCreate()
