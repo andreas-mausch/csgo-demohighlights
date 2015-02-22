@@ -26,6 +26,7 @@ private:
 
 	void onCreate();
 	void onPaint();
+	void onSize(int width, int height);
 
 	static LRESULT CALLBACK callback(HWND window, UINT message, WPARAM wParam, LPARAM lParam);
 

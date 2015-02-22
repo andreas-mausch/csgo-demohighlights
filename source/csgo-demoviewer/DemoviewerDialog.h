@@ -9,6 +9,7 @@ class DemoviewerDialog : public Dialog
 private:
 
 	void onPaint();
+	void onSize(int width, int height);
 
 public:
 	DemoviewerDialog();

@@ -153,7 +153,6 @@ void GameStateControl::onCreate()
 	createBackbuffer();
 }
 
-
 void GameStateControl::onPaint()
 {
 	if (!backbuffer)
@@ -169,6 +168,11 @@ void GameStateControl::onPaint()
 	BeginPaint(window, &paint);
 	BitBlt(paint.hdc, 0, 0, clientRect.right, clientRect.bottom, backbuffer, 0, 0, SRCCOPY);
 	EndPaint(window, &paint);
+}
+
+void GameStateControl::onSize(int width, int height)
+{
+	createBackbuffer();
 }
 
 LRESULT CALLBACK GameStateControl::callback(HWND window, UINT message, WPARAM wParam, LPARAM lParam)
@@ -194,6 +198,11 @@ LRESULT CALLBACK GameStateControl::callback(HWND window, UINT message, WPARAM wP
 		case WM_PAINT:
 		{
 			control->onPaint();
+			return 0;
+		} break;
+		case WM_SIZE:
+		{
+			control->onSize(LOWORD(lParam), HIWORD(lParam));
 			return 0;
 		} break;
 		case WM_GAMESTATECONTROL:

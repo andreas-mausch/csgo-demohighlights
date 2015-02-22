@@ -52,12 +52,12 @@ END
 // Dialog
 //
 
-IDD_DEMOVIEWER DIALOGEX 0, 0, 570, 527
-STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
+IDD_DEMOVIEWER DIALOGEX 0, 0, 570, 526
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CENTER | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
 CAPTION "CS:GO Demoviewer"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    CONTROL         "Benutzerdefiniert1",IDC_GAMESTATE,"GameStateControl",WS_TABSTOP,7,7,556,513
+    CONTROL         "Benutzerdefiniert1",IDC_GAMESTATE,"GameStateControl",WS_TABSTOP,7,7,556,512
 END
 
 
@@ -74,7 +74,7 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 563
         TOPMARGIN, 7
-        BOTTOMMARGIN, 520
+        BOTTOMMARGIN, 519
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -85,7 +85,7 @@ END
 // PNG
 //
 
-IDB_DE_DUST2            PNG                  "de_dust2.png"
+IDB_DE_DUST2            PNG                     "de_dust2.png"
 #endif    // Deutsch (Deutschland) resources
 /////////////////////////////////////////////////////////////////////////////
 

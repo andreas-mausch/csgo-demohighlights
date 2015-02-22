@@ -17,6 +17,19 @@ void DemoviewerDialog::onPaint()
 {
 }
 
+void DemoviewerDialog::onSize(int width, int height)
+{
+	int gameStateControlWidth = width;
+
+	if (height < width)
+	{
+		gameStateControlWidth = height;
+	}
+
+	gameStateControlWidth -= 20;
+	SetWindowPos(GetDlgItem(dialog, IDC_GAMESTATE), NULL, 0, 0, gameStateControlWidth, gameStateControlWidth, SWP_NOMOVE | SWP_NOZORDER);
+}
+
 void DemoviewerDialog::renderGameState(GameState &gameState)
 {
 	SendDlgItemMessage(dialog, IDC_GAMESTATE, WM_GAMESTATECONTROL, GAMESTATECONTROL_SET, reinterpret_cast<LPARAM>(&gameState));
@@ -59,6 +72,10 @@ INT_PTR DemoviewerDialog::callback(HWND dialog, UINT message, WPARAM wParam, LPA
 		case WM_PAINT:
 		{
 			onPaint();
+		} break;
+		case WM_SIZE:
+		{
+			onSize(LOWORD(lParam), HIWORD(lParam));
 		} break;
 		case WM_CLOSE:
 		{
