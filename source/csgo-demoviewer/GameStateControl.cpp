@@ -149,7 +149,7 @@ void GameStateControl::renderPlayer(Player &player)
 
 void GameStateControl::renderScore()
 {
-	std::string text = formatString("%d:%d", gameState->getRoundsWon(Terrorists), gameState->getRoundsWon(CounterTerrorists));
+	std::string text = formatString("%d - %d", gameState->getRoundsWon(Terrorists), gameState->getRoundsWon(CounterTerrorists));
 	RECT clientRect;
 	GetClientRect(window, &clientRect);
 
