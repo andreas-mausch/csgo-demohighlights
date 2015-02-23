@@ -319,11 +319,6 @@ int GameState::getRoundTimeLeft()
 
 int GameState::getBombTimeLeft()
 {
-	if (bombPlantedTick == -1)
-	{
-		return -1;
-	}
-
 	return bombTimer - (tick - bombPlantedTick) / getTicksPerSecond();
 }
 
