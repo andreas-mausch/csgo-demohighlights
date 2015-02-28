@@ -34,6 +34,7 @@ public:
 	void setPosition(Vector position);
 
 	const std::string &getName();
+	void setName(const std::string &name);
 
 	TeamType getTeam();
 	void setTeam(TeamType team);
@@ -58,4 +59,6 @@ public:
 	int getDefusingTick();
 	bool hasKit();
 	void setDefusing(bool defusing, int defusingTick, bool kit);
+
+	std::string toString();
 };

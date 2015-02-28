@@ -1,3 +1,5 @@
+#include <sstream>
+
 #include "Player.h"
 #include "GameState.h"
 
@@ -18,6 +20,11 @@ int Player::getUserId()
 const std::string &Player::getName()
 {
 	return name;
+}
+
+void Player::setName(const std::string &name)
+{
+	this->name = name;
 }
 
 TeamType Player::getTeam()
@@ -121,4 +128,11 @@ void Player::setDefusing(bool defusing, int defusingTick, bool kit)
 	this->defusing = defusing;
 	this->defusingTick = defusingTick;
 	this->kit = kit;
+}
+
+std::string Player::toString()
+{
+	std::stringstream output;
+	output << getName() << " (" << Team::toString(getTeam()) << ")";
+	return output.str();
 }

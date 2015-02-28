@@ -107,7 +107,7 @@ void GameState::updatePlayer(Player &player)
 
 	if (existingPlayer)
 	{
-		*existingPlayer = player;
+		existingPlayer->setName(player.getName());
 	}
 	else
 	{

@@ -8,13 +8,6 @@
 
 bool matchStarted = false;
 
-std::string toString(Player &player)
-{
-	std::stringstream output;
-	output << player.getName() << " (" << Team::toString(player.getTeam()) << ")";
-	return output.str();
-}
-
 const CSVCMsg_GameEvent::key_t& getValue(CSVCMsg_GameEvent &message, const CSVCMsg_GameEventList::descriptor_t& descriptor, const std::string &keyName)
 {
 	for (int i = 0; i < descriptor.keys().size(); i++)
@@ -39,7 +32,7 @@ void DemoParser::playerDeath(CSVCMsg_GameEvent &message, const CSVCMsg_GameEvent
 		userid.setAlive(false);
 
 		gameEventHandler.playerDeath(userid, attacker, headshot);
-		log.logVerbose("player_death: %s killed %s", toString(attacker).c_str(), toString(userid).c_str());
+		log.logVerbose("player_death: %s killed %s", attacker.toString().c_str(), userid.toString().c_str());
 	}
 }
 
@@ -68,7 +61,7 @@ void DemoParser::roundStart(CSVCMsg_GameEvent &message, const CSVCMsg_GameEventL
 		player->setAlive(true);
 		player->setPlanting(false, -1);
 		player->setDefusing(false, -1, false);
-		log.logVerbose("\t%s", toString(*player).c_str());
+		log.logVerbose("\t%s", player->toString().c_str());
 	}
 
 	gameEventHandler.roundStart();

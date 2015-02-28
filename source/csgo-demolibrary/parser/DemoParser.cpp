@@ -14,7 +14,7 @@
 #include <sstream>
 
 DemoParser::DemoParser(GameState &gameState, Log &log, GameEventHandler &gameEventHandler)
-: gameState(gameState), log(log), gameEventHandler(gameEventHandler), playerConnectHandler(gameState)
+: gameState(gameState), log(log), gameEventHandler(gameEventHandler), playerConnectHandler(gameState, log)
 {
 }
 
