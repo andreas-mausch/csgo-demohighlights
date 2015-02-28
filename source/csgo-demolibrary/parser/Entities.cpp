@@ -203,7 +203,7 @@ EntityEntry *DemoParser::AddEntity(int nEntity, uint32 uClass, uint32 uSerialNum
 	else
 	{
 		CSVCMsg_SendTable *pTable = GetTableByClassID( uClass );
-		if (pTable->net_table_name() == "DT_CSTeam")
+		if (pTable && pTable->net_table_name() == "DT_CSTeam")
 		{
 			gameState.addTeam(nEntity);
 		}
