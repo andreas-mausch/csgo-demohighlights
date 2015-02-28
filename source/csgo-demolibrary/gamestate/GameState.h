@@ -5,6 +5,7 @@
 #include "../parser/Stringtable.h"
 #include "../sdk/demofile.h"
 #include "../sdk/demofiledump.h"
+#include "../utils/PointerVector.h"
 #include "../utils/Vector.h"
 
 #include "../protobuf/generated/netmessages_public.pb.h"
@@ -30,6 +31,7 @@ private:
 	std::vector<Stringtable> stringTables;
 	std::vector<Player> players;
 	std::vector<Team> teams;
+	PointerVector<EntityEntry> s_Entities;
 
 	int getTicksPerSecond();
 
@@ -85,5 +87,7 @@ public:
 
 	Vector getBombPosition();
 	void setBombPosition(Vector position);
+
+	PointerVector<EntityEntry> &getEntities();
 
 };

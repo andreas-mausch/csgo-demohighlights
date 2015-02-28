@@ -331,3 +331,8 @@ void GameState::setBombPosition(Vector position)
 {
 	bombPosition = position;
 }
+
+PointerVector<EntityEntry> &GameState::getEntities()
+{
+	return s_Entities;
+}

@@ -10,7 +10,6 @@
 #include "../streams/MemoryBitStream.h"
 #include "../streams/MemoryStreamBuffer.h"
 
-std::vector< EntityEntry * > s_Entities;
 extern int s_nServerClassBits;
 
 EntityEntry *FindEntity( int nEntity );
@@ -182,9 +181,9 @@ void DemoParser::packetEntities(CSVCMsg_PacketEntities &message)
 	}
 }
 
-EntityEntry *FindEntity( int nEntity )
+EntityEntry *DemoParser::FindEntity( int nEntity )
 {
-	for ( std::vector< EntityEntry * >::iterator i = s_Entities.begin(); i != s_Entities.end(); i++ )
+	for ( PointerVector<EntityEntry>::iterator i = gameState.getEntities().begin(); i != gameState.getEntities().end(); i++ )
 	{
 		if (  (*i)->m_nEntity == nEntity )
 		{
@@ -213,21 +212,20 @@ EntityEntry *DemoParser::AddEntity(int nEntity, uint32 uClass, uint32 uSerialNum
 		}
 
 		pEntity = new EntityEntry( nEntity, uClass, uSerialNum );
-		s_Entities.push_back( pEntity );
+		gameState.getEntities().push_back( pEntity );
 	}
 
 	return pEntity;
 }
 
-void RemoveEntity( int nEntity )
+void DemoParser::RemoveEntity( int nEntity )
 {
-	for ( std::vector< EntityEntry * >::iterator i = s_Entities.begin(); i != s_Entities.end(); i++ )
+	for ( PointerVector<EntityEntry>::iterator i = gameState.getEntities().begin(); i != gameState.getEntities().end(); i++ )
 	{
 		EntityEntry *pEntity = *i;
 		if (  pEntity->m_nEntity == nEntity )
 		{
-			s_Entities.erase( i );
-			delete pEntity;
+			gameState.getEntities().erase( i );
 			break;
 		}
 	}

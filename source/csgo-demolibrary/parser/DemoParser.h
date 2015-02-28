@@ -79,6 +79,8 @@ private:
 
 	EntityEntry *AddEntity(int nEntity, uint32 uClass, uint32 uSerialNum);
 	bool ReadNewEntity(MemoryBitStream &entityBitBuffer, EntityEntry *pEntity);
+	EntityEntry *FindEntity(int nEntity);
+	void RemoveEntity(int nEntity);
 
 	template<typename T> void parseMessage(MemoryStream &demo, int length, void (DemoParser::*function)(T &))
 	{
