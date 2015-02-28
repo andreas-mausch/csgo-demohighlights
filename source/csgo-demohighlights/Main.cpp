@@ -5,11 +5,15 @@
 #include "../csgo-demolibrary/streams/MemoryStream.h"
 #include "../csgo-demolibrary/utils/File.h"
 
-int main()
+int main(int argc, char *argv[])
 {
-	const std::string filename = "demo.dem";
-	std::string stringBuffer = readFile(filename);
+	if (argc < 2)
+	{
+		std::cout << "please provide demo file: " << argv[0] << " demo.dem" << std::endl;
+		return -1;
+	}
 
+	std::string stringBuffer = readFile(argv[1]);
 	if (stringBuffer.length() == 0)
 	{
 		std::cout << "error reading file." << std::endl;
