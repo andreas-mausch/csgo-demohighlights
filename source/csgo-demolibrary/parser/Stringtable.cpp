@@ -141,7 +141,7 @@ void DemoParser::parseStringTableUpdate(MemoryBitStream &stream, int entryCount,
 		{
 			const player_info_t *pUnswappedPlayerInfo = ( const player_info_t * )pUserData;
 			log.logVerbose("parseStringTableUpdate player name: %s / %d", pUnswappedPlayerInfo->name, pUnswappedPlayerInfo->userID);
-			updatePlayer(entryIndex, pUnswappedPlayerInfo);
+			updatePlayer(entryIndex + 1, pUnswappedPlayerInfo);
 		}
 		else
 		{
