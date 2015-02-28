@@ -31,13 +31,37 @@ public:
 		return pointers.size();
 	}
 
+	void erase(iterator it)
+	{
+		delete *it;
+		int index = it - begin();
+		pointers.erase(pointers.begin() + index);
+	}
+
 	T& operator [] (int index)
 	{
 		return *pointers[index];
 	}
 
-	iterator begin() { return &pointers[0]; }
-	const_iterator begin() const { return &pointers[0]; }
+	iterator begin()
+	{
+		if (pointers.size() == 0)
+		{
+			return NULL;
+		}
+
+		return &pointers[0];
+	}
+	const_iterator begin() const
+	{
+		if (pointers.size() == 0)
+		{
+			return NULL;
+		}
+
+		return &pointers[0];
+	}
+
 	iterator end() { return begin() + size(); }
 	const_iterator end() const { return begin() + size(); }
 
