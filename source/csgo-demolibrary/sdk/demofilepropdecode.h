@@ -80,9 +80,14 @@ struct Prop_t
 
 	Prop_t(const Prop_t &prop)
 	{
+		*this = prop;
+	}
+	Prop_t &Prop_t::operator =(const Prop_t &prop)
+	{
 		m_type = prop.m_type;
 		m_value = prop.m_value;
 		m_nNumElements = prop.m_nNumElements;
+		return *this;
 	}
 
 	SendPropType_t m_type;

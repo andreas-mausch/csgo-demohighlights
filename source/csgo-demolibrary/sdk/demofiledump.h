@@ -129,8 +129,13 @@ struct PropEntry
 	}
 	PropEntry(const PropEntry &entry)
 	{
+		*this = entry;
+	}
+	PropEntry &PropEntry::operator =(const PropEntry &entry)
+	{
 		m_pFlattenedProp = entry.m_pFlattenedProp;
 		m_pPropValue = new Prop_t(*entry.m_pPropValue);
+		return *this;
 	}
 	~PropEntry()
 	{
@@ -151,6 +156,10 @@ struct EntityEntry
 	}
 	EntityEntry(const EntityEntry &entry)
 	{
+		*this = entry;
+	}
+	EntityEntry &EntityEntry::operator =(const EntityEntry &entry)
+	{
 		m_nEntity = entry.m_nEntity;
 		m_uClass = entry.m_uClass;
 		m_uSerialNum = entry.m_uSerialNum;
@@ -159,7 +168,10 @@ struct EntityEntry
 		{
 			m_props[i->first] = new PropEntry(*i->second);
 		}
+
+		return *this;
 	}
+
 	~EntityEntry()
 	{
 		for (std::map<std::string, PropEntry *>::iterator i = m_props.begin(); i != m_props.end(); i++ )
