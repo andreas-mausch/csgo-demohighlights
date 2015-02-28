@@ -127,6 +127,11 @@ struct PropEntry
 		, m_pPropValue( pPropValue )
 	{
 	}
+	PropEntry(const PropEntry &entry)
+	{
+		m_pFlattenedProp = entry.m_pFlattenedProp;
+		m_pPropValue = new Prop_t(*entry.m_pPropValue);
+	}
 	~PropEntry()
 	{
 		delete m_pPropValue;
@@ -143,6 +148,17 @@ struct EntityEntry
 		, m_uClass( uClass )
 		, m_uSerialNum( uSerialNum )
 	{
+	}
+	EntityEntry(const EntityEntry &entry)
+	{
+		m_nEntity = entry.m_nEntity;
+		m_uClass = entry.m_uClass;
+		m_uSerialNum = entry.m_uSerialNum;
+
+		for (std::map<std::string, PropEntry *>::const_iterator i = entry.m_props.begin(); i != entry.m_props.end(); i++ )
+		{
+			m_props[i->first] = new PropEntry(*i->second);
+		}
 	}
 	~EntityEntry()
 	{

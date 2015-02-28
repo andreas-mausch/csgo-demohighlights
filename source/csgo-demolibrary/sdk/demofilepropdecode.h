@@ -78,6 +78,13 @@ struct Prop_t
 		m_value.m_vector.Init();
 	}
 
+	Prop_t(const Prop_t &prop)
+	{
+		m_type = prop.m_type;
+		m_value = prop.m_value;
+		m_nNumElements = prop.m_nNumElements;
+	}
+
 	SendPropType_t m_type;
 	union
 	{
