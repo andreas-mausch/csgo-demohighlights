@@ -10,7 +10,7 @@ private:
 
 public:
 	typedef T** iterator;
-	typedef const T** const_iterator;
+	typedef T* const * const_iterator;
 
 	PointerVector() {}
 	~PointerVector()
@@ -21,12 +21,27 @@ public:
 		}
 	}
 
+	PointerVector(const PointerVector &other)
+	{
+		*this = other;
+	}
+
+	PointerVector &PointerVector::operator = (const PointerVector &other)
+	{
+		for (PointerVector<T>::const_iterator it = other.begin(); it != other.end(); it++)
+		{
+			push_back(new T(**it));
+		}
+
+		return *this;
+	}
+
 	void push_back(T *element)
 	{
 		pointers.push_back(element);
 	}
 
-	int size()
+	int size() const
 	{
 		return pointers.size();
 	}
