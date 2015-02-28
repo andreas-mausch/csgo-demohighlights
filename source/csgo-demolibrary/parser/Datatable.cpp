@@ -1,27 +1,11 @@
-#include "Datatable.h"
-
+#include "DemoParser.h"
+#include "../gamestate/GameState.h"
+#include "../protobuf/generated/netmessages_public.pb.h"
 #include "../streams/MemoryBitStream.h"
-
 #include "../sdk/demofile.h"
 #include "../sdk/demofiledump.h"
-#include "../protobuf/generated/netmessages_public.pb.h"
 
-std::vector< CSVCMsg_SendTable > s_DataTables;
-std::vector< ServerClass_t > s_ServerClasses;
-int s_nServerClassBits = 0;
-std::vector< ExcludeEntry > s_currentExcludes;
-
-bool ParseDataTable( MemoryBitStream &buf );
-void FlattenDataTable( int nServerClass );
-void GatherExcludes( CSVCMsg_SendTable *pTable );
-void GatherProps( CSVCMsg_SendTable *pTable, int nServerClass );
-void GatherProps_IterateProps( CSVCMsg_SendTable *pTable, int nServerClass, std::vector< FlattenedPropEntry > &flattenedProps );
-bool IsPropExcluded( CSVCMsg_SendTable *pTable, const CSVCMsg_SendTable::sendprop_t &checkSendProp );
-CSVCMsg_SendTable *GetTableByName( const char *pName );
-CSVCMsg_SendTable *GetTableByClassID( uint32 nClassID );
-FlattenedPropEntry *GetSendPropByIndex( uint32 uClass, uint32 uIndex );
-
-bool ParseDataTable( MemoryBitStream &buf )
+bool DemoParser::ParseDataTable( MemoryBitStream &buf )
 {
 	CSVCMsg_SendTable msg;
 	while ( 1 )
@@ -37,7 +21,7 @@ bool ParseDataTable( MemoryBitStream &buf )
 		if ( msg.is_end() )
 			break;
 
-		s_DataTables.push_back( msg );
+		gameState.s_DataTables.push_back( msg );
 	}
 
 	short nServerClasses = buf.readWord();
@@ -59,16 +43,16 @@ bool ParseDataTable( MemoryBitStream &buf )
 
 		// find the data table by name
 		entry.nDataTable = -1;
-		for ( unsigned int j = 0; j < s_DataTables.size(); j++ )
+		for ( unsigned int j = 0; j < gameState.s_DataTables.size(); j++ )
 		{
-			if ( strcmp( entry.strDTName, s_DataTables[ j ].net_table_name().c_str() ) == 0 )
+			if ( strcmp( entry.strDTName, gameState.s_DataTables[ j ].net_table_name().c_str() ) == 0 )
 			{
 				entry.nDataTable = j;
 				break;
 			}
 		}
 
-		s_ServerClasses.push_back( entry );
+		gameState.s_ServerClasses.push_back( entry );
 	}
 
 
@@ -79,24 +63,24 @@ bool ParseDataTable( MemoryBitStream &buf )
 
 	// perform integer log2() to set s_nServerClassBits
 	int nTemp = nServerClasses;
-	s_nServerClassBits = 0;
-	while (nTemp >>= 1) ++s_nServerClassBits;
+	gameState.s_nServerClassBits = 0;
+	while (nTemp >>= 1) ++gameState.s_nServerClassBits;
 
-	s_nServerClassBits++;
+	gameState.s_nServerClassBits++;
 
 	return true;
 }
 
-void FlattenDataTable( int nServerClass )
+void DemoParser::FlattenDataTable( int nServerClass )
 {
-	CSVCMsg_SendTable *pTable = &s_DataTables[ s_ServerClasses[ nServerClass ].nDataTable ];
+	CSVCMsg_SendTable *pTable = &gameState.s_DataTables[ gameState.s_ServerClasses[ nServerClass ].nDataTable ];
 
-	s_currentExcludes.clear();
+	gameState.s_currentExcludes.clear();
 	GatherExcludes( pTable );
 
 	GatherProps( pTable, nServerClass );
 
-	std::vector< FlattenedPropEntry > &flattenedProps = s_ServerClasses[ nServerClass ].flattenedProps;
+	std::vector< FlattenedPropEntry > &flattenedProps = gameState.s_ServerClasses[ nServerClass ].flattenedProps;
 
 	// get priorities
 	std::vector< uint32 > priorities;
@@ -156,14 +140,14 @@ void FlattenDataTable( int nServerClass )
 	}
 }
 
-void GatherExcludes( CSVCMsg_SendTable *pTable )
+void DemoParser::GatherExcludes( CSVCMsg_SendTable *pTable )
 {
 	for ( int iProp=0; iProp < pTable->props_size(); iProp++ )
 	{
 		const CSVCMsg_SendTable::sendprop_t& sendProp = pTable->props( iProp );
 		if ( sendProp.flags() & SPROP_EXCLUDE )
 		{
-			s_currentExcludes.push_back( ExcludeEntry( sendProp.var_name().c_str(), sendProp.dt_name().c_str(), pTable->net_table_name().c_str() ) );
+			gameState.s_currentExcludes.push_back( ExcludeEntry( sendProp.var_name().c_str(), sendProp.dt_name().c_str(), pTable->net_table_name().c_str() ) );
 		}
 
 		if ( sendProp.type() == DPT_DataTable )
@@ -177,19 +161,19 @@ void GatherExcludes( CSVCMsg_SendTable *pTable )
 	}
 }
 
-void GatherProps( CSVCMsg_SendTable *pTable, int nServerClass )
+void DemoParser::GatherProps( CSVCMsg_SendTable *pTable, int nServerClass )
 {
 	std::vector< FlattenedPropEntry > tempFlattenedProps;
 	GatherProps_IterateProps( pTable, nServerClass, tempFlattenedProps );
 
-	std::vector< FlattenedPropEntry > &flattenedProps = s_ServerClasses[ nServerClass ].flattenedProps;
+	std::vector< FlattenedPropEntry > &flattenedProps = gameState.s_ServerClasses[ nServerClass ].flattenedProps;
 	for ( uint32 i = 0; i < tempFlattenedProps.size(); i++ )
 	{
 		flattenedProps.push_back( tempFlattenedProps[ i ] );
 	}
 }
 
-void GatherProps_IterateProps( CSVCMsg_SendTable *pTable, int nServerClass, std::vector< FlattenedPropEntry > &flattenedProps )
+void DemoParser::GatherProps_IterateProps( CSVCMsg_SendTable *pTable, int nServerClass, std::vector< FlattenedPropEntry > &flattenedProps )
 {
 	for ( int iProp=0; iProp < pTable->props_size(); iProp++ )
 	{
@@ -231,12 +215,12 @@ void GatherProps_IterateProps( CSVCMsg_SendTable *pTable, int nServerClass, std:
 	}
 }
 
-bool IsPropExcluded( CSVCMsg_SendTable *pTable, const CSVCMsg_SendTable::sendprop_t &checkSendProp )
+bool DemoParser::IsPropExcluded( CSVCMsg_SendTable *pTable, const CSVCMsg_SendTable::sendprop_t &checkSendProp )
 {
-	for ( unsigned int i = 0; i < s_currentExcludes.size(); i++ )
+	for ( unsigned int i = 0; i < gameState.s_currentExcludes.size(); i++ )
 	{
-		if ( pTable->net_table_name().compare( s_currentExcludes[ i ].m_pDTName ) == 0 &&
-			checkSendProp.var_name().compare( s_currentExcludes[ i ].m_pVarName ) == 0 )
+		if ( pTable->net_table_name().compare( gameState.s_currentExcludes[ i ].m_pDTName ) == 0 &&
+			checkSendProp.var_name().compare( gameState.s_currentExcludes[ i ].m_pVarName ) == 0 )
 		{
 			return true;
 		}
@@ -244,35 +228,35 @@ bool IsPropExcluded( CSVCMsg_SendTable *pTable, const CSVCMsg_SendTable::sendpro
 	return false;
 }
 
-CSVCMsg_SendTable *GetTableByName( const char *pName )
+CSVCMsg_SendTable *DemoParser::GetTableByName( const char *pName )
 {
-	for ( unsigned int i = 0; i < s_DataTables.size(); i++ )
+	for ( unsigned int i = 0; i < gameState.s_DataTables.size(); i++ )
 	{
-		if ( s_DataTables[ i ].net_table_name().compare( pName ) == 0 )
+		if ( gameState.s_DataTables[ i ].net_table_name().compare( pName ) == 0 )
 		{
-			return &(s_DataTables[ i ]);
+			return &(gameState.s_DataTables[ i ]);
 		}
 	}
 	return NULL;
 }
 
-CSVCMsg_SendTable *GetTableByClassID( uint32 nClassID )
+CSVCMsg_SendTable *DemoParser::GetTableByClassID( uint32 nClassID )
 {
-	for ( uint32 i = 0; i < s_ServerClasses.size(); i++ )
+	for ( uint32 i = 0; i < gameState.s_ServerClasses.size(); i++ )
 	{
-		if ( s_ServerClasses[ i ].nClassID == nClassID )
+		if ( gameState.s_ServerClasses[ i ].nClassID == nClassID )
 		{
-			return &(s_DataTables[ s_ServerClasses[i].nDataTable ]);
+			return &(gameState.s_DataTables[ gameState.s_ServerClasses[i].nDataTable ]);
 		}
 	}
 	return NULL;
 }
 
-FlattenedPropEntry *GetSendPropByIndex( uint32 uClass, uint32 uIndex )
+FlattenedPropEntry *DemoParser::GetSendPropByIndex( uint32 uClass, uint32 uIndex )
 {
-	if ( uIndex < s_ServerClasses[ uClass ].flattenedProps.size() )
+	if ( uIndex < gameState.s_ServerClasses[ uClass ].flattenedProps.size() )
 	{
-		return &s_ServerClasses[ uClass ].flattenedProps[ uIndex ];
+		return &gameState.s_ServerClasses[ uClass ].flattenedProps[ uIndex ];
 	}
 	return NULL;
 }

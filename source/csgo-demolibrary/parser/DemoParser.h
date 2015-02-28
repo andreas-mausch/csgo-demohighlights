@@ -81,6 +81,15 @@ private:
 	bool ReadNewEntity(MemoryBitStream &entityBitBuffer, EntityEntry *pEntity);
 	EntityEntry *FindEntity(int nEntity);
 	void RemoveEntity(int nEntity);
+	bool ParseDataTable( MemoryBitStream &buf );
+	void FlattenDataTable( int nServerClass );
+	void GatherExcludes( CSVCMsg_SendTable *pTable );
+	void GatherProps( CSVCMsg_SendTable *pTable, int nServerClass );
+	void GatherProps_IterateProps( CSVCMsg_SendTable *pTable, int nServerClass, std::vector< FlattenedPropEntry > &flattenedProps );
+	bool IsPropExcluded( CSVCMsg_SendTable *pTable, const CSVCMsg_SendTable::sendprop_t &checkSendProp );
+	CSVCMsg_SendTable *GetTableByName( const char *pName );
+	CSVCMsg_SendTable *GetTableByClassID( uint32 nClassID );
+	FlattenedPropEntry *GetSendPropByIndex( uint32 uClass, uint32 uIndex );
 
 	template<typename T> void parseMessage(MemoryStream &demo, int length, void (DemoParser::*function)(T &))
 	{

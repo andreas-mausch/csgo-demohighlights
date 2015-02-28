@@ -288,10 +288,6 @@
 				Name="parser"
 				>
 				<File
-					RelativePath="..\..\source\csgo-demolibrary\parser\Datatable.h"
-					>
-				</File>
-				<File
 					RelativePath="..\..\source\csgo-demolibrary\parser\DemoParser.h"
 					>
 				</File>

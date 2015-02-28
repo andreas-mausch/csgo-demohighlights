@@ -1,4 +1,3 @@
-#include "Datatable.h"
 #include "DemoParser.h"
 #include "Entities.h"
 
@@ -9,8 +8,6 @@
 #include "../streams/MemoryStream.h"
 #include "../streams/MemoryBitStream.h"
 #include "../streams/MemoryStreamBuffer.h"
-
-extern int s_nServerClassBits;
 
 EntityEntry *FindEntity( int nEntity );
 EntityEntry *AddEntity( int nEntity, uint32 uClass, uint32 uSerialNum );
@@ -108,7 +105,7 @@ void DemoParser::packetEntities(CSVCMsg_PacketEntities &message)
 			{
 			case EnterPVS:	
 				{
-					uint32 uClass = stream.ReadUBitLong( s_nServerClassBits );
+					uint32 uClass = stream.ReadUBitLong( gameState.s_nServerClassBits );
 					uint32 uSerialNum = stream.ReadUBitLong( NUM_NETWORKED_EHANDLE_SERIAL_NUMBER_BITS );
 					EntityEntry *pEntity = AddEntity( nNewEntity, uClass, uSerialNum );
 					if ( !ReadNewEntity(stream, pEntity) )

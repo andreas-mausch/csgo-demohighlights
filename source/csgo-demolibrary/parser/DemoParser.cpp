@@ -1,5 +1,4 @@
 #include "DemoParser.h"
-#include "Datatable.h"
 #include "Entities.h"
 #include "Stringtable.h"
 #include "../gamestate/GameState.h"

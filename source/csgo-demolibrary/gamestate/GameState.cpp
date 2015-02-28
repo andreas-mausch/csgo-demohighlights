@@ -5,7 +5,7 @@
 #include "../utils/StringFormat.h"
 
 GameState::GameState(int tick, int positionInStream)
-	: tick(tick), positionInStream(positionInStream), bombTimer(45), bombPosition(-1.0f, -1.0f, -1.0f)
+	: tick(tick), positionInStream(positionInStream), bombTimer(45), bombPosition(-1.0f, -1.0f, -1.0f), s_nServerClassBits(0)
 {
 }
 

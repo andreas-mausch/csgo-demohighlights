@@ -34,8 +34,13 @@ private:
 	PointerVector<EntityEntry> s_Entities;
 
 	int getTicksPerSecond();
-
 	Player *findPlayerByEntityIdIfExists(int entitydId);
+
+public:
+	std::vector< CSVCMsg_SendTable > s_DataTables;
+	std::vector< ServerClass_t > s_ServerClasses;
+	int s_nServerClassBits;
+	std::vector< ExcludeEntry > s_currentExcludes;
 
 public:
 	GameState(int tick, int positionInStream);
