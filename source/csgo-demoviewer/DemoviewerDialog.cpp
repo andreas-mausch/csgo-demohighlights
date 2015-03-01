@@ -1,7 +1,9 @@
 #include <windows.h>
+#include <commctrl.h>
 
 #include "DemoviewerDialog.h"
 #include "GameStateControl.h"
+#include "../csgo-demolibrary/gamestate/GameState.h"
 #include "../../resources/resource.h"
 
 DemoviewerDialog::DemoviewerDialog()
@@ -33,6 +35,10 @@ void DemoviewerDialog::onSize(int width, int height)
 void DemoviewerDialog::setGameState(GameState &gameState)
 {
 	SendDlgItemMessage(dialog, IDC_GAMESTATE, WM_GAMESTATECONTROL, GAMESTATECONTROL_SET, reinterpret_cast<LPARAM>(&gameState));
+
+	SendDlgItemMessage(dialog, IDC_POSITION, TBM_SETRANGEMIN, FALSE, 0);
+	SendDlgItemMessage(dialog, IDC_POSITION, TBM_SETRANGEMAX, FALSE, gameState.getHeader().playbackTicks);
+	SendDlgItemMessage(dialog, IDC_POSITION, TBM_SETPOS, TRUE, gameState.getTick());
 }
 
 bool DemoviewerDialog::handleMessages()

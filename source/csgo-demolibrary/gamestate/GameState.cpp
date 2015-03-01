@@ -13,6 +13,11 @@ GameState::~GameState()
 {
 }
 
+DemoHeader &GameState::getHeader()
+{
+	return header;
+}
+
 void GameState::setHeader(DemoHeader header)
 {
 	this->header = header;

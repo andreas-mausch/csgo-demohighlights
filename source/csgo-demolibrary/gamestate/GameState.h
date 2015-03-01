@@ -49,6 +49,7 @@ public:
 	const CSVCMsg_GameEventList::descriptor_t &getGameEvent(int eventId);
 	std::vector<Stringtable> &getStringTables();
 
+	DemoHeader &getHeader();
 	void setHeader(DemoHeader header);
 
 	std::vector<Player> &getPlayers();
