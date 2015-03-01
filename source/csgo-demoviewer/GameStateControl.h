@@ -28,6 +28,8 @@ private:
 
 	GameState *gameState;
 
+	void setGameState(GameState *gameState);
+
 	void renderMapBackground();
 	void renderGeneralInfo();
 	void renderPlayers();

@@ -18,6 +18,6 @@ public:
 	virtual INT_PTR callback(HWND dialog, UINT message, WPARAM wParam, LPARAM lParam);
 	bool handleMessages();
 
-	void renderGameState(GameState &gameState);
+	void setGameState(GameState &gameState);
 
 };

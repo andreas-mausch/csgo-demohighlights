@@ -285,6 +285,12 @@ void GameStateControl::onSize(int width, int height)
 	InvalidateRect(window, NULL, TRUE);
 }
 
+void GameStateControl::setGameState(GameState *gameState)
+{
+	this->gameState = gameState;
+	RedrawWindow(window, NULL, NULL, RDW_INVALIDATE | RDW_NOCHILDREN);
+}
+
 LRESULT CALLBACK GameStateControl::callback(HWND window, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	GameStateControl *control = reinterpret_cast<GameStateControl *>(GetWindowLongPtr(window, 0));
@@ -321,8 +327,7 @@ LRESULT CALLBACK GameStateControl::callback(HWND window, UINT message, WPARAM wP
 			{
 				case GAMESTATECONTROL_SET:
 				{
-					control->gameState = reinterpret_cast<GameState *>(lParam);
-					RedrawWindow(window, NULL, NULL, RDW_INVALIDATE | RDW_NOCHILDREN);
+					control->setGameState(reinterpret_cast<GameState *>(lParam));
 				} break;
 			}
 		} break;

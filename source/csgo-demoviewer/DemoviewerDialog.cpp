@@ -30,7 +30,7 @@ void DemoviewerDialog::onSize(int width, int height)
 	SetWindowPos(GetDlgItem(dialog, IDC_GAMESTATE), NULL, 0, 0, gameStateControlWidth, gameStateControlWidth, SWP_NOMOVE | SWP_NOZORDER);
 }
 
-void DemoviewerDialog::renderGameState(GameState &gameState)
+void DemoviewerDialog::setGameState(GameState &gameState)
 {
 	SendDlgItemMessage(dialog, IDC_GAMESTATE, WM_GAMESTATECONTROL, GAMESTATECONTROL_SET, reinterpret_cast<LPARAM>(&gameState));
 }
