@@ -149,6 +149,11 @@ void GameStateControl::renderPlayer(Player &player)
 
 void GameStateControl::renderScore()
 {
+	if (!gameState->getTeamIfExists(Terrorists) || !gameState->getTeamIfExists(CounterTerrorists))
+	{
+		return;
+	}
+
 	std::string text = formatString("%d - %d", gameState->getRoundsWon(Terrorists), gameState->getRoundsWon(CounterTerrorists));
 	RECT clientRect;
 	GetClientRect(window, &clientRect);
