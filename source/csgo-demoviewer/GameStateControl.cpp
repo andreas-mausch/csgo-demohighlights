@@ -255,11 +255,15 @@ void GameStateControl::renderPlayers()
 void GameStateControl::paintBackbuffer()
 {
 	renderMapBackground();
-	renderGeneralInfo();
-	renderPlayers();
-	renderScore();
-	renderTime();
-	renderBomb();
+
+	if (gameState)
+	{
+		renderGeneralInfo();
+		renderPlayers();
+		renderScore();
+		renderTime();
+		renderBomb();
+	}
 }
 
 void GameStateControl::onCreate()
