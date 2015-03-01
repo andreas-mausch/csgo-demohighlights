@@ -52,6 +52,9 @@ public:
 	DemoHeader &getHeader();
 	void setHeader(DemoHeader header);
 
+	int getPositionInStream();
+	void setPositionInStream(int positionInStream);
+
 	std::vector<Player> &getPlayers();
 	Player &findPlayerByUserId(int userId);
 	Player *findPlayerByUserIdIfExists(int userId);
@@ -68,6 +71,7 @@ public:
 	void updatePlayerDefusing(int userId, bool defusing, bool kit);
 
 	Team &getTeam(TeamType type);
+	Team *getTeamIfExists(TeamType type);
 	Team &getTeamByEntityId(int entityId);
 	void addTeam(int entityId);
 	void updateTeamScore(int entityId, int score);
@@ -80,7 +84,6 @@ public:
 
 	int getTick();
 	void setTick(int tick);
-	void setPositionInStream(int positionInStream);
 	void setGameEvents(CSVCMsg_GameEventList &message);
 
 	void setRoundTime(int seconds);

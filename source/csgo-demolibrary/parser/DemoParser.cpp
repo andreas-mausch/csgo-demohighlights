@@ -36,6 +36,7 @@ DemoHeader DemoParser::parseHeader(MemoryStream &demo)
 	header.playbackFrames = demo.readInt();
 	header.signonlength = demo.readInt();
 	gameState.setHeader(header);
+	gameState.setPositionInStream(demo.tellg());
 
 	return header;
 }

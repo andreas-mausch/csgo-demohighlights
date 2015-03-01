@@ -5,7 +5,7 @@
 #include "../utils/StringFormat.h"
 
 GameState::GameState(int tick, int positionInStream)
-	: tick(tick), positionInStream(positionInStream), bombTimer(45), bombPosition(-1.0f, -1.0f, -1.0f), s_nServerClassBits(0)
+	: tick(tick), positionInStream(positionInStream), bombTimer(45), bombPosition(-1.0f, -1.0f, -1.0f), bombPlantedTick(-1), s_nServerClassBits(0)
 {
 }
 
@@ -31,6 +31,11 @@ int GameState::getTick()
 void GameState::setTick(int tick)
 {
 	this->tick = tick;
+}
+
+int GameState::getPositionInStream()
+{
+	return positionInStream;
 }
 
 void GameState::setPositionInStream(int positionInStream)
@@ -241,17 +246,29 @@ void GameState::disconnect(int userId)
 	}
 }
 
-Team &GameState::getTeam(TeamType type)
+Team *GameState::getTeamIfExists(TeamType type)
 {
 	for(std::vector<Team>::iterator it = teams.begin(); it != teams.end(); ++it)
 	{
 		if (it->getType() == type)
 		{
-			return *it;
+			return &*it;
 		}
 	}
 
-	throw std::bad_exception("team not found");
+	return NULL;
+}
+
+Team &GameState::getTeam(TeamType type)
+{
+	Team *team = getTeamIfExists(type);
+
+	if (team == NULL)
+	{
+		throw std::bad_exception("team not found");
+	}
+
+	return *team;
 }
 
 Team &GameState::getTeamByEntityId(int entityId)
