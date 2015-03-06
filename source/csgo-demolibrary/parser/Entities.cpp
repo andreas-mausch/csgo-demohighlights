@@ -144,7 +144,8 @@ void DemoParser::packetEntities(CSVCMsg_PacketEntities &message)
 					}
 					else
 					{
-						assert(0);
+						printf("Unknown entity %d\n", nNewEntity);
+						return;
 					}
 				}
 				break;
