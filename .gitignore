@@ -1,6 +1,7 @@
 project/Debug
 project/Release
 project/Release-Profile
+project/Release-Debug
 project/demoinfogo.exe
 project/demos
 project/csgo-demohighlights.ncb
@@ -10,17 +11,20 @@ project/csgo-demohighlights/csgo-demohighlights.vcproj.Hauptrechner.neonew.user
 project/csgo-demohighlights/Debug
 project/csgo-demohighlights/Release
 project/csgo-demohighlights/Release-Profile
+project/csgo-demohighlights/Release-Debug
 
 project/csgo-demoviewer/csgo-demoviewer.vcproj.Hauptrechner.neonew.user
 project/csgo-demoviewer/Debug
 project/csgo-demoviewer/Release
 project/csgo-demoviewer/Release-Profile
+project/csgo-demoviewer/Release-Debug
 project/csgo-demoviewer/csgo-demoviewer.aps
 
 project/csgo-demolibrary/csgo-demolibrary.vcproj.Hauptrechner.neonew.user
 project/csgo-demolibrary/Debug
 project/csgo-demolibrary/Release
 project/csgo-demolibrary/Release-Profile
+project/csgo-demolibrary/Release-Debug
 
 source/csgo-demolibrary/protobuf/generated
 
