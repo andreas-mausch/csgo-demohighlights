@@ -240,6 +240,8 @@ void DemoParser::parseStringtable(MemoryBitStream &stringtables)
 
 	if (clientSideData)
 	{
+		int wordCount = stringtables.readWord();
+
 		for (int i = 0; i < wordCount; i++)
 		{
 			std::string name = stringtables.readNullTerminatedString(4096);
