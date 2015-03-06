@@ -19,6 +19,7 @@ class GameState
 private:
 	DemoHeader header;
 	int tick;
+	int continuousTick;
 	int positionInStream;
 
 	int roundTime;
@@ -84,6 +85,8 @@ public:
 
 	int getTick();
 	void setTick(int tick);
+	int getContinuousTick();
+	void setContinuousTick(int tick);
 	void setGameEvents(CSVCMsg_GameEventList &message);
 
 	void setRoundTime(int seconds);

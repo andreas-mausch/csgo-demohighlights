@@ -32,13 +32,25 @@ void DemoviewerDialog::onSize(int width, int height)
 	SetWindowPos(GetDlgItem(dialog, IDC_GAMESTATE), NULL, 0, 0, gameStateControlWidth, gameStateControlWidth, SWP_NOMOVE | SWP_NOZORDER);
 }
 
-void DemoviewerDialog::setGameState(GameState &gameState)
+extern int maximumContinousTick;
+
+void DemoviewerDialog::setGameState(GameState *gameState)
 {
-	SendDlgItemMessage(dialog, IDC_GAMESTATE, WM_GAMESTATECONTROL, GAMESTATECONTROL_SET, reinterpret_cast<LPARAM>(&gameState));
+	SendDlgItemMessage(dialog, IDC_GAMESTATE, WM_GAMESTATECONTROL, GAMESTATECONTROL_SET, reinterpret_cast<LPARAM>(gameState));
 
 	SendDlgItemMessage(dialog, IDC_POSITION, TBM_SETRANGEMIN, FALSE, 0);
-	SendDlgItemMessage(dialog, IDC_POSITION, TBM_SETRANGEMAX, FALSE, gameState.getHeader().playbackTicks);
-	SendDlgItemMessage(dialog, IDC_POSITION, TBM_SETPOS, TRUE, gameState.getTick());
+	SendDlgItemMessage(dialog, IDC_POSITION, TBM_SETRANGEMAX, FALSE, gameState ? maximumContinousTick : 0);
+	SendDlgItemMessage(dialog, IDC_POSITION, TBM_SETPOS, TRUE, gameState ? gameState->getContinuousTick() : 0);
+}
+
+void setPosition(MemoryStream &demo, PointerVector<GameState> &gameStates, int tick);
+extern MemoryStream *demox;
+extern PointerVector<GameState> gameStates;
+
+void DemoviewerDialog::onScroll()
+{
+	int tick = SendDlgItemMessage(dialog, IDC_POSITION, TBM_GETPOS, 0, 0);
+	setPosition(*demox, gameStates, tick);
 }
 
 bool DemoviewerDialog::handleMessages()
@@ -71,19 +83,23 @@ INT_PTR DemoviewerDialog::callback(HWND dialog, UINT message, WPARAM wParam, LPA
 {
 	switch (message)
 	{
-		case WM_INITDIALOG:
+	case WM_INITDIALOG:
 		{
 			ShowWindow(dialog, SW_SHOW);
 		} break;
-		case WM_PAINT:
+	case WM_PAINT:
 		{
 			onPaint();
 		} break;
-		case WM_SIZE:
+	case WM_SIZE:
 		{
 			onSize(LOWORD(lParam), HIWORD(lParam));
 		} break;
-		case WM_CLOSE:
+	case WM_HSCROLL:
+		{
+			onScroll();
+		} break;
+	case WM_CLOSE:
 		{
 			close();
 		} break;

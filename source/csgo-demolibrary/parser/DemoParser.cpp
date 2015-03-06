@@ -108,6 +108,7 @@ bool DemoParser::parseNextTick(MemoryStream &demo)
 	unsigned char command = demo.readByte();
 	int tick = demo.readInt();
 	gameState.setTick(tick);
+	gameState.setContinuousTick(gameState.getContinuousTick() + 1);
 	unsigned char playerSlot = demo.readByte();
 
 	switch (command)

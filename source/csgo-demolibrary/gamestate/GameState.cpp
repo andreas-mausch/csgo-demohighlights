@@ -5,7 +5,7 @@
 #include "../utils/StringFormat.h"
 
 GameState::GameState(int tick, int positionInStream)
-	: tick(tick), positionInStream(positionInStream), bombTimer(45), bombPosition(-1.0f, -1.0f, -1.0f), bombPlantedTick(-1), s_nServerClassBits(0)
+	: tick(tick), continuousTick(0), positionInStream(positionInStream), bombTimer(45), bombPosition(-1.0f, -1.0f, -1.0f), bombPlantedTick(-1), s_nServerClassBits(0)
 {
 }
 
@@ -31,6 +31,16 @@ int GameState::getTick()
 void GameState::setTick(int tick)
 {
 	this->tick = tick;
+}
+
+int GameState::getContinuousTick()
+{
+	return continuousTick;
+}
+
+void GameState::setContinuousTick(int tick)
+{
+	this->continuousTick = tick;
 }
 
 int GameState::getPositionInStream()
