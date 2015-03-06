@@ -53,6 +53,12 @@ void DemoParser::parsePacket(MemoryStream &demo)
 	parsePacket2(demo, length);
 }
 
+void DemoParser::skipPacket(MemoryStream &demo)
+{
+	int length = demo.readInt();
+	demo.seekg(length, std::ios_base::cur);
+}
+
 void DemoParser::parseDatatables(MemoryStream &demo)
 {
 	int length = demo.readInt();
@@ -103,12 +109,19 @@ void DemoParser::setConVar(CNETMsg_SetConVar &message)
 	}
 }
 
+void DemoParser::userCmd(MemoryStream &demo)
+{
+	int outgoingSequence = demo.readInt();
+	skipPacket(demo);
+}
+
 bool DemoParser::parseNextTick(MemoryStream &demo)
 {
 	unsigned char command = demo.readByte();
 	int tick = demo.readInt();
 	gameState.setTick(tick);
-	gameState.setContinuousTick(gameState.getContinuousTick() + 1);
+	int continuousTick = gameState.getContinuousTick() + 1;
+	gameState.setContinuousTick(continuousTick);
 	unsigned char playerSlot = demo.readByte();
 
 	switch (command)
@@ -120,10 +133,10 @@ bool DemoParser::parseNextTick(MemoryStream &demo)
 	case dem_synctick:
 		break;
 	case dem_consolecmd:
-		unhandledCommand(formatString("command: default %d", command));
+		skipPacket(demo);
 		break;
 	case dem_usercmd:
-		unhandledCommand(formatString("command: default %d", command));
+		userCmd(demo);
 		break;
 	case dem_datatables:
 		parseDatatables(demo);
