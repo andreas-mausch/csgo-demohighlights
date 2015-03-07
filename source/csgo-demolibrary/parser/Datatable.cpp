@@ -87,7 +87,7 @@ void DemoParser::FlattenDataTable( int nServerClass )
 	priorities.push_back(64);
 	for ( unsigned int i = 0; i < flattenedProps.size(); i++ )
 	{
-		uint32 priority = flattenedProps[ i ].m_prop->priority();
+		uint32 priority = flattenedProps[ i ].m_prop.priority();
 
 		bool bFound = false;
 		for ( uint32 j = 0; j < priorities.size(); j++ )
@@ -118,9 +118,9 @@ void DemoParser::FlattenDataTable( int nServerClass )
 			uint32 currentProp = start;
 			while (currentProp < flattenedProps.size()) 
 			{
-				const CSVCMsg_SendTable::sendprop_t *prop = flattenedProps[currentProp].m_prop;
+				const CSVCMsg_SendTable::sendprop_t &prop = flattenedProps[currentProp].m_prop;
 
-				if (prop->priority() == priority || (priority == 64 && (SPROP_CHANGES_OFTEN & prop->flags()))) 
+				if (prop.priority() == priority || (priority == 64 && (SPROP_CHANGES_OFTEN & prop.flags()))) 
 				{
 					if ( start != currentProp )
 					{
@@ -205,11 +205,11 @@ void DemoParser::GatherProps_IterateProps( CSVCMsg_SendTable *pTable, int nServe
 		{
 			if ( sendProp.type() == DPT_Array )
 			{
-				flattenedProps.push_back( FlattenedPropEntry( &sendProp, &(pTable->props( iProp - 1 ) ) ) );
+				flattenedProps.push_back( FlattenedPropEntry( sendProp, &(pTable->props( iProp - 1 ) ) ) );
 			}
 			else
 			{
-				flattenedProps.push_back( FlattenedPropEntry( &sendProp, NULL ) );
+				flattenedProps.push_back( FlattenedPropEntry( sendProp, NULL ) );
 			}
 		}
 	}

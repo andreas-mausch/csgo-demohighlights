@@ -260,35 +260,35 @@ bool DemoParser::ReadNewEntity(MemoryBitStream &entityBitBuffer, EntityEntry *pE
 			DemofileVector valueVector;
 			const char *valueString;
 
-			const CSVCMsg_SendTable::sendprop_t *pSendProp2 = pSendProp->m_prop;
-			switch ( pSendProp2->type() )
+			const CSVCMsg_SendTable::sendprop_t &pSendProp2 = pSendProp->m_prop;
+			switch ( pSendProp2.type() )
 			{
 				case DPT_Int:
-					valueInt = Int_Decode( entityBitBuffer, pSendProp2 );
+					valueInt = Int_Decode( entityBitBuffer, &pSendProp2 );
 					break;
 				case DPT_Float:
-					valueFloat = Float_Decode( entityBitBuffer, pSendProp2 );
+					valueFloat = Float_Decode( entityBitBuffer, &pSendProp2 );
 					break;
 				case DPT_Vector:
-					Vector_Decode( entityBitBuffer, pSendProp2, valueVector );
+					Vector_Decode( entityBitBuffer, &pSendProp2, valueVector );
 					break;
 				case DPT_VectorXY:
-					VectorXY_Decode( entityBitBuffer, pSendProp2, valueVector );
+					VectorXY_Decode( entityBitBuffer, &pSendProp2, valueVector );
 					break;
 				case DPT_String:
-					valueString = String_Decode( entityBitBuffer, pSendProp2 );
+					valueString = String_Decode( entityBitBuffer, &pSendProp2 );
 					break;
 				case DPT_Array:
-					Array_Decode( entityBitBuffer, pSendProp, pSendProp2->num_elements(), pEntity->m_uClass, fieldIndices[ i ], true );
+					Array_Decode( entityBitBuffer, pSendProp, pSendProp2.num_elements(), pEntity->m_uClass, fieldIndices[ i ], true );
 					break;
 				case DPT_DataTable:
 					break;
 				case DPT_Int64:
-					valueInt64 = Int64_Decode( entityBitBuffer, pSendProp2 );
+					valueInt64 = Int64_Decode( entityBitBuffer, &pSendProp2 );
 					break;
 			}
 
-			const std::string &name = pSendProp->m_prop->var_name();
+			const std::string &name = pSendProp->m_prop.var_name();
 			if (pTable->net_table_name() == "DT_CSPlayer")
 			{
 				if (name == "m_iTeamNum")
@@ -596,7 +596,7 @@ Prop_t *Array_Decode( MemoryBitStream &entityBitBuffer, FlattenedPropEntry *pFla
 
 	for ( int i = 0; i < nElements; i++ )
 	{
-		FlattenedPropEntry temp( pFlattenedProp->m_arrayElementProp, NULL );
+		FlattenedPropEntry temp( *pFlattenedProp->m_arrayElementProp, NULL );
 		Prop_t *pElementResult = DecodeProp( entityBitBuffer, &temp, uClass, nFieldIndex, bQuiet );
 		pResult[ i ] = *pElementResult;
 		delete pElementResult;
@@ -608,42 +608,42 @@ Prop_t *Array_Decode( MemoryBitStream &entityBitBuffer, FlattenedPropEntry *pFla
 
 Prop_t *DecodeProp( MemoryBitStream &entityBitBuffer, FlattenedPropEntry *pFlattenedProp, uint32 uClass, int nFieldIndex, bool bQuiet )
 {
-	const CSVCMsg_SendTable::sendprop_t *pSendProp = pFlattenedProp->m_prop;
+	const CSVCMsg_SendTable::sendprop_t &pSendProp = pFlattenedProp->m_prop;
 
 	Prop_t *pResult = NULL;
-	if ( pSendProp->type() != DPT_Array && pSendProp->type() != DPT_DataTable )
+	if ( pSendProp.type() != DPT_Array && pSendProp.type() != DPT_DataTable )
 	{
-		pResult = new Prop_t( ( SendPropType_t )( pSendProp->type() ) );
+		pResult = new Prop_t( ( SendPropType_t )( pSendProp.type() ) );
 	}
 
 	if ( !bQuiet )
 	{
-		printf( "Field: %d, %s = ", nFieldIndex, pSendProp->var_name().c_str() );
+		printf( "Field: %d, %s = ", nFieldIndex, pSendProp.var_name().c_str() );
 	}
-	switch ( pSendProp->type() )
+	switch ( pSendProp.type() )
 	{
 		case DPT_Int:
-			pResult->m_value.m_int = Int_Decode( entityBitBuffer, pSendProp );
+			pResult->m_value.m_int = Int_Decode( entityBitBuffer, &pSendProp );
 			break;
 		case DPT_Float:
-			pResult->m_value.m_float = Float_Decode( entityBitBuffer, pSendProp );
+			pResult->m_value.m_float = Float_Decode( entityBitBuffer, &pSendProp );
 			break;
 		case DPT_Vector:
-			Vector_Decode( entityBitBuffer, pSendProp, pResult->m_value.m_vector );
+			Vector_Decode( entityBitBuffer, &pSendProp, pResult->m_value.m_vector );
 			break;
 		case DPT_VectorXY:
-			VectorXY_Decode( entityBitBuffer, pSendProp, pResult->m_value.m_vector );
+			VectorXY_Decode( entityBitBuffer, &pSendProp, pResult->m_value.m_vector );
 			break;
 		case DPT_String:
-			pResult->m_value.m_pString = String_Decode( entityBitBuffer, pSendProp );
+			pResult->m_value.m_pString = String_Decode( entityBitBuffer, &pSendProp );
 			break;
 		case DPT_Array:
-			pResult = Array_Decode( entityBitBuffer, pFlattenedProp, pSendProp->num_elements(), uClass, nFieldIndex, bQuiet );
+			pResult = Array_Decode( entityBitBuffer, pFlattenedProp, pSendProp.num_elements(), uClass, nFieldIndex, bQuiet );
 			break;
 		case DPT_DataTable:
 			break;
 		case DPT_Int64:
-			pResult->m_value.m_int64 = Int64_Decode( entityBitBuffer, pSendProp );
+			pResult->m_value.m_int64 = Int64_Decode( entityBitBuffer, &pSendProp );
 			break;
 	}
 

@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 
+#include "Demo.h"
 #include "DemoviewerDialog.h"
 #include "FilterHandler.h"
 #include "GameStateControl.h"
@@ -26,33 +27,12 @@ DWORD WINAPI myThread(void *p)
 	}
 
 	MemoryStreamBuffer demoBuffer(const_cast<char *>(stringBuffer.c_str()), stringBuffer.length());
-	MemoryStream demo(demoBuffer);
+	Demo demo(demoBuffer);
+	demoviewerDialog.setDemo(demo);
 
-	bool end = false;
-	GameState gameState(0, demo.tellg());
-	Log log(std::cout, false);
-	FilterHandler filterHandler(gameState, log);
-	DemoParser demoParser(gameState, log, filterHandler);
-	demoParser.parseHeader(demo);
-
-	int lastRendered = -1;
-	int tick = 0;
-	while (tick < 7500)
-	{
-		demoParser.parseNextTick(demo);
-		tick = gameState.getTick();
-	}
-	while (demoParser.parseNextTick(demo))
-	{
-		if ((GetTickCount() - lastRendered) > 30)
-		{
-			demoviewerDialog.setGameState(&gameState);
-			lastRendered = GetTickCount();
-		}
-		Sleep(30);
-	}
 	while (true)
 	{
+		Sleep(1000);
 	}
 
 	return 0;

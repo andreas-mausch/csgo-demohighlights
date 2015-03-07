@@ -101,12 +101,29 @@ struct ExcludeEntry
 
 struct FlattenedPropEntry
 {
-	FlattenedPropEntry( const CSVCMsg_SendTable::sendprop_t *prop, const CSVCMsg_SendTable::sendprop_t *arrayElementProp )
+	FlattenedPropEntry( const CSVCMsg_SendTable::sendprop_t &prop, const CSVCMsg_SendTable::sendprop_t *arrayElementProp )
 		: m_prop( prop )
 		, m_arrayElementProp( arrayElementProp )
 	{
 	}
-	const CSVCMsg_SendTable::sendprop_t *m_prop;
+	FlattenedPropEntry(const FlattenedPropEntry &entry)
+	{
+		*this = entry;
+	}
+	FlattenedPropEntry &FlattenedPropEntry::operator =(const FlattenedPropEntry &entry)
+	{
+		m_prop = entry.m_prop;
+		if (entry.m_arrayElementProp)
+		{
+			m_arrayElementProp = new CSVCMsg_SendTable::sendprop_t(*entry.m_arrayElementProp);
+		}
+		else
+		{
+			m_arrayElementProp = NULL;
+		}
+		return *this;
+	}
+	CSVCMsg_SendTable::sendprop_t m_prop;
 	const CSVCMsg_SendTable::sendprop_t *m_arrayElementProp;
 };
 
@@ -195,7 +212,7 @@ struct EntityEntry
 		//{
 		//	printf("got vec origin!\n" );
 		//}
-		const std::string &name = pFlattenedProp->m_prop->var_name();
+		const std::string &name = pFlattenedProp->m_prop.var_name();
 		PropEntry *pProp = FindProp(name.c_str() );
 		if ( pProp )
 		{

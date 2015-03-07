@@ -1,18 +1,25 @@
 #include <windows.h>
 #include <commctrl.h>
 
+#include "Demo.h"
 #include "DemoviewerDialog.h"
 #include "GameStateControl.h"
 #include "../csgo-demolibrary/gamestate/GameState.h"
 #include "../../resources/resource.h"
 
 DemoviewerDialog::DemoviewerDialog()
-: Dialog(NULL, IDD_DEMOVIEWER)
+: Dialog(NULL, IDD_DEMOVIEWER), demo(NULL)
 {
 }
 
 DemoviewerDialog::~DemoviewerDialog()
 {
+}
+
+void DemoviewerDialog::setDemo(Demo &demo)
+{
+	this->demo = &demo;
+	setGameState(&demo.getCurrentGameState());
 }
 
 void DemoviewerDialog::onPaint()
@@ -32,25 +39,24 @@ void DemoviewerDialog::onSize(int width, int height)
 	SetWindowPos(GetDlgItem(dialog, IDC_GAMESTATE), NULL, 0, 0, gameStateControlWidth, gameStateControlWidth, SWP_NOMOVE | SWP_NOZORDER);
 }
 
-extern int maximumContinousTick;
-
 void DemoviewerDialog::setGameState(GameState *gameState)
 {
 	SendDlgItemMessage(dialog, IDC_GAMESTATE, WM_GAMESTATECONTROL, GAMESTATECONTROL_SET, reinterpret_cast<LPARAM>(gameState));
 
 	SendDlgItemMessage(dialog, IDC_POSITION, TBM_SETRANGEMIN, FALSE, 0);
-	SendDlgItemMessage(dialog, IDC_POSITION, TBM_SETRANGEMAX, FALSE, gameState ? maximumContinousTick : 0);
-	SendDlgItemMessage(dialog, IDC_POSITION, TBM_SETPOS, TRUE, gameState ? gameState->getContinuousTick() : 0);
+	SendDlgItemMessage(dialog, IDC_POSITION, TBM_SETRANGEMAX, FALSE, demo ? demo->getMaximumContinuousTick() : 0);
+	SendDlgItemMessage(dialog, IDC_POSITION, TBM_SETPOS, TRUE, demo ? demo->getCurrentGameState().getContinuousTick() : 0);
 }
-
-void setPosition(MemoryStream &demo, PointerVector<GameState> &gameStates, int tick);
-extern MemoryStream *demox;
-extern PointerVector<GameState> gameStates;
 
 void DemoviewerDialog::onScroll()
 {
-	int tick = SendDlgItemMessage(dialog, IDC_POSITION, TBM_GETPOS, 0, 0);
-	setPosition(*demox, gameStates, tick);
+	int continuousTick = SendDlgItemMessage(dialog, IDC_POSITION, TBM_GETPOS, 0, 0);
+
+	if (demo)
+	{
+		demo->setPosition(continuousTick);
+		setGameState(&demo->getCurrentGameState());
+	}
 }
 
 bool DemoviewerDialog::handleMessages()

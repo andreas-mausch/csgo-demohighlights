@@ -23,4 +23,5 @@ public:
 
 	void setPosition(int continuousTick);
 	GameState &getCurrentGameState();
+	int getMaximumContinuousTick();
 };

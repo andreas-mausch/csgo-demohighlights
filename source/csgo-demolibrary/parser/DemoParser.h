@@ -99,8 +99,8 @@ private:
 		demo.readBytes(bytes, length);
 		T message;
 		message.ParseFromArray(bytes, length);
-		delete[] bytes;
 		(this->*function)(message);
+		delete[] bytes;
 	}
 
 public:

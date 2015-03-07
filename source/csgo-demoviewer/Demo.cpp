@@ -4,6 +4,7 @@
 Demo::Demo(MemoryStreamBuffer &buffer)
 : demo(buffer), maximumContinousTick(-1), currentGameState(0, 0)
 {
+	load();
 }
 
 Demo::~Demo()
@@ -35,8 +36,16 @@ void Demo::load()
 
 void Demo::setPosition(int continuousTick)
 {
-	GameState &originGameState = findNearestGameState(continuousTick);
-	currentGameState = originGameState;
+	if (currentGameState.getContinuousTick() < continuousTick &&
+		(continuousTick - currentGameState.getContinuousTick()) < 500)
+	{
+	}
+	else
+	{
+		GameState &originGameState = findNearestGameState(continuousTick);
+		currentGameState = originGameState;
+	}
+
 	demo.seekg(currentGameState.getPositionInStream());
 	Log log(std::cout, false);
 	FilterHandler filterHandler(currentGameState, log);
@@ -54,12 +63,6 @@ GameState &Demo::getCurrentGameState()
 
 GameState &Demo::findNearestGameState(int continuousTick)
 {
-	if (currentGameState.getContinuousTick() < continuousTick &&
-		(continuousTick - currentGameState.getContinuousTick()) < 500)
-	{
-		return currentGameState;
-	}
-
 	GameState *best = NULL;
 	int bestTick = -1;
 
@@ -73,4 +76,9 @@ GameState &Demo::findNearestGameState(int continuousTick)
 	}
 
 	return *best;
+}
+
+int Demo::getMaximumContinuousTick()
+{
+	return maximumContinousTick;
 }
