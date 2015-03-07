@@ -46,7 +46,7 @@ DWORD WINAPI myThread(void *p)
 	{
 		if ((GetTickCount() - lastRendered) > 30)
 		{
-			demoviewerDialog.renderGameState(gameState);
+			demoviewerDialog.setGameState(&gameState);
 			lastRendered = GetTickCount();
 		}
 		Sleep(30);

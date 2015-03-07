@@ -35,6 +35,16 @@ void Demo::load()
 
 void Demo::setPosition(int continuousTick)
 {
+	GameState &originGameState = findNearestGameState(continuousTick);
+	currentGameState = originGameState;
+	demo.seekg(currentGameState.getPositionInStream());
+	Log log(std::cout, false);
+	FilterHandler filterHandler(currentGameState, log);
+	DemoParser demoParser(currentGameState, log, filterHandler);
+	while (currentGameState.getContinuousTick() < continuousTick)
+	{
+		demoParser.parseNextTick(demo);
+	}
 }
 
 GameState &Demo::getCurrentGameState()
@@ -44,6 +54,12 @@ GameState &Demo::getCurrentGameState()
 
 GameState &Demo::findNearestGameState(int continuousTick)
 {
+	if (currentGameState.getContinuousTick() < continuousTick &&
+		(continuousTick - currentGameState.getContinuousTick()) < 500)
+	{
+		return currentGameState;
+	}
+
 	GameState *best = NULL;
 	int bestTick = -1;
 
