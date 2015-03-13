@@ -28,12 +28,22 @@ public:
 
 	PointerVector &PointerVector::operator = (const PointerVector &other)
 	{
+		clear();
 		for (PointerVector<T>::const_iterator it = other.begin(); it != other.end(); it++)
 		{
 			push_back(new T(**it));
 		}
 
 		return *this;
+	}
+
+	void clear()
+	{
+		for (std::vector<T *>::iterator it = pointers.begin(); it != pointers.end(); it++)
+		{
+			delete *it;
+		}
+		pointers.clear();
 	}
 
 	void push_back(T *element)
