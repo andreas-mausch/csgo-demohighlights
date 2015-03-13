@@ -127,6 +127,68 @@ struct FlattenedPropEntry
 	const CSVCMsg_SendTable::sendprop_t *m_arrayElementProp;
 };
 
+#include <string>
+
+struct PropertyKey
+{
+	PropertyKey(const std::string &name, int priority, int flags, int type, int elementCount, int bitCount, int highValue, int lowValue, PropertyKey *arrayType)
+		: name(name), priority(priority), flags(flags), type(type), elementCount(elementCount), bitCount(bitCount), highValue(highValue), lowValue(lowValue)
+	{
+		if (arrayType)
+		{
+			this->arrayType = new PropertyKey(*arrayType);
+		}
+		else
+		{
+			this->arrayType = NULL;
+		}
+	}
+	PropertyKey(const PropertyKey &key)
+	{
+		name = key.name;
+		priority = key.priority;
+		flags = key.flags;
+		type = key.type;
+		elementCount = key.elementCount;
+		bitCount = key.bitCount;
+		highValue = key.highValue;
+		lowValue = key.lowValue;
+		if (key.arrayType)
+		{
+			arrayType = new PropertyKey(*key.arrayType);
+		}
+		else
+		{
+			arrayType = NULL;
+		}
+	}
+
+	~PropertyKey()
+	{
+		delete arrayType;
+	}
+
+	std::string name;
+	int priority;
+	int flags;
+	int type;
+	int elementCount;
+	int bitCount;
+	int highValue;
+	int lowValue;
+	PropertyKey *arrayType;
+};
+
+struct ServerClass
+{
+	int classId;
+	std::string name;
+	std::string datatableName;
+	int dataTableId;
+
+	std::vector<PropertyKey> keys;
+};
+
 struct ServerClass_t
 {
 	int nClassID;

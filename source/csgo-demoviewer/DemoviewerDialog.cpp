@@ -87,28 +87,35 @@ bool DemoviewerDialog::handleMessages()
 
 INT_PTR DemoviewerDialog::callback(HWND dialog, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	switch (message)
+	try
 	{
-	case WM_INITDIALOG:
+		switch (message)
 		{
-			ShowWindow(dialog, SW_SHOW);
-		} break;
-	case WM_PAINT:
-		{
-			onPaint();
-		} break;
-	case WM_SIZE:
-		{
-			onSize(LOWORD(lParam), HIWORD(lParam));
-		} break;
-	case WM_HSCROLL:
-		{
-			onScroll();
-		} break;
-	case WM_CLOSE:
-		{
-			close();
-		} break;
+		case WM_INITDIALOG:
+			{
+				ShowWindow(dialog, SW_SHOW);
+			} break;
+		case WM_PAINT:
+			{
+				onPaint();
+			} break;
+		case WM_SIZE:
+			{
+				onSize(LOWORD(lParam), HIWORD(lParam));
+			} break;
+		case WM_HSCROLL:
+			{
+				onScroll();
+			} break;
+		case WM_CLOSE:
+			{
+				close();
+			} break;
+		}
+	}
+	catch (const std::bad_exception &e)
+	{
+		MessageBoxA(0, e.what(), 0, 0);
 	}
 
 	return 0;

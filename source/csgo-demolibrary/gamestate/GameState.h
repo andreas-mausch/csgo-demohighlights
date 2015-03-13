@@ -39,7 +39,7 @@ private:
 
 public:
 	std::vector< CSVCMsg_SendTable > s_DataTables;
-	std::vector< ServerClass_t > s_ServerClasses;
+	std::vector<ServerClass> serverClasses;
 	int s_nServerClassBits;
 	std::vector< ExcludeEntry > s_currentExcludes;
 

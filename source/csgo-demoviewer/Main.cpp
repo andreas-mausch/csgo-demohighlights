@@ -17,22 +17,29 @@ DemoviewerDialog demoviewerDialog;
 
 DWORD WINAPI myThread(void *p)
 {
-	const std::string filename = "demo.dem";
-	std::string stringBuffer = readFile(filename);
-
-	if (stringBuffer.length() == 0)
+	try
 	{
-		std::cout << "error reading file." << std::endl;
-		return -1;
+		const std::string filename = "demo.dem";
+		std::string stringBuffer = readFile(filename);
+
+		if (stringBuffer.length() == 0)
+		{
+			std::cout << "error reading file." << std::endl;
+			return -1;
+		}
+
+		MemoryStreamBuffer demoBuffer(const_cast<char *>(stringBuffer.c_str()), stringBuffer.length());
+		Demo demo(demoBuffer);
+		demoviewerDialog.setDemo(demo);
+
+		while (true)
+		{
+			Sleep(1000);
+		}
 	}
-
-	MemoryStreamBuffer demoBuffer(const_cast<char *>(stringBuffer.c_str()), stringBuffer.length());
-	Demo demo(demoBuffer);
-	demoviewerDialog.setDemo(demo);
-
-	while (true)
+	catch (const std::bad_exception &e)
 	{
-		Sleep(1000);
+		MessageBoxA(0, e.what(), 0, 0);
 	}
 
 	return 0;

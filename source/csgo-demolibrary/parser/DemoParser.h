@@ -87,11 +87,14 @@ private:
 	void FlattenDataTable( int nServerClass );
 	void GatherExcludes( CSVCMsg_SendTable *pTable );
 	void GatherProps( CSVCMsg_SendTable *pTable, int nServerClass );
-	void GatherProps_IterateProps( CSVCMsg_SendTable *pTable, int nServerClass, std::vector< FlattenedPropEntry > &flattenedProps );
+	void GatherProps_IterateProps( CSVCMsg_SendTable *pTable, int nServerClass, std::vector< PropertyKey > &flattenedProps );
 	bool IsPropExcluded( CSVCMsg_SendTable *pTable, const CSVCMsg_SendTable::sendprop_t &checkSendProp );
 	CSVCMsg_SendTable *GetTableByName( const char *pName );
 	CSVCMsg_SendTable *GetTableByClassID( uint32 nClassID );
-	FlattenedPropEntry *GetSendPropByIndex( uint32 uClass, uint32 uIndex );
+	PropertyKey *GetSendPropByIndex( uint32 uClass, uint32 uIndex );
+	Prop_t *Array_Decode( MemoryBitStream &entityBitBuffer, const PropertyKey &key, int nNumElements, uint32 uClass, int nFieldIndex, bool bQuiet );
+	Prop_t *DecodeProp( MemoryBitStream &entityBitBuffer, const PropertyKey &key, uint32 uClass, int nFieldIndex, bool bQuiet );
+	int ReadFieldIndex( MemoryBitStream &entityBitBuffer, int lastIndex, bool bNewWay );
 
 	template<typename T> void parseMessage(MemoryStream &demo, int length, void (DemoParser::*function)(T &))
 	{

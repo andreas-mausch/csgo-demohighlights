@@ -28,31 +28,29 @@ bool DemoParser::ParseDataTable( MemoryBitStream &buf )
 	assert( nServerClasses );
 	for ( int i = 0; i < nServerClasses; i++ )
 	{
-		ServerClass_t entry;
-		entry.nClassID = buf.readWord();
-		if ( entry.nClassID >= nServerClasses )
+		ServerClass entry;
+		entry.classId = buf.readWord();
+		if ( entry.classId >= nServerClasses )
 		{
-			printf( "ParseDataTable: invalid class index (%d).\n", entry.nClassID);
+			printf( "ParseDataTable: invalid class index (%d).\n", entry.classId);
 			return false;
 		}
 
-		std::string name = buf.readNullTerminatedString(sizeof( entry.strName ));
-		std::string dtName = buf.readNullTerminatedString(sizeof( entry.strDTName ));
-		strncpy_s(entry.strName, name.c_str(), sizeof( entry.strName ));
-		strncpy_s(entry.strDTName, dtName.c_str(), sizeof( entry.strDTName ));
+		entry.name = buf.readNullTerminatedString(256);
+		entry.datatableName = buf.readNullTerminatedString(256);
 
 		// find the data table by name
-		entry.nDataTable = -1;
+		entry.dataTableId = -1;
 		for ( unsigned int j = 0; j < gameState.s_DataTables.size(); j++ )
 		{
-			if ( strcmp( entry.strDTName, gameState.s_DataTables[ j ].net_table_name().c_str() ) == 0 )
+			if (entry.datatableName == gameState.s_DataTables[ j ].net_table_name())
 			{
-				entry.nDataTable = j;
+				entry.dataTableId = j;
 				break;
 			}
 		}
 
-		gameState.s_ServerClasses.push_back( entry );
+		gameState.serverClasses.push_back( entry );
 	}
 
 
@@ -73,21 +71,21 @@ bool DemoParser::ParseDataTable( MemoryBitStream &buf )
 
 void DemoParser::FlattenDataTable( int nServerClass )
 {
-	CSVCMsg_SendTable *pTable = &gameState.s_DataTables[ gameState.s_ServerClasses[ nServerClass ].nDataTable ];
+	CSVCMsg_SendTable *pTable = &gameState.s_DataTables[ gameState.serverClasses[ nServerClass ].dataTableId ];
 
 	gameState.s_currentExcludes.clear();
 	GatherExcludes( pTable );
 
 	GatherProps( pTable, nServerClass );
 
-	std::vector< FlattenedPropEntry > &flattenedProps = gameState.s_ServerClasses[ nServerClass ].flattenedProps;
+	std::vector<PropertyKey> &flattenedProps = gameState.serverClasses[ nServerClass ].keys;
 
 	// get priorities
 	std::vector< uint32 > priorities;
 	priorities.push_back(64);
 	for ( unsigned int i = 0; i < flattenedProps.size(); i++ )
 	{
-		uint32 priority = flattenedProps[ i ].m_prop.priority();
+		uint32 priority = flattenedProps[ i ].priority;
 
 		bool bFound = false;
 		for ( uint32 j = 0; j < priorities.size(); j++ )
@@ -118,13 +116,13 @@ void DemoParser::FlattenDataTable( int nServerClass )
 			uint32 currentProp = start;
 			while (currentProp < flattenedProps.size()) 
 			{
-				const CSVCMsg_SendTable::sendprop_t &prop = flattenedProps[currentProp].m_prop;
+				const PropertyKey &key = flattenedProps[currentProp];
 
-				if (prop.priority() == priority || (priority == 64 && (SPROP_CHANGES_OFTEN & prop.flags()))) 
+				if (key.priority == priority || (priority == 64 && (SPROP_CHANGES_OFTEN & key.flags))) 
 				{
 					if ( start != currentProp )
 					{
-						FlattenedPropEntry temp = flattenedProps[start];
+						PropertyKey temp = flattenedProps[start];
 						flattenedProps[start] = flattenedProps[currentProp];
 						flattenedProps[currentProp] = temp;
 					}
@@ -163,17 +161,32 @@ void DemoParser::GatherExcludes( CSVCMsg_SendTable *pTable )
 
 void DemoParser::GatherProps( CSVCMsg_SendTable *pTable, int nServerClass )
 {
-	std::vector< FlattenedPropEntry > tempFlattenedProps;
+	std::vector< PropertyKey > tempFlattenedProps;
 	GatherProps_IterateProps( pTable, nServerClass, tempFlattenedProps );
 
-	std::vector< FlattenedPropEntry > &flattenedProps = gameState.s_ServerClasses[ nServerClass ].flattenedProps;
+	std::vector<PropertyKey> &flattenedProps = gameState.serverClasses[ nServerClass ].keys;
 	for ( uint32 i = 0; i < tempFlattenedProps.size(); i++ )
 	{
 		flattenedProps.push_back( tempFlattenedProps[ i ] );
 	}
 }
 
-void DemoParser::GatherProps_IterateProps( CSVCMsg_SendTable *pTable, int nServerClass, std::vector< FlattenedPropEntry > &flattenedProps )
+PropertyKey propertyKeyFromSendProp(CSVCMsg_SendTable *pTable, int iProp)
+{
+	const CSVCMsg_SendTable::sendprop_t& sendProp = pTable->props( iProp );
+
+	if ( sendProp.type() == DPT_Array )
+	{
+		PropertyKey arrayType = propertyKeyFromSendProp(pTable, iProp - 1);
+		return PropertyKey(sendProp.var_name(), sendProp.priority(), sendProp.flags(), sendProp.type(), sendProp.num_elements(), sendProp.num_bits(), sendProp.high_value(), sendProp.low_value(), &arrayType);
+	}
+	else
+	{
+		return PropertyKey(sendProp.var_name(), sendProp.priority(), sendProp.flags(), sendProp.type(), 1, sendProp.num_bits(), sendProp.high_value(), sendProp.low_value(), NULL);
+	}
+}
+
+void DemoParser::GatherProps_IterateProps( CSVCMsg_SendTable *pTable, int nServerClass, std::vector<PropertyKey> &flattenedProps )
 {
 	for ( int iProp=0; iProp < pTable->props_size(); iProp++ )
 	{
@@ -203,14 +216,7 @@ void DemoParser::GatherProps_IterateProps( CSVCMsg_SendTable *pTable, int nServe
 		}
 		else
 		{
-			if ( sendProp.type() == DPT_Array )
-			{
-				flattenedProps.push_back( FlattenedPropEntry( sendProp, &(pTable->props( iProp - 1 ) ) ) );
-			}
-			else
-			{
-				flattenedProps.push_back( FlattenedPropEntry( sendProp, NULL ) );
-			}
+			flattenedProps.push_back(propertyKeyFromSendProp(pTable, iProp));
 		}
 	}
 }
@@ -242,21 +248,21 @@ CSVCMsg_SendTable *DemoParser::GetTableByName( const char *pName )
 
 CSVCMsg_SendTable *DemoParser::GetTableByClassID( uint32 nClassID )
 {
-	for ( uint32 i = 0; i < gameState.s_ServerClasses.size(); i++ )
+	for ( uint32 i = 0; i < gameState.serverClasses.size(); i++ )
 	{
-		if ( gameState.s_ServerClasses[ i ].nClassID == nClassID )
+		if ( gameState.serverClasses[ i ].classId == nClassID )
 		{
-			return &(gameState.s_DataTables[ gameState.s_ServerClasses[i].nDataTable ]);
+			return &(gameState.s_DataTables[ gameState.serverClasses[i].dataTableId ]);
 		}
 	}
 	return NULL;
 }
 
-FlattenedPropEntry *DemoParser::GetSendPropByIndex( uint32 uClass, uint32 uIndex )
+PropertyKey *DemoParser::GetSendPropByIndex( uint32 uClass, uint32 uIndex )
 {
-	if ( uIndex < gameState.s_ServerClasses[ uClass ].flattenedProps.size() )
+	if ( uIndex < gameState.serverClasses[ uClass ].keys.size() )
 	{
-		return &gameState.s_ServerClasses[ uClass ].flattenedProps[ uIndex ];
+		return &gameState.serverClasses[ uClass ].keys[ uIndex ];
 	}
 	return NULL;
 }
