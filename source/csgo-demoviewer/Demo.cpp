@@ -23,11 +23,11 @@ void Demo::load()
 	int lastTickSaved = -1;
 	while (demoParser.parseNextTick(demo))
 	{
-		if (abs(gameState.getTick() - lastTickSaved) > 1000)
+		if (abs(gameState.getContinuousTick() - lastTickSaved) > 200)
 		{
 			GameState *s = new GameState(gameState);
 			gameStates.push_back(s);
-			lastTickSaved = gameState.getTick();
+			lastTickSaved = gameState.getContinuousTick();
 		}
 	}
 	maximumContinousTick = gameState.getContinuousTick();
