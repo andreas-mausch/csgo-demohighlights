@@ -48,13 +48,28 @@ void DemoviewerDialog::setGameState(GameState *gameState)
 	SendDlgItemMessage(dialog, IDC_POSITION, TBM_SETPOS, TRUE, demo ? demo->getCurrentGameState().getContinuousTick() : 0);
 }
 
-void DemoviewerDialog::onScroll()
+void DemoviewerDialog::onScroll(int scrollType)
 {
 	int continuousTick = SendDlgItemMessage(dialog, IDC_POSITION, TBM_GETPOS, 0, 0);
 
 	if (demo)
 	{
-		demo->setPosition(continuousTick);
+		switch (scrollType)
+		{
+			case TB_PAGEUP:
+			{
+				demo->setPositionToPreviousRound();
+			} break;
+			case TB_PAGEDOWN:
+			{
+				demo->setPositionToNextRound();
+			} break;
+			default:
+			{
+				demo->setPosition(continuousTick);
+			} break;
+		}
+
 		setGameState(&demo->getCurrentGameState());
 	}
 }
@@ -91,23 +106,23 @@ INT_PTR DemoviewerDialog::callback(HWND dialog, UINT message, WPARAM wParam, LPA
 	{
 		switch (message)
 		{
-		case WM_INITDIALOG:
+			case WM_INITDIALOG:
 			{
 				ShowWindow(dialog, SW_SHOW);
 			} break;
-		case WM_PAINT:
+			case WM_PAINT:
 			{
 				onPaint();
 			} break;
-		case WM_SIZE:
+			case WM_SIZE:
 			{
 				onSize(LOWORD(lParam), HIWORD(lParam));
 			} break;
-		case WM_HSCROLL:
+			case WM_HSCROLL:
 			{
-				onScroll();
+				onScroll(LOWORD(wParam));
 			} break;
-		case WM_CLOSE:
+			case WM_CLOSE:
 			{
 				close();
 			} break;

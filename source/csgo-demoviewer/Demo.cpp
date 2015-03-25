@@ -57,6 +57,42 @@ void Demo::setPosition(int continuousTick)
 	}
 }
 
+void Demo::setPositionToNextRound()
+{
+	for (PointerVector<GameState>::iterator s = roundStarts.begin(); s != roundStarts.end(); s++)
+	{
+		if ((*s)->getContinuousTick() > currentGameState.getContinuousTick())
+		{
+			setPosition((*s)->getContinuousTick());
+			return;
+		}
+	}
+}
+
+void Demo::setPositionToPreviousRound()
+{
+	GameState *previous = NULL;
+
+	for (PointerVector<GameState>::iterator s = roundStarts.begin(); s != roundStarts.end(); s++)
+	{
+		if ((*s)->getContinuousTick() >= currentGameState.getContinuousTick())
+		{
+			if (previous)
+			{
+				setPosition(previous->getContinuousTick());
+			}
+			else
+			{
+				setPosition(0);
+			}
+
+			return;
+		}
+
+		previous = *s;
+	}
+}
+
 GameState &Demo::getCurrentGameState()
 {
 	return currentGameState;

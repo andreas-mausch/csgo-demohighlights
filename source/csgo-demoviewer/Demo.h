@@ -23,6 +23,9 @@ public:
 	~Demo();
 
 	void setPosition(int continuousTick);
+	void setPositionToPreviousRound();
+	void setPositionToNextRound();
+
 	GameState &getCurrentGameState();
 	int getMaximumContinuousTick();
 	void addRoundStart(const GameState &gameState);

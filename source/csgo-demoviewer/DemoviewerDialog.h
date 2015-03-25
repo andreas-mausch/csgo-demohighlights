@@ -12,7 +12,7 @@ private:
 
 	void onPaint();
 	void onSize(int width, int height);
-	void onScroll();
+	void onScroll(int scrollType);
 
 	void setGameState(GameState *gameState);
 
