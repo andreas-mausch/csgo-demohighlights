@@ -16,6 +16,13 @@ DemoviewerDialog::~DemoviewerDialog()
 {
 }
 
+void DemoviewerDialog::setIcon()
+{
+	HICON icon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_ICON1));
+	SendMessage(dialog, WM_SETICON, ICON_BIG, reinterpret_cast<LPARAM>(icon));
+	SendMessage(dialog, WM_SETICON, ICON_SMALL, reinterpret_cast<LPARAM>(icon));
+}
+
 void DemoviewerDialog::setDemo(Demo &demo)
 {
 	this->demo = &demo;
@@ -111,6 +118,7 @@ INT_PTR DemoviewerDialog::callback(HWND dialog, UINT message, WPARAM wParam, LPA
 			case WM_INITDIALOG:
 			{
 				ShowWindow(dialog, SW_SHOW);
+				setIcon();
 			} break;
 			case WM_PAINT:
 			{

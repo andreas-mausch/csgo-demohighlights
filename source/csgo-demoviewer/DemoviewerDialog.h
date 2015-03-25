@@ -10,6 +10,7 @@ class DemoviewerDialog : public Dialog
 private:
 	Demo *demo;
 
+	void setIcon();
 	void onPaint();
 	void onSize(int width, int height);
 	void onScroll(int scrollType);
