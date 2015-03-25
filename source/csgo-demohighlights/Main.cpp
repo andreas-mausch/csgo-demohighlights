@@ -4,6 +4,12 @@
 #include "../csgo-demolibrary/streams/MemoryStreamBuffer.h"
 #include "../csgo-demolibrary/streams/MemoryStream.h"
 #include "../csgo-demolibrary/utils/File.h"
+#include "../csgo-demolibrary/utils/StringFormat.h"
+
+void printHeader()
+{
+	std::cout << formatString("%-13.13s %5.5s %-15.15s %s", "Type", "Round", "Player", "Team") << std::endl << std::endl;
+}
 
 int main(int argc, char *argv[])
 {
@@ -19,6 +25,8 @@ int main(int argc, char *argv[])
 		std::cout << "error reading file." << std::endl;
 		return -1;
 	}
+
+	printHeader();
 
 	MemoryStreamBuffer demoBuffer(const_cast<char *>(stringBuffer.c_str()), stringBuffer.length());
 	MemoryStream demo(demoBuffer);

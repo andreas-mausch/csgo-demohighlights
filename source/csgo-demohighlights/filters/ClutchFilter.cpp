@@ -71,7 +71,7 @@ void ClutchFilter::roundEnd(TeamType winner)
 	{
 		if (clutch->player->getTeam() == winner)
 		{
-			log.log("CLUTCH WON %d:%d - %dvs%d: %s (%s)", gameState.getRoundsWon(Terrorists), gameState.getRoundsWon(CounterTerrorists), clutch->aliveOwnTeam, clutch->aliveEnemyTeam, clutch->player->getName().c_str(), Team::toString(winner).c_str());
+			log.log("Clutch %dvs%d %02d:%02d %15.15s %s", clutch->aliveOwnTeam, clutch->aliveEnemyTeam, gameState.getRoundsWon(Terrorists), gameState.getRoundsWon(CounterTerrorists), clutch->player->getName().c_str(), Team::toString(winner).c_str());
 		}
 	}
 }
