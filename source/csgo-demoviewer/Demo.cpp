@@ -24,7 +24,7 @@ void Demo::load()
 	int lastTickSaved = -1;
 	while (demoParser.parseNextTick(demo))
 	{
-		if (abs(gameState.getContinuousTick() - lastTickSaved) > 200)
+		if (abs(gameState.getContinuousTick() - lastTickSaved) > 1000)
 		{
 			GameState *s = new GameState(gameState);
 			gameStates.push_back(s);
