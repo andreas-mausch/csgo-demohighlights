@@ -29,14 +29,16 @@ void DemoviewerDialog::onPaint()
 void DemoviewerDialog::onSize(int width, int height)
 {
 	int gameStateControlWidth = width;
+	int maxHeight = height - 30;
 
-	if (height < width)
+	if (maxHeight < width)
 	{
-		gameStateControlWidth = height;
+		gameStateControlWidth = maxHeight;
 	}
 
 	gameStateControlWidth -= 20;
 	SetWindowPos(GetDlgItem(dialog, IDC_GAMESTATE), NULL, 0, 0, gameStateControlWidth, gameStateControlWidth, SWP_NOMOVE | SWP_NOZORDER);
+	SetWindowPos(GetDlgItem(dialog, IDC_POSITION), NULL, 0, height - 30, width, 24, SWP_NOZORDER);
 }
 
 void DemoviewerDialog::setGameState(GameState *gameState)
