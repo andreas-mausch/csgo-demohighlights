@@ -227,6 +227,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\source\csgo-demolibrary\gamestate\Round.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\csgo-demolibrary\gamestate\Team.cpp"
 					>
 				</File>
@@ -338,6 +342,10 @@
 				</File>
 				<File
 					RelativePath="..\..\source\csgo-demolibrary\gamestate\Player.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\csgo-demolibrary\gamestate\Round.h"
 					>
 				</File>
 				<File

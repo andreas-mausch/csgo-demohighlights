@@ -5,7 +5,7 @@
 #include "../utils/StringFormat.h"
 
 GameState::GameState(int tick, int positionInStream)
-: tick(tick), continuousTick(0), positionInStream(positionInStream), roundTime(-1), bombTimer(45), bombPosition(-1.0f, -1.0f, -1.0f), bombPlantedTick(-1), s_nServerClassBits(0)
+: tick(tick), continuousTick(0), positionInStream(positionInStream), s_nServerClassBits(0)
 {
 }
 
@@ -316,27 +316,27 @@ void GameState::updateTeamScore(int entityId, int score)
 
 void GameState::setRoundTime(int seconds)
 {
-	roundTime = seconds;
+	round.roundTime = seconds;
 }
 
 void GameState::setRoundStartedTick(int tick)
 {
-	roundStartedTick = tick;
+	round.roundStartedTick = tick;
 }
 
 void GameState::setBombTimer(int seconds)
 {
-	bombTimer = seconds;
+	round.bombTimer = seconds;
 }
 
 int GameState::getBombPlantedTick()
 {
-	return bombPlantedTick;
+	return round.bombPlantedTick;
 }
 
 void GameState::setBombPlantedTick(int tick)
 {
-	bombPlantedTick = tick;
+	round.bombPlantedTick = tick;
 }
 
 int GameState::getTicksPerSecond()
@@ -346,22 +346,22 @@ int GameState::getTicksPerSecond()
 
 int GameState::getRoundTimeLeft()
 {
-	return roundTime - (tick - roundStartedTick) / getTicksPerSecond();
+	return round.roundTime - (tick - round.roundStartedTick) / getTicksPerSecond();
 }
 
 int GameState::getBombTimeLeft()
 {
-	return bombTimer - (tick - bombPlantedTick) / getTicksPerSecond();
+	return round.bombTimer - (tick - round.bombPlantedTick) / getTicksPerSecond();
 }
 
 Vector GameState::getBombPosition()
 {
-	return bombPosition;
+	return round.bombPosition;
 }
 
 void GameState::setBombPosition(Vector position)
 {
-	bombPosition = position;
+	round.bombPosition = position;
 }
 
 PointerVector<EntityEntry> &GameState::getEntities()

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Player.h"
+#include "Round.h"
 #include "../parser/DemoParser.h"
 #include "../parser/Stringtable.h"
 #include "../sdk/demofile.h"
@@ -22,11 +23,7 @@ private:
 	int continuousTick;
 	int positionInStream;
 
-	int roundTime;
-	int bombTimer;
-	int roundStartedTick;
-	int bombPlantedTick;
-	Vector bombPosition;
+	Round round;
 
 	CSVCMsg_GameEventList gameEvents;
 	std::vector<Stringtable> stringTables;
