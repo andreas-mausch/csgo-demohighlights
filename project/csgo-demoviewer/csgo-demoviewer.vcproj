@@ -357,6 +357,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\icon.ico"
+				>
+			</File>
+			<File
+				RelativePath="..\..\resources\icon.ico"
+				>
+			</File>
+			<File
 				RelativePath="..\..\resources\resource.h"
 				>
 			</File>

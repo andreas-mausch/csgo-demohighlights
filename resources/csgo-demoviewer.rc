@@ -86,7 +86,16 @@ END
 // PNG
 //
 
-IDB_DE_DUST2            PNG                  "de_dust2.png"
+IDB_DE_DUST2            PNG                     "de_dust2.png"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_ICON1               ICON                    "icon.ico"
 #endif    // Deutsch (Deutschland) resources
 /////////////////////////////////////////////////////////////////////////////
 
