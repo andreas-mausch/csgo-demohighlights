@@ -5,7 +5,6 @@
 
 #include "Demo.h"
 #include "DemoviewerDialog.h"
-#include "FilterHandler.h"
 #include "GameStateControl.h"
 #include "../csgo-demolibrary/parser/DemoParser.h"
 #include "../csgo-demolibrary/gamestate/GameState.h"

@@ -10,6 +10,8 @@ class FilterHandler : public GameEventHandler
 {
 private:
 	PointerVector<GameEventHandler> handlers;
+
+protected:
 	GameState &gameState;
 
 public:

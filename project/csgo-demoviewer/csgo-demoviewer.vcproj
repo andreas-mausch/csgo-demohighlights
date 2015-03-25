@@ -273,6 +273,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\source\csgo-demoviewer\FilterHandlerRoundStart.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\source\csgo-demoviewer\GameStateControl.cpp"
 				>
 			</File>
@@ -316,6 +320,10 @@
 			</File>
 			<File
 				RelativePath="..\..\source\csgo-demoviewer\FilterHandler.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\source\csgo-demoviewer\FilterHandlerRoundStart.h"
 				>
 			</File>
 			<File

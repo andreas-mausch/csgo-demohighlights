@@ -11,6 +11,7 @@ class Demo
 private:
 	MemoryStream demo;
 	PointerVector<GameState> gameStates;
+	PointerVector<GameState> roundStarts;
 	GameState currentGameState;
 	int maximumContinousTick;
 
@@ -24,4 +25,5 @@ public:
 	void setPosition(int continuousTick);
 	GameState &getCurrentGameState();
 	int getMaximumContinuousTick();
+	void addRoundStart(const GameState &gameState);
 };

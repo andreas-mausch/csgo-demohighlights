@@ -1,5 +1,6 @@
 #include "Demo.h"
 #include "FilterHandler.h"
+#include "FilterHandlerRoundStart.h"
 
 Demo::Demo(MemoryStreamBuffer &buffer)
 : demo(buffer), maximumContinousTick(-1), currentGameState(0, 0)
@@ -15,7 +16,7 @@ void Demo::load()
 {
 	GameState gameState(0, demo.tellg());
 	Log log(std::cout, false);
-	FilterHandler filterHandler(gameState, log);
+	FilterHandlerRoundStart filterHandler(*this, gameState, log);
 	DemoParser demoParser(gameState, log, filterHandler);
 	demoParser.parseHeader(demo);
 	gameStates.push_back(new GameState(gameState));
@@ -76,6 +77,11 @@ GameState &Demo::findNearestGameState(int continuousTick)
 	}
 
 	return *best;
+}
+
+void Demo::addRoundStart(const GameState &gameState)
+{
+	roundStarts.push_back(new GameState(gameState));
 }
 
 int Demo::getMaximumContinuousTick()
