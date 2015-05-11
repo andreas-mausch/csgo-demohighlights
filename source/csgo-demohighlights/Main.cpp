@@ -8,7 +8,7 @@
 
 void printHeader()
 {
-	std::cout << formatString("%-13.13s %5.5s %-15.15s %s", "Type", "Round", "Player", "Team") << std::endl << std::endl;
+	std::cout << formatString("%-11.11s %5.5s %-15.15s %s", "Type", "Round", "Player", "Team") << std::endl << std::endl;
 }
 
 int main(int argc, char *argv[])

@@ -34,7 +34,7 @@ void KillsFilter::roundOfficiallyEnded()
 		if (it->second >= 3)
 		{
 			Player &player = gameState.findPlayerByUserId(it->first);
-			log.log("%1dK (%1d HS)   %02d:%02d %15.15s %s", it->second, headshotsPerPlayer[player.getUserId()], tRoundsWon, ctRoundsWon, player.getName().c_str(), Team::toString(player.getTeam()).c_str());
+			log.log("%1dK (%1d HS)   %02d:%02d %-15.15s %s", it->second, headshotsPerPlayer[player.getUserId()], tRoundsWon, ctRoundsWon, player.getName().c_str(), Team::toString(player.getTeam()).c_str());
 		}
 	}
 
